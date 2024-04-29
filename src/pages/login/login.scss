@@ -1,0 +1,26 @@
+@import "../../colors.scss";
+
+.card{
+    background-color: $tertiaryColor;
+    padding: 50px 70px 30px 70px;
+    border-radius: 20px;
+    width: 400px;
+}
+
+input{
+    background-color: lightgrey;
+    width: 100%;
+}
+
+input[type="checkbox"]{
+    width: auto;
+}
+
+label{
+    color: $primaryColor;
+    font-weight: 700;
+}
+
+input[type="checkbox"] + label{
+    font-weight: 400;
+}
