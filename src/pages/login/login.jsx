@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from "react-router-dom";
 
 import './login.scss'
 
@@ -27,7 +28,8 @@ const Login = () => {
                     <label htmlFor="remember">Remember me</label>
 
                     <div className='mt-8 text-center'>
-                        <button className='bg-sky-900 rounded-lg p-3 m-2'>Login</button>
+                        <Link  to="/users" className='bg-sky-900 rounded-lg p-3 m-2'>Login
+                        </Link>
                     </div>
 
                 </div>
