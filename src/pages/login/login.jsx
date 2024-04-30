@@ -8,8 +8,8 @@ const Login = () => {
         <div className='flex justify-center items-center h-screen'>
             <div className='mb-20'>
 
-                <div className="flex justify-center mb-10">
-                  <img className="justify-center" src="/public/cashwise3.png" width="200px" alt="" draggable="false"/>
+                <div className="flex justify-center mb-7">
+                  <img className="justify-center" src="/CashTrack.png" width="250px" alt="" draggable="false"/>
                 </div>
             
                 <div className='card'>
