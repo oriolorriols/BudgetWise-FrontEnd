@@ -1,43 +1,81 @@
-import React from 'react'
+import React from 'react';
 import { Link } from "react-router-dom";
 
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Form, Input } from 'antd';
 import './login.scss'
 
 const Login = () => {
+
+  const onFinish = (values) => {
+    console.log('Received values of form: ', values);
+  };
+  
   return (
-    <>
-        <div className='flex justify-center items-center h-screen'>
-            <div className='mb-20'>
-
-                <div className="flex justify-center mb-7">
-                  <img className="justify-center" src="/CashTrack.png" width="250px" alt="" draggable="false"/>
-                </div>
-            
-                <div className='card'>
-                    <div className='mb-5'>
-                        <label className="block" htmlFor="username">Username</label>
-                        <input className="p-2 mt-1" type="text" placeholder='Enter Username'/>
-                    </div>
-                    
-                    <div className='mb-5'>
-                        <label className="block" htmlFor="password">Password</label>
-                        <input className="p-2 mt-1" type="password" placeholder='Enter Password'/>
-                    </div>
-                
-                    <input className="mr-2" type="checkbox" />
-                    <label htmlFor="remember">Remember me</label>
-
-                    <div className='mt-8 text-center'>
-                        <Link  to="/users" className='bg-sky-900 rounded-lg p-3 m-2'>Login
-                        </Link>
-                    </div>
-
-                </div>
-
-            </div>
+    <div className='flex justify-center items-center h-screen'>
+       <div className='max-w-md card'>
+        <div className='mb-5'>
+            <img src="/CashTrack.png" width="250px" alt="" draggable="false"/>
         </div>
-    </>
-  )
-}
+        <div className='login-form-container'>
+            <Form
+                className="login-form"
+                initialValues={{
+                    remember: true,
+                }}
+                onFinish={onFinish}
+            >
+            <Form.Item
+                name="username"
+                rules={[
+                {
+                    required: true,
+                    message: 'Please input your Username!',
+                },
+                ]}
+            >
+                <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+            </Form.Item>
+            <Form.Item
+                name="password"
+                rules={[
+                {
+                    required: true,
+                    message: 'Please input your Password!',
+                },
+                ]}
+            >
+                <Input
+                prefix={<LockOutlined className="site-form-item-icon" />}
+                type="password"
+                placeholder="Password"
+                />
+            </Form.Item>
+            
+            <div className='flex w-full justify-between mt-8 mb-5'>
+                <Form.Item name="remember" valuePropName="checked" noStyle>
+                <Checkbox>Remember me</Checkbox>
+                </Form.Item>
 
-export default Login
+                <a className="login-form-forgot" href="">
+                Forgot password
+                </a>
+            </div>
+
+            <Form.Item>
+             
+                    <Button type="primary" htmlType="submit" className="w-full">
+                    Log in
+                </Button>
+           
+                Or <a href="">register now!</a>
+            </Form.Item>
+        </Form>
+        </ div>
+    </ div>
+        </div>
+
+    
+  );
+};
+export default Login;
