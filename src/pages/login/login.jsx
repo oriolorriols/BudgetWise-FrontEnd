@@ -15,7 +15,7 @@ const Login = () => {
     <div className='flex justify-center items-center h-screen'>
        <div className='max-w-md card'>
         <div className='mb-5'>
-            <img src="/CashTrack.png" width="250px" alt="" draggable="false"/>
+            <img src="/BudgetWiseGreen.png" width="250px" alt="" draggable="false"/>
         </div>
         <div className='login-form-container'>
             <Form
