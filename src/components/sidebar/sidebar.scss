@@ -1,0 +1,25 @@
+@import "../../colors.scss";
+
+.sidebar{
+    background-color: $accentBackgroundColor;
+}
+
+#sider{
+    min-width: 72px;
+}
+
+.nav-logo{
+    background-image: url("/BudgetWiseNS.png");
+    height: 50px;
+    width: 150px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.nav-logo-collapsed{
+    background-image: url("/favicon.png");
+    height: 50px;
+    width: 50px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
