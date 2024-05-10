@@ -1,7 +1,7 @@
 const baseUrl = "http://localhost:3000"
 
 export const getUsers = async () => {
-    const token = localStorage.getItem('acces_token')
+    const token = localStorage.getItem('access_token')
     const response = await fetch(`${baseUrl}/user`, {
         headers: {"authorization": `Bearer ${token}`} // ponemos en headers el token generado
     })
@@ -39,4 +39,14 @@ export const updateUser = async (id, userData) => {
     })
     const usuarioCambiado = await response.json();
     return usuarioCambiado
+}
+
+export const login = async (email, password) => {
+    const response = await fetch(`${baseUrl}/user/login`, {
+        method: 'POST', 
+        body: JSON.stringify({email, password}), 
+        headers: {"Content-Type": "application/json"}
+    })
+    const inicio = await response.json();
+    return inicio
 }

@@ -15,21 +15,18 @@ function App() {
 
   return (
     <>
-     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login/>}/>
-
-        <Route path='/' element={<Home/>}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login/>}/>
+          <Route path='/' element={<Home/>}>
           <Route path='/' element={<DashBoard/>}/>
           <Route path='/users' element={<Users/>}/>
           <Route path='/calendario' element={<Calendario/>}/>
           <Route path='/objetivos' element={<Objetivos/>}/>
           <Route path='/perfil' element={<Perfil/>}/>
-        </Route>
-
-      </Routes>
-
-     </BrowserRouter>
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
