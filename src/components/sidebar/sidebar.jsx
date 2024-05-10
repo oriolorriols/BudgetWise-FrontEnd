@@ -58,8 +58,8 @@ const SideBar = () => {
 
   return (
   <div className='sidebar h-screen sticky top-0'>
-    <Sider trigger={null} collapsible collapsed={collapsed} className={`h-full pt-10 ${collapsed ? '' : 'mr-8'}`}>
-      <div className={`${collapsed ? 'nav-logo-collapsed ml-4' : 'nav-logo ml-5'} justify-center`}/>
+    <Sider trigger={null} collapsible collapsed={collapsed} className={`h-full pt-10 ${collapsed ? '' : 'mr-8'} `}>
+      <div className={`${collapsed ? 'nav-logo-collapsed ml-4' : 'nav-logo ml-7'}`}/>
 
         <Menu
           theme="dark"
