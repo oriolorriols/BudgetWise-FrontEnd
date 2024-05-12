@@ -1,4 +1,4 @@
-import { BrowserRouter,  Routes, Route } from "react-router-dom"
+import {  Routes, Route } from "react-router-dom"
 
 import Home from "./components/home/home"
 
@@ -15,7 +15,6 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login/>}/>
           <Route path='/' element={<Home/>}>
@@ -26,7 +25,6 @@ function App() {
           <Route path='/perfil' element={<Perfil/>}/>
           </Route>
         </Routes>
-      </BrowserRouter>
     </>
   )
 }

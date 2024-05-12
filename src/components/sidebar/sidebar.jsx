@@ -41,7 +41,7 @@ const items = [
     key: '/perfil',
     icon: <ContainerOutlined />,
     label: 'Perfil',
-  }
+  },
 ];
 
 
