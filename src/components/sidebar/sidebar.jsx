@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
 
 import {
-  AppstoreOutlined,
-  ContainerOutlined,
   DesktopOutlined,
-  MailOutlined,
+  CalendarOutlined,
+  LogoutOutlined,
+  RiseOutlined,
+  UserOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
@@ -29,17 +30,17 @@ const items = [
   },
   {
     key: '/calendario',
-    icon: <ContainerOutlined />,
+    icon: <CalendarOutlined />,
     label: 'Calendario',
   },
   {
     key: '/objetivos',
-    icon: <ContainerOutlined />,
+    icon: <RiseOutlined />,
     label: 'Objetivos',
   },
   {
     key: '/perfil',
-    icon: <ContainerOutlined />,
+    icon: <UserOutlined />,
     label: 'Perfil',
   },
   {
@@ -50,16 +51,15 @@ const items = [
 ];
 
 
-const SideBar = (sidebar) => {
+const SideBar = () => {
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate()
 
   return (
-    <div className={`${collapsed ? 'pr-1' : 'pr-10'} sidebar h-screen mr-5 pl-2`}>
-        <div className={`${collapsed ? 'nav-logo-collapsed' : 'nav-logo'} mx-5 mt-10 mb-3 justify-center`}/>
+  <div className='sidebar h-screen sticky top-0'>
+    <Sider trigger={null} collapsible collapsed={collapsed} className={`h-full pt-10 ${collapsed ? '' : 'mr-8'} `}>
+      <div className={`${collapsed ? 'nav-logo-collapsed ml-4' : 'nav-logo ml-7'}`}/>
 
-        <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
           mode="inline"
@@ -69,10 +69,10 @@ const SideBar = (sidebar) => {
             navigate(key)
           }}
         />
-      </Sider>
+
       <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            icon={collapsed ? <MenuUnfoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/> : <MenuFoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/>}
             onClick={() => setCollapsed(!collapsed)}
             style={{
               fontSize: '16px',
@@ -80,6 +80,7 @@ const SideBar = (sidebar) => {
               height: 64,
             }}
           />
+      </Sider>
     </div>
   );
 };
