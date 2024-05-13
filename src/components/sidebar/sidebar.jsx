@@ -43,6 +43,11 @@ const items = [
     icon: <UserOutlined />,
     label: 'Perfil',
   },
+  {
+    key: '/viajes',
+    icon: <ContainerOutlined />,
+    label: 'Viajes',
+  },
 ];
 
 
