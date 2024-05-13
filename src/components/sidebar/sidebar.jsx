@@ -43,12 +43,6 @@ const items = [
     icon: <UserOutlined />,
     label: 'Perfil',
   },
-  {
-    key: '/logout',
-    icon:   <LogoutOutlined/>,
-    label: 'LogOut',
-  }
-
 ];
 
 

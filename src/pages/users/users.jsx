@@ -1,7 +1,22 @@
 import { useState, useEffect } from "react"
 import { getUsers } from '../../apiService/userApi'
-
 import { Form, Input, InputNumber, Popconfirm, Table, Typography } from 'antd';
+
+const Users = () => {
+  const [allUsers, setAllUsers] = useState([])
+  const [dummy, refresh] = useState(false)
+  const [error, setError] = useState('')
+
+  const getAllUsers = async () => {
+    const users = await getUsers();
+    if (users.length) setAllUsers(users);
+    else setError(users.message)
+  }
+
+  useEffect(() => {
+    getAllUsers()
+  }, [dummy]);
+
 
 const originData = [];
 for (let i = 0; i < 100; i++) {
@@ -49,7 +64,6 @@ const EditableCell = ({
   );
 };
 
-const Users = () => {
 //  const [allUsers, setAllUsers] = useState([])
 //
 //  useEffect(() => {
