@@ -4,6 +4,7 @@ import {useNavigate} from 'react-router-dom'
 import {
   DesktopOutlined,
   CalendarOutlined,
+  ContainerOutlined,
   LogoutOutlined,
   RiseOutlined,
   UserOutlined,
@@ -48,6 +49,11 @@ const items = [
     icon: <ContainerOutlined />,
     label: 'Viajes',
   },
+  {
+    key: '/logout',
+    icon: <LogoutOutlined />,
+    label: 'Logout',
+  }
 ];
 
 

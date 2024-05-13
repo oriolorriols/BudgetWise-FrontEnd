@@ -4,7 +4,7 @@ const Viajes = () => {
     <>
     <h1>Viajes</h1>
     </>
-    );
+    )
 }
 
 export default Viajes;
