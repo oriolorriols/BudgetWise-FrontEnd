@@ -50,10 +50,20 @@ const items = [
     label: 'Ausencias',
   },
   {
+    key: '/expenses',
+    icon: <ContainerOutlined />,
+    label: 'Gastos',
+  },
+  {
+    key: '/requests',
+    icon: <ContainerOutlined />,
+    label: 'Solicitudes',
+  },
+  {
     key: '/logout',
     icon: <LogoutOutlined />,
     label: 'Logout',
-  }
+  },
 ];
 
 const SideBar = () => {
