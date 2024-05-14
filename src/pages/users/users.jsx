@@ -17,18 +17,6 @@ const Users = () => {
     getAllUsers()
   }, [dummy]);
 
-
-const originData = [];
-for (let i = 0; i < 100; i++) {
-  originData.push({
-    key: i.toString(),
-    name: `Edward ${i}`,
-    age: 32,
-    department: "FSD", 
-    address: `London Park no. ${i}`,
-  });
-}
-
 const EditableCell = ({
   editing,
   dataIndex,
@@ -64,24 +52,14 @@ const EditableCell = ({
   );
 };
 
-//  const [allUsers, setAllUsers] = useState([])
-//
-//  useEffect(() => {
-//    const fetchData = async () => {
-//      const users = await getUsers();
-//      setAllUsers(users);
-//    };
-//    fetchData();
-//  }, []);
-
   const [form] = Form.useForm();
-  const [data, setData] = useState(originData);
+  //const [data, setData] = useState(originData);
   const [editingKey, setEditingKey] = useState('');
   const isEditing = (record) => record.key === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
       name: '',
-      age: '',
+      position: '',
       address: '',
       department: '',
       ...record,
@@ -94,7 +72,7 @@ const EditableCell = ({
   const save = async (key) => {
     try {
       const row = await form.validateFields();
-      const newData = [...data];
+      const newData = [...allUsers];
       const index = newData.findIndex((item) => key === item.key);
       if (index > -1) {
         const item = newData[index];
@@ -102,11 +80,11 @@ const EditableCell = ({
           ...item,
           ...row,
         });
-        setData(newData);
+        setAllUsers(newData);
         setEditingKey('');
       } else {
         newData.push(row);
-        setData(newData);
+        setAllUsers(newData);
         setEditingKey('');
       }
     } catch (errInfo) {
@@ -114,14 +92,14 @@ const EditableCell = ({
     }
   }
   const handleDelete = (key) => {
-    const newData = data.filter((item) => item.key !== key);
-    setData(newData);
+    const newData = allUsers.filter((item) => item.key !== key);
+    setAllUsers(newData);
   };
   const columns = [
     {
       title: 'Nombre',
       dataIndex: 'name',
-      width: '25%',
+      width: '20%',
       editable: true,
     },
     {
@@ -131,27 +109,27 @@ const EditableCell = ({
       editable: true,
     },
     {
-      title: 'Edad',
-      dataIndex: 'age',
-      width: '5%',
+      title: 'Posición',
+      dataIndex: 'position',
+      width: '20%',
       editable: true,
     },
     {
       title: 'Dirección',
       dataIndex: 'address',
-      width: '30%',
+      width: '20%',
       editable: true,
     },
     {
       title: 'Departamento',
       dataIndex: 'department',
-      width: '40%',
+      width: '20%',
       editable: true,
     },
     {
       title: 'Situación',
-      dataIndex: 'isSick',
-      width: '40%',
+      dataIndex: 'status',
+      width: '15%',
       editable: true,
     },
     {
@@ -184,7 +162,7 @@ const EditableCell = ({
       title: 'Delete',
       dataIndex: 'operation',
       render: (_, record) =>
-        data.length >= 1 ? (
+        allUsers.length >= 1 ? (
           <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
             <a>Delete</a>
           </Popconfirm>
@@ -215,7 +193,7 @@ const EditableCell = ({
           },
         }}
         bordered
-        dataSource={data}
+        dataSource={allUsers}
         columns={mergedColumns}
         rowClassName="editable-row"
         pagination={{
