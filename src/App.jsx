@@ -8,7 +8,8 @@ import DashBoard from './pages/dashboard/dashboard'
 import Calendario from './pages/calendario/calendario'
 import Objetivos from './pages/objetivos/objetivos'
 import Perfil from './pages/perfil/perfil'
-import Viajes from "./pages/viajes/viajes"
+import Absences from "./pages/absence/absence"
+
 
 import './App.scss'
 
@@ -24,7 +25,7 @@ function App() {
           <Route path='/calendario' element={<Calendario/>}/>
           <Route path='/objetivos' element={<Objetivos/>}/>
           <Route path='/perfil' element={<Perfil/>}/>
-          <Route path='/viajes' element={<Viajes/>}/>
+          <Route path='/ausencias' element={<Absences/>}/>
           </Route>
         </Routes>
     </>

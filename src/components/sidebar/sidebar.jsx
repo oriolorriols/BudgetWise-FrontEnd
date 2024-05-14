@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
 
 import {
@@ -45,9 +45,9 @@ const items = [
     label: 'Perfil',
   },
   {
-    key: '/viajes',
+    key: '/ausencias',
     icon: <ContainerOutlined />,
-    label: 'Viajes',
+    label: 'Ausencias',
   },
   {
     key: '/logout',
@@ -56,10 +56,9 @@ const items = [
   }
 ];
 
-
 const SideBar = () => {
-    const [collapsed, setCollapsed] = useState(false);
-    const navigate = useNavigate()
+  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate()
 
   return (
   <div className='sidebar h-screen sticky top-0'>
@@ -71,9 +70,11 @@ const SideBar = () => {
           mode="inline"
           defaultSelectedKeys={['1']}
           items={items}
-          onClick={({key})=> {
-            navigate(key)
-          }}
+          onClick={({key}) => {
+            if (key === '/logout') {
+            localStorage.removeItem('access_token')
+            navigate('/login')}
+            else navigate(key)}}
         />
 
       <Button
