@@ -87,7 +87,7 @@ const SideBar = () => {
             else navigate(key)}}
         />
 
-      <Button
+      <Button 
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/> : <MenuFoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/>}
             onClick={() => setCollapsed(!collapsed)}
