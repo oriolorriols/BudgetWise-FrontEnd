@@ -8,6 +8,7 @@ const Expenses = () => {
     const [allExpenses, setAllExpenses] = useState([])
     const [error, setError] = useState("")
     const [dummy, refresh] = useState(false)
+    const [filtering, setFiltering] = useState(null)
     
     const getAllExpenses = async () => {
         const expenses = await getExpenses();
@@ -22,7 +23,22 @@ const Expenses = () => {
     const [filteredInfo, setFilteredInfo] = useState({});
     const [sortedInfo, setSortedInfo] = useState({});
 
-    const onSearch = (value, _e, info) => console.log(info?.source, value);
+    const onSearch = (value, _e, info) => {
+        console.log(info?.source, value)
+        const newList = [...allExpenses]
+        if (info) {
+            const filteredDataCreatedAt = newList.filter(info => info.createdAt.toLowerCase().includes(value.toLowerCase()))         
+            const filteredDataExpenseType = newList.filter(info => info.expenseType.toLowerCase().includes(value.toLowerCase()))
+            if (filteredDataCreatedAt) return setFiltering(filteredDataCreatedAt)
+            if (filteredDataExpenseType) return setFiltering(filteredDataExpenseType)
+        }
+        if (!info) allExpenses
+    };
+    // const onSearch = (value) => {
+    //     console.log(value)
+    //     const filteredData = allExpenses.filter((data) => data.includes(value))
+    //     setAllExpenses(filteredData)
+    // };
 
     const handleChange = (pagination, filters, sorter) => {
     console.log('Various parameters', pagination, filters, sorter);
@@ -159,7 +175,6 @@ const columns = [
 
     return (
     <>
-    {console.log(allExpenses)}
         <h1>Todos los gastos: </h1>
         <div className="flex justify-end my-5">
         <Space direction="vertical">
@@ -174,9 +189,8 @@ const columns = [
         </div>
         <Table 
             columns={columns} 
-            dataSource={allExpenses} 
-            onChange={handleChange
-        } />
+            dataSource={filtering.length > 0 ? filtering : allExpenses} 
+            onChange={handleChange} />
             {error && <p>Ha habido un error: {error}</p>}
     </>
     )}
