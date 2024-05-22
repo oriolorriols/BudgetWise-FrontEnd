@@ -20,7 +20,6 @@ const navigate = useNavigate();
 
 const clickLogin = async () => { //creamos funcion que guarda el token al dar login
     const token = await login(email, password)
-    console.log(token)
     localStorage.setItem('access_token', token)
     navigate('/')
 }
