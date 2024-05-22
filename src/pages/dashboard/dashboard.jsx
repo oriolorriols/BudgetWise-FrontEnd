@@ -1,12 +1,13 @@
-import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/authContext"
 
 const DashBoard = () => {
+  const { token } = useAuth()
+  return (
+    <>
+      <h1>DashBoard</h1> <br />
+      <p>{token}</p>
+    </>
+  );
+}
 
-    return (
-      <>
-    <h1>DashBoard</h1> <br />
-    <Link to="/login">Login</Link> <br />
-      </>
-    )}
-    
 export default DashBoard;
