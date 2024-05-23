@@ -1,5 +1,6 @@
 import { useState } from 'react';
-//import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/authContext"
+
 
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input } from 'antd';
@@ -18,9 +19,12 @@ const [password, setPassword] = useState('')
 
 const navigate = useNavigate();
 
+const { setToken } = useAuth()
+
 const clickLogin = async () => { //creamos funcion que guarda el token al dar login
     const token = await login(email, password)
     localStorage.setItem('access_token', token)
+    setToken(token)
     navigate('/')
 }
 

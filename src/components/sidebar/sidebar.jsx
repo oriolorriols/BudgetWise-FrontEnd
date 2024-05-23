@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
+import { useAuth } from "../../contexts/authContext"
+
 
 import {
   DesktopOutlined,
@@ -59,6 +61,8 @@ const items = [
 const SideBar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate()
+  const { setToken } = useAuth()
+
 
   return (
   <div className='sidebar h-screen sticky top-0'>
@@ -73,6 +77,7 @@ const SideBar = () => {
           onClick={({key}) => {
             if (key === '/logout') {
             localStorage.removeItem('access_token')
+            setToken(null)
             navigate('/login')}
             else navigate(key)}}
         />
