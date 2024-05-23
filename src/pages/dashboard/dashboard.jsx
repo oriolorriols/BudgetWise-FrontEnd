@@ -5,7 +5,9 @@ const DashBoard = () => {
   return (
     <>
       <h1>DashBoard</h1> <br />
-      <p>{isHR}</p>
+      <p>TOKEN: {token}</p>
+      <p>USER ID: {userId}</p>
+      <p>IS HR?: {isHR}</p>
     </>
   );
 }

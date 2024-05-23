@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useAuth } from "../../contexts/authContext"
+import { getOneUser } from '../../apiService/userApi';
+
 import { InboxOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -16,6 +19,7 @@ import {
   Switch,
   Upload,
 } from 'antd';
+
 const { Option } = Select;
 const formItemLayout = {
   labelCol: {
@@ -35,7 +39,19 @@ const normFile = (e) => {
 const onFinish = (values) => {
   console.log('Received values of form: ', values);
 };
-const Perfil = () => (
+const Perfil = () => {
+  const { userId, isHR } = useAuth()
+
+  useEffect(()=>{
+    const userData = async () => {
+      const user = await getOneUser(userId)
+  }
+  }, [])
+
+
+  return (
+  <>
+  <h2>Hey {userId} </h2>
   <Form
     name="validate_other"
     {...formItemLayout}
@@ -265,5 +281,7 @@ const Perfil = () => (
       </Space>
     </Form.Item>
   </Form>
-);
+  </>
+  )
+};
 export default Perfil;
