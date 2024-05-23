@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react"
 import { getUsers } from '../../apiService/userApi'
+
+import { useAuth } from "../../contexts/authContext"
+import {useNavigate} from 'react-router-dom'
+
 import { Form, Input, InputNumber, Popconfirm, Table, Typography } from 'antd';
 
 const Users = () => {
@@ -7,10 +11,19 @@ const Users = () => {
   const [dummy, refresh] = useState(false)
   const [error, setError] = useState('')
 
+  const { token, setToken } = useAuth()
+  const navigate = useNavigate()
+
   const getAllUsers = async () => {
     const users = await getUsers();
     if (users.length) setAllUsers(users);
-    else setError(users.message)
+    else {
+      setError(users.msg)
+      if(users.error.name === "TokenExpiredError"){
+        alert("Token is expired. Please Log In again.")
+        setToken(null)
+        navigate('/login')
+      }}
   }
 
   useEffect(() => {
