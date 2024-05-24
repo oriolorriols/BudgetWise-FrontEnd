@@ -8,7 +8,7 @@ const Expenses = () => {
     const [allExpenses, setAllExpenses] = useState([])
     const [error, setError] = useState("")
     const [dummy, refresh] = useState(false)
-    const [filtering, setFiltering] = useState(null)
+    const [filtering, setFiltering] = useState([])
     
     const getAllExpenses = async () => {
         const expenses = await getExpenses();
