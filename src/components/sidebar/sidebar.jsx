@@ -52,10 +52,20 @@ const items = [
     label: 'Ausencias',
   },
   {
+    key: '/expenses',
+    icon: <ContainerOutlined />,
+    label: 'Gastos',
+  },
+  {
+    key: '/requests',
+    icon: <ContainerOutlined />,
+    label: 'Solicitudes',
+  },
+  {
     key: '/logout',
     icon: <LogoutOutlined />,
     label: 'Logout',
-  }
+  },
 ];
 
 const SideBar = () => {
@@ -82,7 +92,7 @@ const SideBar = () => {
             else navigate(key)}}
         />
 
-      <Button
+      <Button 
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/> : <MenuFoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/>}
             onClick={() => setCollapsed(!collapsed)}
