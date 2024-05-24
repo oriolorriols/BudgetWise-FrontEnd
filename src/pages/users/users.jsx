@@ -21,6 +21,7 @@ const Users = () => {
       setError(users.msg)
       if(users.error.name === "TokenExpiredError"){
         alert("Token is expired. Please Log In again.")
+        localStorage.removeItem('access_token')
         setToken(null)
         navigate('/login')
       }}
