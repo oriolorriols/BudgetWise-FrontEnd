@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react'
 import { useAuth } from "../../contexts/authContext"
-import { getOneUser } from '../../apiService/userApi';
+import { getOneUser } from '../../apiService/userApi'
+import { useNavigate } from 'react-router-dom'
 
-import { InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import { InboxOutlined, UploadOutlined } from '@ant-design/icons'
 import {
   Button,
   Checkbox,
@@ -19,6 +20,8 @@ import {
   Switch,
   Upload,
 } from 'antd';
+
+
 
 const { Option } = Select;
 const formItemLayout = {
@@ -40,19 +43,52 @@ const onFinish = (values) => {
   console.log('Received values of form: ', values);
 };
 const Perfil = () => {
-  const { userId, isHR } = useAuth()
+  const navigate = useNavigate()
 
-  useEffect(()=>{
-    const userData = async () => {
-      const user = await getOneUser(userId)
-  }
-  }, [])
+  const { userId, isHR, setToken } = useAuth()
+  const [ user, setUser ] = useState({})
+
+  const getUserData = async () => {
+    try {
+      const data = await getOneUser(userId)
+      setUser(data)
+      if(data.error.name === "TokenExpiredError"){
+        alert("Token is expired. Please Log In again.")
+        localStorage.removeItem('access_token')
+        setToken(null)
+        navigate('/login')
+      }
+      
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      getUserData();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
 
   return (
   <>
-  <h2>Hey {userId} </h2>
-  <Form
+  <h2>Hola, {user.name}!</h2>
+
+  <div className='flex'>
+    <div>
+      <img src="" alt="" />
+      <p>{user.name} {user.surname}</p>
+      <p>{user.email}</p>
+      <p>{user.dni}</p>
+    </div>
+
+
+  <Form className=''
     name="validate_other"
     {...formItemLayout}
     onFinish={onFinish}
@@ -281,6 +317,7 @@ const Perfil = () => {
       </Space>
     </Form.Item>
   </Form>
+  </div>
   </>
   )
 };

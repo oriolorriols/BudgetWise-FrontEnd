@@ -10,7 +10,9 @@ export const getUsers = async () => {
 }
 
 export const getOneUser = async (id) => {
-    const response = await fetch(`${baseUrl}/users/${id}`, {"authorization": `Bearer ${token}`})
+    const response = await fetch(`${baseUrl}/users/${id}`,{
+     headers: {"authorization": `Bearer ${token}`}
+    })
     const user = await response.json();
     return user
 }
