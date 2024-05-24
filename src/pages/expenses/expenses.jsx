@@ -8,7 +8,7 @@ const Expenses = () => {
     const [allExpenses, setAllExpenses] = useState([])
     const [error, setError] = useState("")
     const [dummy, refresh] = useState(false)
-    const [filtering, setFiltering] = useState(null)
+    const [filtering, setFiltering] = useState([])
     
     const getAllExpenses = async () => {
         const expenses = await getExpenses();
@@ -26,19 +26,16 @@ const Expenses = () => {
     const onSearch = (value, _e, info) => {
         console.log(info?.source, value)
         const newList = [...allExpenses]
-        if (info) {
-            const filteredDataCreatedAt = newList.filter(info => info.createdAt.toLowerCase().includes(value.toLowerCase()))         
-            const filteredDataExpenseType = newList.filter(info => info.expenseType.toLowerCase().includes(value.toLowerCase()))
-            if (filteredDataCreatedAt) return setFiltering(filteredDataCreatedAt)
-            if (filteredDataExpenseType) return setFiltering(filteredDataExpenseType)
+        if (info) { 
+            const filteredData = newList.filter(info => 
+                info.expenseType.toLowerCase().includes(value.toLowerCase()) || 
+                info.absenceId.employeeId.name.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.employeeId.surname.toLowerCase().includes(value.toLowerCase())
+            )
+            if (filteredData) return setFiltering(filteredData)
         }
         if (!info) allExpenses
     };
-    // const onSearch = (value) => {
-    //     console.log(value)
-    //     const filteredData = allExpenses.filter((data) => data.includes(value))
-    //     setAllExpenses(filteredData)
-    // };
 
     const handleChange = (pagination, filters, sorter) => {
     console.log('Various parameters', pagination, filters, sorter);
@@ -73,12 +70,12 @@ const columns = [
 },
 {
     title: 'Nombre',
-    dataIndex: 'name',
+    dataIndex: ['absenceId', 'employeeId', 'name'],
     key: 'name',
 },
 {
     title: 'Apellido',
-    dataIndex: 'surname',
+    dataIndex: ['absenceId', 'employeeId', 'surname'],
     key: 'surname',
 },
 {
