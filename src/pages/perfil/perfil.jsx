@@ -58,7 +58,6 @@ const Perfil = () => {
         setToken(null)
         navigate('/login')
       }
-      
     } catch (error) {
       console.error("Failed to fetch user data", error);
     }
@@ -70,21 +69,39 @@ const Perfil = () => {
     }
   }, [userId]);
 
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
-
-
   return (
-  <>
-  <h2>Hola, {user.name}!</h2>
+  <>  
+  <div className='mb-5'>
+    <h2 className='font-medium text-2xl'>Hola, {user.name}!</h2>
+  </div>
 
   <div className='flex'>
-    <div>
-      <img src="" alt="" />
-      <p>{user.name} {user.surname}</p>
-      <p>{user.email}</p>
-      <p>{user.dni}</p>
+    <div className='bg-green-200 rounded-lg max-w-72 h-fit p-5 mr-10'>
+      <div className='overflow-hidden rounded-full'>
+        <img src="https://st3.depositphotos.com/9998432/13335/v/450/depositphotos_133351928-stock-illustration-default-placeholder-man-and-woman.jpg" alt="" />
+      </div>
+      <div className='mt-4'>
+        <Form.Item
+          name="upload"
+          label="Upload"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
+          extra=""
+        >
+          <Upload name="logo" action="/upload.do" listType="picture">
+            <Button icon={<UploadOutlined />}>Click to upload</Button>
+          </Upload>
+        </Form.Item>
+      </div>
+
+
+      <div className='mt-5'>
+        <p className='font-medium text-center'>{user.name} {user.surname}</p>
+        <p className='text-center'>{user.email}</p>
+        <p className='text-center'>{user.dni}</p>
+        <p className='mt-5 font-medium text-center'>{user.profileType}</p>
+      </div>
+  
     </div>
 
 
