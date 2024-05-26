@@ -25,6 +25,7 @@ const Users = () => {
         setToken(null)
         navigate('/login')
       }}
+      refresh
   }
 
   useEffect(() => {

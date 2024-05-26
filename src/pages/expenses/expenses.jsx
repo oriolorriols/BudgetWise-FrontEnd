@@ -63,10 +63,15 @@ const columns = [
     ellipsis: true,
 },
 {
-    title: 'Motivo',
-    dataIndex: 'expenseType',
-    key: 'expenseType',
+    title: 'Título',
+    dataIndex: ['absenceId', 'absenceCodeId', 'absenceName'],
+    key: 'title',
     render: (text) => <a>{text}</a>,
+},
+{
+    title: 'Motivo',
+    dataIndex: ['absenceId', 'absenceCodeId', 'absenceService'],
+    key: 'service',
 },
 {
     title: 'Nombre',
@@ -88,9 +93,26 @@ const columns = [
     ellipsis: true,
 },
 {
+    title: 'Tipo de pago',
+    dataIndex: 'paymentMethod',
+    key: 'paymentMethod',
+    filters: [
+        {
+            text: 'Personal',
+            value: 'Personal',
+        },
+        {
+            text: 'Business Card',
+            value: 'Business Card',
+        },
+    ],
+    filteredValue: filteredInfo.paymentMethod || null,
+    onFilter: (value, record) => record.paymentMethod.includes(value),
+},
+{
     title: 'Estado',
-    dataIndex: 'status',
-    key: 'status',
+    dataIndex: 'expenseStatus',
+    key: 'expenseStatus',
     filters: [
         {
             text: 'Pendiente',
@@ -106,24 +128,24 @@ const columns = [
 },
 {
     title: 'Monto en Euros',
-    dataIndex: 'amount',
-    key: 'amount',
+    dataIndex: 'expenseEuros',
+    key: 'expenseEuros',
     sorter: (a, b) => a.amount - b.amount,
     sortOrder: sortedInfo.columnKey === 'amount' ? sortedInfo.order : null,
     ellipsis: true,
 },
 {
-    title: 'Editar',
+    title: '',
     key: 'action',
     width: '8%',
     render: (_, record) => (
         <Space size="middle">
-        <a>Editar {record.purpose}</a>
+        <a>Aprobar {record.title}</a>
         </Space>
     ),
 },
 {
-    title: 'Delete',
+    title: '',
     key: 'action',
     width: '8%',
     render: (_, record) =>
@@ -187,8 +209,16 @@ const columns = [
         <Table 
             columns={columns} 
             dataSource={filtering.length > 0 ? filtering : allExpenses} 
-            onChange={handleChange} />
-            {error && <p>Ha habido un error: {error}</p>}
+            onChange={handleChange} 
+            // key={}
+        />
+        {error && <p>Ha habido un error: {error}</p>}
+        Prueba
+            {allExpenses.map((expense, index) => (
+                <div key={index}>
+                    <h1>{expense.absenceId.absenceCodeId.absenceName}</h1>
+                </div>
+            ))}
     </>
     )}
     
