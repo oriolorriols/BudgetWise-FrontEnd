@@ -28,9 +28,10 @@ const Expenses = () => {
         const newList = [...allExpenses]
         if (info) { 
             const filteredData = newList.filter(info => 
-                info.expenseType.toLowerCase().includes(value.toLowerCase()) || 
                 info.absenceId.employeeId.name.toLowerCase().includes(value.toLowerCase()) ||
-                info.absenceId.employeeId.surname.toLowerCase().includes(value.toLowerCase())
+                info.absenceId.employeeId.surname.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.absenceCodeId.absenceName.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.absenceCodeId.absenceService.toLowerCase().includes(value.toLowerCase())
             )
             if (filteredData) return setFiltering(filteredData)
         }
@@ -65,13 +66,13 @@ const columns = [
 {
     title: 'Título',
     dataIndex: ['absenceId', 'absenceCodeId', 'absenceName'],
-    key: 'title',
+    key: 'absenceName',
     render: (text) => <a>{text}</a>,
 },
 {
     title: 'Motivo',
     dataIndex: ['absenceId', 'absenceCodeId', 'absenceService'],
-    key: 'service',
+    key: 'absenceService',
 },
 {
     title: 'Nombre',
@@ -213,12 +214,6 @@ const columns = [
             // key={}
         />
         {error && <p>Ha habido un error: {error}</p>}
-        Prueba
-            {allExpenses.map((expense, index) => (
-                <div key={index}>
-                    <h1>{expense.absenceId.absenceCodeId.absenceName}</h1>
-                </div>
-            ))}
     </>
     )}
     
