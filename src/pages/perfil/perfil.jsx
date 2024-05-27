@@ -45,7 +45,7 @@ const onFinish = (values) => {
 const Perfil = () => {
   const navigate = useNavigate()
 
-  const { userId, isHR, setToken } = useAuth()
+  const { userId, setLogOut } = useAuth()
   const [ user, setUser ] = useState({})
 
   const getUserData = async () => {
@@ -54,8 +54,7 @@ const Perfil = () => {
       setUser(data)
       if(data.error.name === "TokenExpiredError"){
         alert("Token is expired. Please Log In again.")
-        localStorage.removeItem('access_token')
-        setToken(null)
+        setLogOut()
         navigate('/login')
       }
     } catch (error) {

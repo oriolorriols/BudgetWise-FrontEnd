@@ -10,23 +10,21 @@ import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
 
-const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-};
+    const navigate = useNavigate();
+    const onFinish = (values) => {
+        console.log('Received values of form: ', values);
+    };
 
-const [email, setEmail] = useState('')
-const [password, setPassword] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
-const navigate = useNavigate();
+    const { setLogIn } = useAuth()
 
-const { setToken } = useAuth()
-
-const clickLogin = async () => { //creamos funcion que guarda el token al dar login
-    const token = await login(email, password)
-    localStorage.setItem('access_token', token)
-    setToken(token)
-    navigate('/')
-}
+    const clickLogin = async () => { //creamos funcion que guarda el token al dar login
+        const token = await login(email, password)
+        setLogIn(token)
+        navigate('/')
+    }
 
 return (
     <div className='flex justify-center items-center h-screen wrapper'>

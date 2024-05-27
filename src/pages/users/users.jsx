@@ -11,7 +11,7 @@ const Users = () => {
   const [dummy, refresh] = useState(false)
   const [error, setError] = useState('')
 
-  const { token, setToken } = useAuth()
+  const { setLogOut } = useAuth()
   const navigate = useNavigate()
 
   const getAllUsers = async () => {
@@ -22,8 +22,7 @@ const Users = () => {
       setError(users.msg)
       if(users.error.name === "TokenExpiredError"){
         alert("Token is expired. Please Log In again.")
-        localStorage.removeItem('access_token')
-        setToken(null)
+        setLogOut()
         navigate('/login')
       }}
     refresh()
