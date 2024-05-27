@@ -16,6 +16,7 @@ const Users = () => {
 
   const getAllUsers = async () => {
     const users = await getUsers();
+    console.log(users)
     if (users.length) setAllUsers(users);
     else {
       setError(users.msg)
@@ -25,6 +26,7 @@ const Users = () => {
         setToken(null)
         navigate('/login')
       }}
+    refresh()
   }
 
   useEffect(() => {

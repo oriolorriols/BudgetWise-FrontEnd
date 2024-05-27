@@ -1,7 +1,7 @@
 const baseUrl = "http://localhost:3000"
-const token = localStorage.getItem('access_token')
 
 export const getUsers = async () => {
+    const token = localStorage.getItem("access_token")
     const response = await fetch(`${baseUrl}/users`, {
         headers: {"authorization": `Bearer ${token}`} // ponemos en headers el token generado
     })
@@ -10,6 +10,7 @@ export const getUsers = async () => {
 }
 
 export const getOneUser = async (id) => {
+    const token = localStorage.getItem("access_token")
     const response = await fetch(`${baseUrl}/users/${id}`,{
      headers: {"authorization": `Bearer ${token}`}
     })
@@ -18,6 +19,7 @@ export const getOneUser = async (id) => {
 }
 
 export const addUsuario = async (userData) => {
+    const token = localStorage.getItem("access_token")
     const response = await fetch(`${baseUrl}/users`, {
         method: 'POST', 
         body: JSON.stringify(userData), 
@@ -28,12 +30,16 @@ export const addUsuario = async (userData) => {
 }
 
 export const deleteUser = async (id) => {
+    const token = localStorage.getItem("access_token")
+
     const response = await fetch(`${baseUrl}/users/${id}`, {method: 'DELETE', headers: {"authorization": `Bearer ${token}`}})
     const deletedUser = await response.json();
     return deletedUser
 }
 
 export const updateUser = async (id, userData) => {
+    const token = localStorage.getItem("access_token")
+
     const response = await fetch(`${baseUrl}/users/${id}`, {
         method: 'PUT', 
         body: JSON.stringify(userData), 
@@ -44,6 +50,8 @@ export const updateUser = async (id, userData) => {
 }
 
 export const login = async (email, password) => {
+    const token = localStorage.getItem("access_token")
+
     const response = await fetch(`${baseUrl}/users/login`, {
         method: 'POST', 
         body: JSON.stringify({email, password}), 
