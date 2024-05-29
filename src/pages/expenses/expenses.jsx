@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getExpenses } from "../../apiService/expensesApi";
+import { deleteExpenses, getExpenses, getOneExpense } from "../../apiService/expensesApi";
 import { Space, Table, Input, Popconfirm } from 'antd';
 
 const { Search } = Input;
@@ -44,9 +44,12 @@ const Expenses = () => {
     setSortedInfo(sorter);
     };
 
-    const handleDelete = (key) => {
-        const newData = allExpenses.filter((item) => item.key !== key);
-        setAllExpenses(newData);
+    const handleDelete = async (id) => {
+        await deleteExpenses(id);
+        refresh(!dummy)
+        // const newData = allExpenses.filter(item => item._id !== id);
+        // console.log(newData)
+        // setAllExpenses(data);
     };
 
     function formatDate(dateString) {
@@ -150,14 +153,15 @@ const columns = [
     key: 'action',
     width: '8%',
     render: (_, record) =>
-        (
-            <Space>
-                <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+    allExpenses.length >= 1 ? (
+        <Space>
+                <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
                     <a>Eliminar</a>
                 </Popconfirm>
             </Space>
-        ) 
+        ) : null,
 },
+
 ];
 
 // const data = [
@@ -214,6 +218,18 @@ const columns = [
             // key={}
         />
         {error && <p>Ha habido un error: {error}</p>}
+        <div> Traslados, Dietas y Hospedajes </div> <br />
+        {allExpenses.map((expense, index) => (
+            <div key={index}>
+                <h1>{expense.expenseCodeId.map((gasto, i) => (
+                    <div key={i}>
+                        <h1>Traslado: {gasto.Traslados}</h1> <br />
+                        <h1>Dieta: {gasto.Dietas}</h1> <br />
+                        <h1>Hospedaje: {gasto.Hospedajes}</h1> <br />
+                    </div>
+                ))}</h1>
+            </div>
+            ))}
     </>
     )}
     
