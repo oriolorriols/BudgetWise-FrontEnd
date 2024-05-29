@@ -71,7 +71,7 @@ const items = [
 const SideBar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate()
-  const { setToken } = useAuth()
+  const { setLogOut } = useAuth()
 
 
   return (
@@ -86,8 +86,7 @@ const SideBar = () => {
           items={items}
           onClick={({key}) => {
             if (key === '/logout') {
-            localStorage.removeItem('access_token')
-            setToken(null)
+            setLogOut()
             navigate('/login')}
             else navigate(key)}}
         />

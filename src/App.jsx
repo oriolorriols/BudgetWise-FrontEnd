@@ -22,13 +22,13 @@ import './App.scss'
 
 function App() {
 
-  const { token } = useAuth()
+  const { isAuthenticated } = useAuth()
 
   return (
     <>
         <Routes>
           <Route path="*" element={<Navigate to="/"/>}/>
-          <Route path="/login" element={token ? <Navigate replace to={"/"}/> : <Login/>} />
+          <Route path="/login" element={isAuthenticated ? <Navigate replace to={"/"}/> : <Login/>} />
           <Route element={<PrivateRoutes/>}>
             <Route path='/' element={<Home/>}>
               <Route path='/' element={<DashBoard/>}/>
