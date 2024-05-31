@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { deleteExpenses, getExpenses, getOneExpense } from "../../apiService/expensesApi";
-import { Space, Table, Input, Popconfirm } from 'antd';
+import { deleteExpenses, getExpenses } from "../../apiService/expensesApi";
+import { Space, Table, Input, Popconfirm, DatePicker } from 'antd';
+const { RangePicker } = DatePicker
 
 const { Search } = Input;
 
@@ -38,13 +39,41 @@ const Expenses = () => {
         if (!info) allExpenses
     };
 
+    const [dates, setDates] = useState([]);
+
+    const onDateChangeCreation = (dates, dateStringsC) => {
+        setDates(dateStringsC);
+        filterDataByDateC(dateStringsC);
+    };
+        
+    const filterDataByDateC = (dateStringsC) => {
+        const [start, end] = dateStringsC;
+        const filtered = allExpenses.filter(item => 
+            item.createdAt >= start && item.createdAt <= end
+            );
+            setFiltering(filtered);
+        };
+        
+    const onDateChangeExpense = (dates, dateStringsE) => {
+        setDates(dateStringsE);
+        filterDataByDateE(dateStringsE);
+    };
+
+    const filterDataByDateE = (dateStringsE) => {
+        const [start, end] = dateStringsE;
+        const filtered = allExpenses.filter(item => 
+            item.expenseDate >= start && item.expenseDate <= end
+        );
+        setFiltering(filtered);
+    };
+
     const handleChange = (pagination, filters, sorter) => {
     console.log('Various parameters', pagination, filters, sorter);
     setFilteredInfo(filters);
     setSortedInfo(sorter);
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id) => { //revisar porque no elimina
         await deleteExpenses(id);
         refresh(!dummy)
         // const newData = allExpenses.filter(item => item._id !== id);
@@ -141,7 +170,7 @@ const columns = [
 {
     title: '',
     key: 'action',
-    width: '8%',
+    width: '5%',
     render: (_, record) => (
         <Space size="middle">
         <a>Aprobar {record.title}</a>
@@ -151,7 +180,7 @@ const columns = [
 {
     title: '',
     key: 'action',
-    width: '8%',
+    width: '5%',
     render: (_, record) =>
     allExpenses.length >= 1 ? (
         <Space>
@@ -200,17 +229,35 @@ const columns = [
     return (
     <>
         <h1>Todos los gastos: </h1>
-        <div className="flex justify-end my-5">
-        <Space direction="vertical">
-            <Search
-                placeholder="Buscar..."
-                allowClear
-                enterButton="Buscar"
-                size="large"
-                onSearch={onSearch}
-            />
-        </Space> 
+        <div className="flex flex-row-reverse justify-between items-center my-5">
+            <div className="flex justify-end my-5">
+                <Space direction="vertical">
+                    <Search
+                        placeholder="Buscar texto..."
+                        allowClear
+                        enterButton="Buscar"
+                        size="large"
+                        onSearch={onSearch}
+                    />
+                </Space> 
+            </div>
+            <div className="flex">
+                <div className="mb-5">
+                    <div className="mb-3">Buscar por fecha de envío:</div>
+                    <Space direction="vertical" size={12}>
+                        <RangePicker onChange={onDateChangeCreation} />
+                    </Space>
+                </div>
+                <div className="mb-5 ml-5">
+                    <div className="mb-3">Buscar por fecha de gasto:</div>
+                    <Space direction="vertical" size={12}>
+                        <RangePicker onChange={onDateChangeExpense} />
+                    </Space>
+                </div>
+            </div>
         </div>
+
+        {console.log(allExpenses)}
         <Table 
             columns={columns} 
             dataSource={filtering.length > 0 ? filtering : allExpenses} 
@@ -218,18 +265,6 @@ const columns = [
             // key={}
         />
         {error && <p>Ha habido un error: {error}</p>}
-        <div> Traslados, Dietas y Hospedajes </div> <br />
-        {allExpenses.map((expense, index) => (
-            <div key={index}>
-                <h1>{expense.expenseCodeId.map((gasto, i) => (
-                    <div key={i}>
-                        <h1>Traslado: {gasto.Traslados}</h1> <br />
-                        <h1>Dieta: {gasto.Dietas}</h1> <br />
-                        <h1>Hospedaje: {gasto.Hospedajes}</h1> <br />
-                    </div>
-                ))}</h1>
-            </div>
-            ))}
     </>
     )}
     
