@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { getExpenses } from "../../apiService/expensesApi";
-import { Space, Table, Input, Popconfirm } from 'antd';
+import { deleteExpenses, getExpenses } from "../../apiService/expensesApi";
+import { Space, Table, Input, Popconfirm, DatePicker } from 'antd';
+const { RangePicker } = DatePicker
 
 const { Search } = Input;
 
@@ -28,13 +29,42 @@ const Expenses = () => {
         const newList = [...allExpenses]
         if (info) { 
             const filteredData = newList.filter(info => 
-                info.expenseType.toLowerCase().includes(value.toLowerCase()) || 
                 info.absenceId.employeeId.name.toLowerCase().includes(value.toLowerCase()) ||
-                info.absenceId.employeeId.surname.toLowerCase().includes(value.toLowerCase())
+                info.absenceId.employeeId.surname.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.absenceCodeId.absenceName.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.absenceCodeId.absenceService.toLowerCase().includes(value.toLowerCase())
             )
             if (filteredData) return setFiltering(filteredData)
         }
         if (!info) allExpenses
+    };
+
+    const [dates, setDates] = useState([]);
+
+    const onDateChangeCreation = (dates, dateStringsC) => {
+        setDates(dateStringsC);
+        filterDataByDateC(dateStringsC);
+    };
+        
+    const filterDataByDateC = (dateStringsC) => {
+        const [start, end] = dateStringsC;
+        const filtered = allExpenses.filter(item => 
+            item.createdAt >= start && item.createdAt <= end
+            );
+            setFiltering(filtered);
+        };
+        
+    const onDateChangeExpense = (dates, dateStringsE) => {
+        setDates(dateStringsE);
+        filterDataByDateE(dateStringsE);
+    };
+
+    const filterDataByDateE = (dateStringsE) => {
+        const [start, end] = dateStringsE;
+        const filtered = allExpenses.filter(item => 
+            item.expenseDate >= start && item.expenseDate <= end
+        );
+        setFiltering(filtered);
     };
 
     const handleChange = (pagination, filters, sorter) => {
@@ -43,9 +73,12 @@ const Expenses = () => {
     setSortedInfo(sorter);
     };
 
-    const handleDelete = (key) => {
-        const newData = allExpenses.filter((item) => item.key !== key);
-        setAllExpenses(newData);
+    const handleDelete = async (id) => { //revisar porque no elimina
+        await deleteExpenses(id);
+        refresh(!dummy)
+        // const newData = allExpenses.filter(item => item._id !== id);
+        // console.log(newData)
+        // setAllExpenses(data);
     };
 
     function formatDate(dateString) {
@@ -63,10 +96,15 @@ const columns = [
     ellipsis: true,
 },
 {
-    title: 'Motivo',
-    dataIndex: 'expenseType',
-    key: 'expenseType',
+    title: 'Título',
+    dataIndex: ['absenceId', 'absenceCodeId', 'absenceName'],
+    key: 'absenceName',
     render: (text) => <a>{text}</a>,
+},
+{
+    title: 'Motivo',
+    dataIndex: ['absenceId', 'absenceCodeId', 'absenceService'],
+    key: 'absenceService',
 },
 {
     title: 'Nombre',
@@ -88,9 +126,26 @@ const columns = [
     ellipsis: true,
 },
 {
+    title: 'Tipo de pago',
+    dataIndex: 'paymentMethod',
+    key: 'paymentMethod',
+    filters: [
+        {
+            text: 'Personal',
+            value: 'Personal',
+        },
+        {
+            text: 'Business Card',
+            value: 'Business Card',
+        },
+    ],
+    filteredValue: filteredInfo.paymentMethod || null,
+    onFilter: (value, record) => record.paymentMethod.includes(value),
+},
+{
     title: 'Estado',
-    dataIndex: 'status',
-    key: 'status',
+    dataIndex: 'expenseStatus',
+    key: 'expenseStatus',
     filters: [
         {
             text: 'Pendiente',
@@ -106,35 +161,36 @@ const columns = [
 },
 {
     title: 'Monto en Euros',
-    dataIndex: 'amount',
-    key: 'amount',
+    dataIndex: 'expenseEuros',
+    key: 'expenseEuros',
     sorter: (a, b) => a.amount - b.amount,
     sortOrder: sortedInfo.columnKey === 'amount' ? sortedInfo.order : null,
     ellipsis: true,
 },
 {
-    title: 'Editar',
+    title: '',
     key: 'action',
-    width: '8%',
+    width: '5%',
     render: (_, record) => (
         <Space size="middle">
-        <a>Editar {record.purpose}</a>
+        <a>Aprobar {record.title}</a>
         </Space>
     ),
 },
 {
-    title: 'Delete',
+    title: '',
     key: 'action',
-    width: '8%',
+    width: '5%',
     render: (_, record) =>
-        (
-            <Space>
-                <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+    allExpenses.length >= 1 ? (
+        <Space>
+                <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
                     <a>Eliminar</a>
                 </Popconfirm>
             </Space>
-        ) 
+        ) : null,
 },
+
 ];
 
 // const data = [
@@ -173,22 +229,42 @@ const columns = [
     return (
     <>
         <h1>Todos los gastos: </h1>
-        <div className="flex justify-end my-5">
-        <Space direction="vertical">
-            <Search
-                placeholder="Buscar..."
-                allowClear
-                enterButton="Buscar"
-                size="large"
-                onSearch={onSearch}
-            />
-        </Space> 
+        <div className="flex flex-row-reverse justify-between items-center my-5">
+            <div className="flex justify-end my-5">
+                <Space direction="vertical">
+                    <Search
+                        placeholder="Buscar texto..."
+                        allowClear
+                        enterButton="Buscar"
+                        size="large"
+                        onSearch={onSearch}
+                    />
+                </Space> 
+            </div>
+            <div className="flex">
+                <div className="mb-5">
+                    <div className="mb-3">Buscar por fecha de envío:</div>
+                    <Space direction="vertical" size={12}>
+                        <RangePicker onChange={onDateChangeCreation} />
+                    </Space>
+                </div>
+                <div className="mb-5 ml-5">
+                    <div className="mb-3">Buscar por fecha de gasto:</div>
+                    <Space direction="vertical" size={12}>
+                        <RangePicker onChange={onDateChangeExpense} />
+                    </Space>
+                </div>
+            </div>
         </div>
+
+        {console.log(allExpenses)}
         <Table 
             columns={columns} 
             dataSource={filtering.length > 0 ? filtering : allExpenses} 
-            onChange={handleChange} />
-            {error && <p>Ha habido un error: {error}</p>}
+            onChange={handleChange} 
+            // key={}
+        />
+        {error && <p>Ha habido un error: {error}</p>}
     </>
     )}
     

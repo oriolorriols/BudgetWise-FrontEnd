@@ -11,7 +11,9 @@ export const getExpenses = async () => {
 
 export const getOneExpense = async (id) => {
     const token = localStorage.getItem('access_token')
-    const response = await fetch(`${baseUrl}/expenses/${id}`, {"authorization": `Bearer ${token}`})
+    const response = await fetch(`${baseUrl}/expenses/${id}`, {
+        headers: {"authorization": `Bearer ${token}`}
+    })
     const expenses = await response.json();
     return expenses
 }

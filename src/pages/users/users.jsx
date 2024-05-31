@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { getUsers } from '../../apiService/userApi'
+import { getOneUser, getUsers } from '../../apiService/userApi'
 
 import { useAuth } from "../../contexts/authContext"
 import {useNavigate} from 'react-router-dom'
@@ -106,9 +106,12 @@ const EditableCell = ({
       console.log('Validate Failed:', errInfo);
     }
   }
-  const handleDelete = (key) => {
+  const handleDelete = async (key) => {
+    // const data = await getOneUser(id);
+    // console.log(allUsers)
     const newData = allUsers.filter((item) => item.key !== key);
     setAllUsers(newData);
+    refresh(!dummy)
   };
   const columns = [
     {
@@ -137,7 +140,7 @@ const EditableCell = ({
     },
     {
       title: 'Departamento',
-      dataIndex: 'department',
+      dataIndex: ['departmentId', 'departmentName'],
       width: '20%',
       editable: true,
     },
@@ -178,7 +181,7 @@ const EditableCell = ({
       dataIndex: 'operation',
       render: (_, record) =>
         allUsers.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
             <a>Delete</a>
           </Popconfirm>
         ) : null,
