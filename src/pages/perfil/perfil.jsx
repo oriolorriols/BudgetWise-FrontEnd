@@ -30,10 +30,6 @@ const normFile = (e) => {
   }
   return e?.fileList;
 };
-const onFinishData = (values) => {
-  console.log('Received values of form: ', values);
-  updateUser(values)
-};
 
 const Perfil = () => {
   const navigate = useNavigate();
@@ -70,6 +66,12 @@ const Perfil = () => {
       getUserData();
     }
   }, [userId]);
+
+
+  const onFinishData = (values) => {
+    updateUser(userId, values)
+  };
+  
 
   const dateFormat = 'YYYY/MM/DD';
 
