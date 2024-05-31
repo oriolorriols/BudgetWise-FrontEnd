@@ -1,27 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import { useAuth } from "../../contexts/authContext"
-import { getOneUser } from '../../apiService/userApi'
-import { useNavigate } from 'react-router-dom'
-
-import { InboxOutlined, UploadOutlined } from '@ant-design/icons'
+import React, { useEffect, useState } from 'react';
+import { useAuth } from "../../contexts/authContext";
+import { getOneUser, updateUser } from '../../apiService/userApi';
+import { useNavigate } from 'react-router-dom';
+import { InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import {
   Button,
-  Checkbox,
-  Col,
-  ColorPicker,
   Form,
-  InputNumber,
-  Radio,
-  Rate,
-  Row,
+  Input,
   Select,
-  Slider,
-  Space,
-  Switch,
   Upload,
+  Space,
+  DatePicker,
 } from 'antd';
-
-
 
 const { Option } = Select;
 const formItemLayout = {
@@ -39,23 +30,35 @@ const normFile = (e) => {
   }
   return e?.fileList;
 };
-const onFinish = (values) => {
+const onFinishData = (values) => {
   console.log('Received values of form: ', values);
+  updateUser(values)
 };
-const Perfil = () => {
-  const navigate = useNavigate()
 
-  const { userId, setLogOut } = useAuth()
-  const [ user, setUser ] = useState({})
+const Perfil = () => {
+  const navigate = useNavigate();
+  const { userId, setLogOut } = useAuth();
+  const [user, setUser] = useState({});
+  const [form] = Form.useForm();
 
   const getUserData = async () => {
     try {
-      const data = await getOneUser(userId)
-      setUser(data)
-      if(data.error.name === "TokenExpiredError"){
-        alert("Token is expired. Please Log In again.")
-        setLogOut()
-        navigate('/login')
+      const data = await getOneUser(userId);
+      setUser(data);
+      console.log(data);
+      if(data.error && data.error.name === "TokenExpiredError"){
+        alert("Token is expired. Please Log In again.");
+        setLogOut();
+        navigate('/login');
+      } else {
+        form.setFieldsValue({
+          name: data.name,
+          surname: data.surname,
+          status: data.status,
+          address: data.address,
+          email: data.email,
+          phoneExt: data.phoneExt
+        });
       }
     } catch (error) {
       console.error("Failed to fetch user data", error);
@@ -67,6 +70,8 @@ const Perfil = () => {
       getUserData();
     }
   }, [userId]);
+
+  const dateFormat = 'YYYY/MM/DD';
 
   return (
   <>  
@@ -93,248 +98,130 @@ const Perfil = () => {
         </Form.Item>
       </div>
 
-
       <div className='mt-5'>
         <p className='font-medium text-center'>{user.name} {user.surname}</p>
         <p className='text-center'>{user.email}</p>
         <p className='text-center'>{user.dni}</p>
         <p className='mt-5 font-medium text-center'>{user.profileType}</p>
       </div>
-  
     </div>
 
-
-  <Form className=''
-    name="validate_other"
-    {...formItemLayout}
-    onFinish={onFinish}
-    initialValues={{
-      'input-number': 3,
-      'checkbox-group': ['A', 'B'],
-      rate: 3.5,
-      'color-picker': null,
-    }}
-    style={{
-      maxWidth: 600,
-    }}
-  >
-    <Form.Item label="Plain Text">
-      <span className="ant-form-text">China</span>
-    </Form.Item>
-    <Form.Item
-      name="select"
-      label="Select"
-      hasFeedback
-      rules={[
-        {
-          required: true,
-          message: 'Please select your country!',
-        },
-      ]}
-    >
-      <Select placeholder="Please select a country">
-        <Option value="china">China</Option>
-        <Option value="usa">U.S.A</Option>
-      </Select>
-    </Form.Item>
-
-    <Form.Item
-      name="select-multiple"
-      label="Select[multiple]"
-      rules={[
-        {
-          required: true,
-          message: 'Please select your favourite colors!',
-          type: 'array',
-        },
-      ]}
-    >
-      <Select mode="multiple" placeholder="Please select favourite colors">
-        <Option value="red">Red</Option>
-        <Option value="green">Green</Option>
-        <Option value="blue">Blue</Option>
-      </Select>
-    </Form.Item>
-
-    <Form.Item label="InputNumber">
-      <Form.Item name="input-number" noStyle>
-        <InputNumber min={1} max={10} />
-      </Form.Item>
-      <span
-        className="ant-form-text"
-        style={{
-          marginLeft: 8,
-        }}
-      >
-        machines
-      </span>
-    </Form.Item>
-
-    <Form.Item name="switch" label="Switch" valuePropName="checked">
-      <Switch />
-    </Form.Item>
-
-    <Form.Item name="slider" label="Slider">
-      <Slider
-        marks={{
-          0: 'A',
-          20: 'B',
-          40: 'C',
-          60: 'D',
-          80: 'E',
-          100: 'F',
-        }}
-      />
-    </Form.Item>
-
-    <Form.Item name="radio-group" label="Radio.Group">
-      <Radio.Group>
-        <Radio value="a">item 1</Radio>
-        <Radio value="b">item 2</Radio>
-        <Radio value="c">item 3</Radio>
-      </Radio.Group>
-    </Form.Item>
-
-    <Form.Item
-      name="radio-button"
-      label="Radio.Button"
-      rules={[
-        {
-          required: true,
-          message: 'Please pick an item!',
-        },
-      ]}
-    >
-      <Radio.Group>
-        <Radio.Button value="a">item 1</Radio.Button>
-        <Radio.Button value="b">item 2</Radio.Button>
-        <Radio.Button value="c">item 3</Radio.Button>
-      </Radio.Group>
-    </Form.Item>
-
-    <Form.Item name="checkbox-group" label="Checkbox.Group">
-      <Checkbox.Group>
-        <Row>
-          <Col span={8}>
-            <Checkbox
-              value="A"
-              style={{
-                lineHeight: '32px',
-              }}
-            >
-              A
-            </Checkbox>
-          </Col>
-          <Col span={8}>
-            <Checkbox
-              value="B"
-              style={{
-                lineHeight: '32px',
-              }}
-              disabled
-            >
-              B
-            </Checkbox>
-          </Col>
-          <Col span={8}>
-            <Checkbox
-              value="C"
-              style={{
-                lineHeight: '32px',
-              }}
-            >
-              C
-            </Checkbox>
-          </Col>
-          <Col span={8}>
-            <Checkbox
-              value="D"
-              style={{
-                lineHeight: '32px',
-              }}
-            >
-              D
-            </Checkbox>
-          </Col>
-          <Col span={8}>
-            <Checkbox
-              value="E"
-              style={{
-                lineHeight: '32px',
-              }}
-            >
-              E
-            </Checkbox>
-          </Col>
-          <Col span={8}>
-            <Checkbox
-              value="F"
-              style={{
-                lineHeight: '32px',
-              }}
-            >
-              F
-            </Checkbox>
-          </Col>
-        </Row>
-      </Checkbox.Group>
-    </Form.Item>
-
-    <Form.Item name="rate" label="Rate">
-      <Rate />
-    </Form.Item>
-
-    <Form.Item
-      name="upload"
-      label="Upload"
-      valuePropName="fileList"
-      getValueFromEvent={normFile}
-      extra="longgggggggggggggggggggggggggggggggggg"
-    >
-      <Upload name="logo" action="/upload.do" listType="picture">
-        <Button icon={<UploadOutlined />}>Click to upload</Button>
-      </Upload>
-    </Form.Item>
-    <Form.Item label="Dragger">
-      <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-        <Upload.Dragger name="files" action="/upload.do">
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-          <p className="ant-upload-text">Click or drag file to this area to upload</p>
-          <p className="ant-upload-hint">Support for a single or bulk upload.</p>
-        </Upload.Dragger>
-      </Form.Item>
-    </Form.Item>
-    <Form.Item
-      name="color-picker"
-      label="ColorPicker"
-      rules={[
-        {
-          required: true,
-          message: 'color is required!',
-        },
-      ]}
-    >
-      <ColorPicker />
-    </Form.Item>
-
-    <Form.Item
-      wrapperCol={{
-        span: 12,
-        offset: 6,
+    <Form 
+      form={form}
+      name="validate_other"
+      {...formItemLayout}
+      onFinish={onFinishData}
+      style={{
+        maxWidth: 600,
       }}
     >
-      <Space>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-        <Button htmlType="reset">reset</Button>
-      </Space>
-    </Form.Item>
-  </Form>
+      <h2 className='text-lg font-bold mb-2'>Datos Personales</h2>
+      <Form.Item
+        name="name"
+        rules={[
+          {
+            required: true,
+            message: 'Introduce un nombre!',
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="surname"
+        rules={[
+          {
+            required: true,
+            message: 'Introduce un apellido!',
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="status"
+        label="Estado"
+        hasFeedback
+        rules={[
+          {
+            required: true,
+            message: 'Selecciona un estado',
+          },
+        ]}
+      >
+        <Select>
+          <Option value="Alta">Alta</Option>
+          <Option value="Baja">Baja</Option>
+          <Option value="Baja medica">Baja medica</Option>
+        </Select>
+      </Form.Item>
+      <Form.Item
+        name="address"
+        rules={[
+          {
+            required: true,
+            message: 'Introduce una dirección!',
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="email"
+        rules={[
+          {
+            required: true,
+            message: 'Introduce tu correo electrónico',
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="phoneExt"
+        rules={[
+          {
+            required: true,
+            message: 'Introduce tu extensión',
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item label="DatePicker">
+      <DatePicker defaultValue={dayjs('2015/01/01', dateFormat)} />
+      </Form.Item>
+
+
+      <Form.Item label="Dragger">
+        <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+          <Upload.Dragger name="files" action="/upload.do">
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">Click or drag file to this area to upload</p>
+            <p className="ant-upload-hint">Support for a single or bulk upload.</p>
+          </Upload.Dragger>
+        </Form.Item>
+      </Form.Item>
+      <Form.Item
+        wrapperCol={{
+          span: 12,
+          offset: 6,
+        }}
+      >
+        <Space>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+          <Button htmlType="reset">reset</Button>
+        </Space>
+      </Form.Item>
+    </Form>
   </div>
   </>
   )
 };
+
 export default Perfil;
