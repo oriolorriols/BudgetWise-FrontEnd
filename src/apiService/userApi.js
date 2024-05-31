@@ -46,6 +46,7 @@ export const updateUser = async (id, userData) => {
         headers: {"Content-Type": "application/json", "authorization": `Bearer ${token}`}
     })
     const changedUser = await response.json();
+    console.log(changedUser)
     return changedUser
 }
 
