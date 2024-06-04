@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { deleteExpenses, getExpenses } from "../../apiService/expensesApi";
 import { Space, Table, Input, Popconfirm, DatePicker } from 'antd';
+
 const { RangePicker } = DatePicker
 
 const { Search } = Input;
@@ -12,8 +13,9 @@ const Expenses = () => {
     const [filtering, setFiltering] = useState([])
     
     const getAllExpenses = async () => {
-        const expenses = await getExpenses();
-        if (expenses.length) setAllExpenses(expenses);
+        const expenses = await getExpenses()
+        const notRemoved = expenses.filter(user => !user.removedAt);
+        if (expenses.length) setAllExpenses(notRemoved);
         else setError(expenses.message)
     }
     
@@ -75,15 +77,41 @@ const Expenses = () => {
 
     const handleDelete = async (id) => { //revisar porque no elimina
         await deleteExpenses(id);
+        const newData = allExpenses.filter(empleado => !empleado.removedAt);
+        console.log(newData)
+        setAllExpenses(newData);
         refresh(!dummy)
-        // const newData = allExpenses.filter(item => item._id !== id);
-        // console.log(newData)
-        // setAllExpenses(data);
     };
 
     function formatDate(dateString) {
         return new Date(dateString).toISOString().split("T")[0];
     }
+
+    // const expandedRowRender = () => {
+    //     const columns = [
+    //         {
+    //             title: 'Gastos',
+    //             dataIndex: 'expenseCodeId',
+    //             key: 'expenseCodeId',
+    //             render: (codes) => (
+    //                 <div className="flex">
+    //                         {codes.map((code, index) => (
+    //                             <div key={index}>
+    //                                 <p>Hospedajes: {code.Hospedajes > 0 ? code.Hospedajes : 0} €</p>
+    //                                 <p>Dietas: {code.Dietas > 0 ? code.Dietas : 0} €</p>
+    //                                 <p>Traslados: {code.Traslados > 0 ? code.Traslados : 0} €</p>
+    //                             </div>
+    //                         ))}
+    //                 </div>
+    //         )},
+    //         {
+    //             title: 'Pais',
+    //             dataIndex: ['absenceId', 'absenceCodeId', 'country'],
+    //             key: 'country'
+    //         }
+    //     ]
+    // return <Table columns={columns} dataSource={allExpenses} pagination={false} rowKey="_id"/>;
+    // }
 
 const columns = [
 {
@@ -99,7 +127,6 @@ const columns = [
     title: 'Título',
     dataIndex: ['absenceId', 'absenceCodeId', 'absenceName'],
     key: 'absenceName',
-    render: (text) => <a>{text}</a>,
 },
 {
     title: 'Motivo',
@@ -161,8 +188,22 @@ const columns = [
 },
 {
     title: 'Monto en Euros',
-    dataIndex: 'expenseEuros',
-    key: 'expenseEuros',
+    dataIndex: 'expenseCodeId',
+    key: 'expenseCodeId',
+    render: (codes) => (
+        <div className="flex">
+            <ul>
+                {codes.map((code, index) => (
+                    <li key={index}>
+                        {(code.Traslados > 0 ? code.Traslados : 0) + 
+                        (code.Dietas > 0 ? code.Dietas : 0) + 
+                        (code.Hospedajes > 0 ? code.Hospedajes : 0)} 
+                    </li>
+                ))}
+            </ul>
+            <p className="ml-1">€</p>
+        </div>
+    ),
     sorter: (a, b) => a.amount - b.amount,
     sortOrder: sortedInfo.columnKey === 'amount' ? sortedInfo.order : null,
     ellipsis: true,
@@ -256,16 +297,42 @@ const columns = [
                 </div>
             </div>
         </div>
-
-        {console.log(allExpenses)}
         <Table 
-            columns={columns} 
+            columns={columns}
+            expandable={{
+                // expandedRowRender,
+                expandedRowRender: record => (
+                    <div style={{margin: 0}}>
+                        {record.expenseCodeId.map((code, index) => (
+                        <div key={index}>
+                            <p className="font-bold">Gastos:</p>
+                            <p>Hospedajes: {code.Hospedajes > 0 ? code.Hospedajes : 0} €</p>
+                            <p>Dietas: {code.Dietas > 0 ? code.Dietas : 0} €</p>
+                            <p>Traslados: {code.Traslados > 0 ? code.Traslados : 0} €</p>
+                        </div>
+                    ))}
+                    </div>
+                ),
+            }}
             dataSource={filtering.length > 0 ? filtering : allExpenses} 
             onChange={handleChange} 
-            // key={}
-        />
+            rowKey="_id"
+            />
         {error && <p>Ha habido un error: {error}</p>}
-    </>
+
+            {/* {allExpenses.map((expense, index) => (
+                <div key={index}>
+                    <h1>{expense.expenseCodeId.map((code, index) => (
+                        <div key={index}>
+                            <h1>Hospedajes: {code.Hospedajes}</h1>
+                            <h1>Dietas: {code.Dietas}</h1>
+                            <h1>Traslados: {code.Traslados}</h1>
+                        </div>
+                    ))}</h1>
+                </div>
+            ))} */}
+
+        </>
     )}
     
 export default Expenses;
