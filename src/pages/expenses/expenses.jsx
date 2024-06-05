@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { deleteExpenses, getExpenses } from "../../apiService/expensesApi";
+import { deleteExpenses, getExpenses, updateExpenses } from "../../apiService/expensesApi";
 import { Space, Table, Input, Popconfirm, DatePicker } from 'antd';
 
 const { RangePicker } = DatePicker
@@ -31,11 +31,14 @@ const Expenses = () => {
         const newList = [...allExpenses]
         if (info) { 
             const filteredData = newList.filter(info => 
+                info.absenceId.absenceCodeId.absenceName.toLowerCase().includes(value.toLowerCase()) ||
                 info.absenceId.employeeId.name.toLowerCase().includes(value.toLowerCase()) ||
                 info.absenceId.employeeId.surname.toLowerCase().includes(value.toLowerCase()) ||
-                info.absenceId.absenceCodeId.absenceName.toLowerCase().includes(value.toLowerCase()) ||
-                info.absenceId.absenceCodeId.absenceService.toLowerCase().includes(value.toLowerCase())
-            )
+                info.absenceId.country.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.city.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.absenceCodeId.absenceService.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.absenceCodeId.absenceCode?.toLowerCase().includes(value.toLowerCase())
+                )
             if (filteredData) return setFiltering(filteredData)
         }
         if (!info) allExpenses
@@ -77,11 +80,13 @@ const Expenses = () => {
 
     const handleDelete = async (id) => {
         await deleteExpenses(id);
-        const newData = allExpenses.filter(empleado => !empleado.removedAt);
-        console.log(newData)
-        setAllExpenses(newData);
         refresh(!dummy)
     };
+
+    const handleApprove = async (id) => {
+        await updateExpenses(id);
+        refresh(!dummy)
+    }
 
     function formatDate(dateString) {
         return new Date(dateString).toISOString().split("T")[0];
@@ -152,8 +157,8 @@ const columns = [
             value: 'Aprobado',
         },
     ],
-    filteredValue: filteredInfo.status || null,
-    onFilter: (value, record) => record.status.includes(value),
+    filteredValue: filteredInfo.expenseStatus || null,
+    onFilter: (value, record) => record.expenseStatus.includes(value),
 },
 {
     title: 'Monto en Euros',
@@ -182,8 +187,8 @@ const columns = [
     key: 'action',
     width: '5%',
     render: (_, record) => (
-        <Space size="middle">
-        <a>Aprobar {record.title}</a>
+        <Space size="middle" onClick={() => handleApprove(record._id)}>
+        <a>Aprobar</a>
         </Space>
     ),
 },
@@ -260,6 +265,9 @@ const columns = [
                         <div className="ml-32">
                             <p className="font-bold">Business Card:</p>
                             {record.creditCardEnd? record.creditCardEnd : "-"}
+                        </div>
+                        <div className="ml-32">
+                            <p className="font-bold">Fecha de pago:</p>
                         </div>
                     </div>
                 ),
