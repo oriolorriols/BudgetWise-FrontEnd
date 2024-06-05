@@ -75,7 +75,7 @@ const Expenses = () => {
     setSortedInfo(sorter);
     };
 
-    const handleDelete = async (id) => { //revisar porque no elimina
+    const handleDelete = async (id) => {
         await deleteExpenses(id);
         const newData = allExpenses.filter(empleado => !empleado.removedAt);
         console.log(newData)
@@ -86,32 +86,6 @@ const Expenses = () => {
     function formatDate(dateString) {
         return new Date(dateString).toISOString().split("T")[0];
     }
-
-    // const expandedRowRender = () => {
-    //     const columns = [
-    //         {
-    //             title: 'Gastos',
-    //             dataIndex: 'expenseCodeId',
-    //             key: 'expenseCodeId',
-    //             render: (codes) => (
-    //                 <div className="flex">
-    //                         {codes.map((code, index) => (
-    //                             <div key={index}>
-    //                                 <p>Hospedajes: {code.Hospedajes > 0 ? code.Hospedajes : 0} €</p>
-    //                                 <p>Dietas: {code.Dietas > 0 ? code.Dietas : 0} €</p>
-    //                                 <p>Traslados: {code.Traslados > 0 ? code.Traslados : 0} €</p>
-    //                             </div>
-    //                         ))}
-    //                 </div>
-    //         )},
-    //         {
-    //             title: 'Pais',
-    //             dataIndex: ['absenceId', 'absenceCodeId', 'country'],
-    //             key: 'country'
-    //         }
-    //     ]
-    // return <Table columns={columns} dataSource={allExpenses} pagination={false} rowKey="_id"/>;
-    // }
 
 const columns = [
 {
@@ -127,11 +101,6 @@ const columns = [
     title: 'Título',
     dataIndex: ['absenceId', 'absenceCodeId', 'absenceName'],
     key: 'absenceName',
-},
-{
-    title: 'Motivo',
-    dataIndex: ['absenceId', 'absenceCodeId', 'absenceService'],
-    key: 'absenceService',
 },
 {
     title: 'Nombre',
@@ -231,41 +200,7 @@ const columns = [
             </Space>
         ) : null,
 },
-
 ];
-
-// const data = [
-// {
-//     key: '1',
-//     purpose: 'V-084',
-//     requestDate: '14/05/2024',
-//     name: 'John', 
-//     surname: 'Gonzalez',
-//     expenseDate: '10/05/2024',
-//     status: 'Pendiente',
-//     amount: 20,
-// },
-// {
-//     key: '2',
-//     purpose: 'PV-080',
-//     requestDate: '08/05/2024',
-//     name: 'Jim', 
-//     surname: 'Fernandez',
-//     expenseDate: '05/05/2024',
-//     status: 'Aprobado',
-//     amount: 268,
-// },
-// {
-//     key: '3',
-//     purpose: 'V-083',
-//     requestDate: '17/05/2024',
-//     name: 'Joe', 
-//     surname: 'Rodriguez',
-//     expenseDate: '16/05/2024',
-//     status: 'Pendiente',
-//     amount: 64,
-// },
-// ];
 
     return (
     <>
@@ -300,9 +235,8 @@ const columns = [
         <Table 
             columns={columns}
             expandable={{
-                // expandedRowRender,
                 expandedRowRender: record => (
-                    <div style={{margin: 0}}>
+                    <div className="flex">
                         {record.expenseCodeId.map((code, index) => (
                         <div key={index}>
                             <p className="font-bold">Gastos:</p>
@@ -311,6 +245,22 @@ const columns = [
                             <p>Traslados: {code.Traslados > 0 ? code.Traslados : 0} €</p>
                         </div>
                     ))}
+                        <div className="ml-32">
+                            <p className="font-bold">País:</p>
+                            {record.absenceId.country}
+                            <p className="font-bold">Ciudad:</p>
+                            {record.absenceId.city}
+                        </div>
+                        <div className="ml-32">
+                            <p className="font-bold">Motivo:</p>
+                            {record.absenceId.absenceCodeId.absenceService}
+                            <p className="font-bold">Código:</p>
+                            {record.absenceId.absenceCodeId.absenceCode? record.absenceId.absenceCodeId.absenceCode : "-"}
+                        </div>
+                        <div className="ml-32">
+                            <p className="font-bold">Business Card:</p>
+                            {record.creditCardEnd? record.creditCardEnd : "-"}
+                        </div>
                     </div>
                 ),
             }}
@@ -319,19 +269,6 @@ const columns = [
             rowKey="_id"
             />
         {error && <p>Ha habido un error: {error}</p>}
-
-            {/* {allExpenses.map((expense, index) => (
-                <div key={index}>
-                    <h1>{expense.expenseCodeId.map((code, index) => (
-                        <div key={index}>
-                            <h1>Hospedajes: {code.Hospedajes}</h1>
-                            <h1>Dietas: {code.Dietas}</h1>
-                            <h1>Traslados: {code.Traslados}</h1>
-                        </div>
-                    ))}</h1>
-                </div>
-            ))} */}
-
         </>
     )}
     
