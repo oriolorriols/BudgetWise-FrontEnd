@@ -31,6 +31,7 @@ const Perfil = () => {
   const { userId, setLogOut } = useAuth()
   const [user, setUser] = useState({})
   const [form] = Form.useForm()
+  const [initialValues, setInitialValues] = useState({})
 
   const getUserData = async () => {
     try {
@@ -42,8 +43,8 @@ const Perfil = () => {
         setLogOut()
         navigate('/login')
       } else {
-        if(data.profilePic === "" || !data.profilePic) data.profilePic = "../../public/noProfilePic.jpg"
-        form.setFieldsValue({
+        if (data.profilePic === "" || !data.profilePic) data.profilePic = "/noProfilePic.jpg"
+        const formValues = {
           name: data.name,
           surname: data.surname,
           dni: data.dni,
@@ -55,7 +56,9 @@ const Perfil = () => {
           personalMail: data.personalMail,
           phoneExt: data.phoneExt,
           bankAccount: data.bankAccount
-        })
+        }
+        setInitialValues(formValues)
+        form.setFieldsValue(formValues)
       }
     } catch (error) {
       console.error("Failed to fetch user data", error)
@@ -99,7 +102,7 @@ const Perfil = () => {
 
   const [fileList, setFileList] = useState([])
   const [uploading, setUploading] = useState(false)
-  
+
   const props = {
     onRemove: (file) => {
       setFileList((prevFileList) => prevFileList.filter((f) => f.uid !== file.uid))
@@ -113,8 +116,12 @@ const Perfil = () => {
 
   const dateFormat = 'YYYY/MM/DD'
 
+  const handleReset = () => {
+    form.setFieldsValue(initialValues)
+  }
+
   return (
-    <>  
+    <>
       <div className='mb-5'>
         <h2 className='font-medium text-2xl'>Hola, {user.name}!</h2>
       </div>
@@ -146,47 +153,45 @@ const Perfil = () => {
             <p className='text-center'>{user.position}</p>
           </div>
         </div>
-        <Form 
+        <Form
           form={form}
           name="validate_other"
           {...formItemLayout}
           onFinish={onFinishData}
-          style={{ width: 600 }}
+          style={{ width: 500 }}
         >
-          <h2 className='text-lg font-bold mb-2'>Datos Personales</h2>
-          <div className="flex">
-            <Form.Item
-              className='w-full'
-              name="name"
-              label="Nombre"
-              rules={[{ required: true, message: 'Introduce tu nombre!' }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              className='w-full'
-              name="surname"
-              label="Apellidos"
-              rules={[{ required: true, message: 'Introduce tus apellidos!' }]}
-            >
-              <Input />
-            </Form.Item>
-          </div>
+          <h2 className='text-lg font-bold mb-7'>Datos Personales</h2>
           <Form.Item
-              className='w-full'
-              name="dni"
-              label="DNI"
-              rules={[{ required: true, message: 'Introduce tu DNI!' }]}
-            >
-              <Input />
+            className='w-full'
+            name="name"
+            label="Nombre"
+            rules={[{ required: true, message: 'Introduce tu nombre!' }]}
+          >
+            <Input />
           </Form.Item>
           <Form.Item
-              className='w-full'
-              name="position"
-              label="Posición"
-              rules={[{ required: true, message: 'Introduce tu posición!' }]}
-            >
-              <Input />
+            className='w-full'
+            name="surname"
+            label="Apellidos"
+            rules={[{ required: true, message: 'Introduce tus apellidos!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            className='w-full'
+            name="dni"
+            label="DNI"
+            rules={[{ required: true, message: 'Introduce tu DNI!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            className='w-full'
+            name="position"
+            label="Posición"
+            rules={[{ required: true, message: 'Introduce tu posición!' }]}
+          >
+            <Input />
           </Form.Item>
           <Form.Item
             className='w-full'
@@ -243,17 +248,14 @@ const Perfil = () => {
             <DatePicker defaultValue={dayjs('2015/01/01', dateFormat)} />
           </Form.Item>
 
-
-
-
           <Form.Item
             wrapperCol={{ span: 12, offset: 6 }}
           >
             <Space>
               <Button type="primary" htmlType="submit">
-                Submit
+                Actualizar
               </Button>
-              <Button htmlType="reset">Reset</Button>
+              <Button htmlType="button" onClick={handleReset}>Restablecer</Button>
             </Space>
           </Form.Item>
         </Form>
