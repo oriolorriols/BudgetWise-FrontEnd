@@ -6,13 +6,15 @@ import { useAuth } from "../../contexts/authContext"
 import {
   DesktopOutlined,
   CalendarOutlined,
-  ContainerOutlined,
+  SolutionOutlined,
   LogoutOutlined,
   RiseOutlined,
   UserOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
+  BankOutlined,
+  CarryOutOutlined
 } from '@ant-design/icons';
 import {  Menu, Layout, Button } from 'antd';
 const { Sider } = Layout;
@@ -48,17 +50,17 @@ const items = [
   },
   {
     key: '/ausencias',
-    icon: <ContainerOutlined />,
+    icon: <SolutionOutlined />,
     label: 'Ausencias',
   },
   {
     key: '/expenses',
-    icon: <ContainerOutlined />,
+    icon: <BankOutlined />,
     label: 'Gastos',
   },
   {
     key: '/requests',
-    icon: <ContainerOutlined />,
+    icon: <CarryOutOutlined />,
     label: 'Solicitudes',
   },
   {

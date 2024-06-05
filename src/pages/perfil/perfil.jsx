@@ -3,7 +3,7 @@ import { useAuth } from "../../contexts/authContext"
 import { getOneUser, updateUser } from '../../apiService/userApi'
 import { updateUserPic } from '../../apiService/profileApi'
 import { useNavigate } from 'react-router-dom'
-import { InboxOutlined, UploadOutlined } from '@ant-design/icons'
+import { UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import {
   Button,
@@ -42,13 +42,19 @@ const Perfil = () => {
         setLogOut()
         navigate('/login')
       } else {
+        if(data.profilePic === "" || !data.profilePic) data.profilePic = "../../public/noProfilePic.jpg"
         form.setFieldsValue({
           name: data.name,
           surname: data.surname,
+          dni: data.dni,
           status: data.status,
           address: data.address,
           email: data.email,
+          phoneNumber: data.phoneNumber,
+          position: data.position,
+          personalMail: data.personalMail,
           phoneExt: data.phoneExt,
+          bankAccount: data.bankAccount
         })
       }
     } catch (error) {
@@ -137,6 +143,7 @@ const Perfil = () => {
             <p className='text-center'>{user.email}</p>
             <p className='text-center'>{user.dni}</p>
             <p className='mt-5 font-medium text-center'>{user.profileType}</p>
+            <p className='text-center'>{user.position}</p>
           </div>
         </div>
         <Form 
@@ -152,7 +159,7 @@ const Perfil = () => {
               className='w-full'
               name="name"
               label="Nombre"
-              rules={[{ required: true, message: 'Introduce un nombre!' }]}
+              rules={[{ required: true, message: 'Introduce tu nombre!' }]}
             >
               <Input />
             </Form.Item>
@@ -160,16 +167,31 @@ const Perfil = () => {
               className='w-full'
               name="surname"
               label="Apellidos"
-              rules={[{ required: true, message: 'Introduce un apellido!' }]}
+              rules={[{ required: true, message: 'Introduce tus apellidos!' }]}
             >
               <Input />
             </Form.Item>
           </div>
           <Form.Item
+              className='w-full'
+              name="dni"
+              label="DNI"
+              rules={[{ required: true, message: 'Introduce tu DNI!' }]}
+            >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              className='w-full'
+              name="position"
+              label="Posición"
+              rules={[{ required: true, message: 'Introduce tu posición!' }]}
+            >
+              <Input />
+          </Form.Item>
+          <Form.Item
             className='w-full'
             name="status"
             label="Estado"
-            hasFeedback
             rules={[{ required: true, message: 'Selecciona un estado' }]}
           >
             <Select>
@@ -179,26 +201,51 @@ const Perfil = () => {
             </Select>
           </Form.Item>
           <Form.Item
+            label="Dirección"
             name="address"
             rules={[{ required: true, message: 'Introduce una dirección!' }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
+            label="E-mail"
             name="email"
             rules={[{ required: true, message: 'Introduce tu correo electrónico' }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            name="phoneExt"
-            rules={[{ required: true, message: 'Introduce tu extensión' }]}
+            label="E-mail Personal"
+            name="personalMail"
           >
             <Input />
           </Form.Item>
+          <Form.Item
+            label="Móvil"
+            name="phoneNumber"
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Extensión"
+            name="phoneExt"
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="IBAN"
+            name="bankAccount"
+          >
+            <Input />
+          </Form.Item>
+
           <Form.Item label="Data Nacimiento">
             <DatePicker defaultValue={dayjs('2015/01/01', dateFormat)} />
           </Form.Item>
+
+
+
+
           <Form.Item
             wrapperCol={{ span: 12, offset: 6 }}
           >
