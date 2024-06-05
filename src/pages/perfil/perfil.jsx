@@ -25,13 +25,6 @@ const formItemLayout = {
     span: 14,
   },
 }
-const normFile = (e) => {
-  console.log('Upload event:', e)
-  if (Array.isArray(e)) {
-    return e
-  }
-  return e?.fileList
-}
 
 const Perfil = () => {
   const navigate = useNavigate()
@@ -126,7 +119,7 @@ const Perfil = () => {
           </div>
           <div className='text-center mt-4'>
             <Upload {...props}>
-              <Button icon={<UploadOutlined />}>Select File</Button>
+              <Button icon={<UploadOutlined />}>Selecciona tu avatar</Button>
             </Upload>
             {fileList.length > 0 && (
               <Button
@@ -135,7 +128,7 @@ const Perfil = () => {
                 loading={uploading}
                 style={{ marginTop: 16 }}
               >
-                {uploading ? 'Uploading' : 'Start Upload'}
+                {uploading ? 'Subiendo' : 'Actualizar'}
               </Button>
             )}
           </div>
