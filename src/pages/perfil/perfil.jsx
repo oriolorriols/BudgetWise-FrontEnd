@@ -32,6 +32,7 @@ const Perfil = () => {
   const [user, setUser] = useState({})
   const [form] = Form.useForm()
   const [initialValues, setInitialValues] = useState({})
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const getUserData = async () => {
     try {
@@ -56,6 +57,7 @@ const Perfil = () => {
           personalMail: data.personalMail,
           phoneExt: data.phoneExt,
           bankAccount: data.bankAccount,
+          birthDate: data.birthDate ? dayjs(data.birthDate) : null,
         }
         setInitialValues(formValues)
         form.setFieldsValue(formValues)
@@ -75,6 +77,8 @@ const Perfil = () => {
     try {
       await updateUser(userId, values)
       await getUserData()
+      form.resetFields(['password', 'password2'])
+      setShowConfirmPassword(false)
       message.success("User data updated successfully!")
     } catch (error) {
       message.error("Failed to update user data")
@@ -120,6 +124,12 @@ const Perfil = () => {
     form.setFieldsValue(initialValues)
   }
 
+  const handlePasswordChange = (e) => {
+    const value = e.target.value
+    setShowConfirmPassword(!!value)
+    form.validateFields(['password2'])
+  }
+
   return (
     <>
       <div className='mb-5'>
@@ -158,7 +168,7 @@ const Perfil = () => {
           name="validate_other"
           {...formItemLayout}
           onFinish={onFinishData}
-          style={{ width: 600 }}
+          style={{ width: 650 }}
         >
           <h2 className='text-lg font-bold mb-7'>Datos Personales</h2>
           <Form.Item
@@ -178,6 +188,13 @@ const Perfil = () => {
             <Input />
           </Form.Item>
           <Form.Item
+            label="E-mail"
+            name="email"
+            rules={[{ required: true, message: 'Introduce tu correo electrónico' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
             className='w-full'
             name="dni"
             label="DNI"
@@ -189,7 +206,7 @@ const Perfil = () => {
             className='w-full'
             name="position"
             label="Posición"
-            rules={[{ required: true, message: 'Introduce tu posición!' }]}
+            rules={[{message: 'Introduce tu posición!' }]}
           >
             <Input />
           </Form.Item>
@@ -197,7 +214,7 @@ const Perfil = () => {
             className='w-full'
             name="status"
             label="Estado"
-            rules={[{ required: true, message: 'Selecciona un estado' }]}
+            rules={[{ message: 'Selecciona un estado' }]}
           >
             <Select>
               <Option value="Alta">Alta</Option>
@@ -208,17 +225,11 @@ const Perfil = () => {
           <Form.Item
             label="Dirección"
             name="address"
-            rules={[{ required: true, message: 'Introduce una dirección!' }]}
+            rules={[{ message: 'Introduce una dirección!' }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            label="E-mail"
-            name="email"
-            rules={[{ required: true, message: 'Introduce tu correo electrónico' }]}
-          >
-            <Input />
-          </Form.Item>
+
           <Form.Item
             label="E-mail Personal"
             name="personalMail"
@@ -243,51 +254,42 @@ const Perfil = () => {
           >
             <Input />
           </Form.Item>
-
-          <Form.Item label="Data Nacimiento">
-            <DatePicker defaultValue={dayjs('2015/01/01', dateFormat)} />
-          </Form.Item>
-
-
-
-
-
-
           <Form.Item
-            label="Actualizar contraseña"
+            label="Fecha de Nacimiento"
+            name="birthDate"
+            rules={[{ message: 'Introduce tu fecha de nacimiento!' }]}
+          >
+            <DatePicker format={dateFormat} />
+          </Form.Item>
+          <Form.Item
+            label="Actualizar Contraseña"
             name="password"
           >
-            <Input.Password />
+            <Input.Password onChange={handlePasswordChange} />
           </Form.Item>
-
-          <Form.Item
-            label="Confirmar contraseña"
-            name="password2"
-            dependencies={['password']}
-            rules={[
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Las contraseñas tienen que coincidir'));
+          {showConfirmPassword && (
+            <Form.Item
+              label="Confirmar Contraseña"
+              name="password2"
+              dependencies={['password']}
+              rules={[
+                {
+                  required: true,
+                  message: 'Por favor, confirma tu contraseña',
                 },
-              }),
-            ]}
-          >
-            <Input.Password />
-          </Form.Item>
-
-
-
-
-
-
-
-
-
-
-
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Las contraseñas tienen que coincidir'));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+          )}
           <Form.Item
             wrapperCol={{ span: 12, offset: 6 }}
           >
