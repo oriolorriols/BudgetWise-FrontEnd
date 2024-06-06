@@ -75,6 +75,7 @@ const Login = () => {
                                     message: '¡Escribe tu email!',
                                 },
                             ]}
+                            hasFeedback
                         >
                             <Input 
                                 prefix={<UserOutlined className="site-form-item-icon" />} 
@@ -91,14 +92,16 @@ const Login = () => {
                                     message: '¡Introduce tu contraseña!',
                                 },
                             ]}
+                            
                         >
-                            <Input
+                            <Input.Password 
                                 prefix={<LockOutlined className="site-form-item-icon" />}
                                 type="password"
                                 placeholder="Contraseña"
                                 value={password}
                                 onChange={e => setPassword(e.currentTarget.value)}
                             />
+                            
                         </Form.Item>
                         <div className='flex w-full justify-between mt-8 mb-5'>
                             <Form.Item name="remember" valuePropName="checked" noStyle>
