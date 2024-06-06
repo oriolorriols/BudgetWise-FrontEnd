@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { deleteExpenses, getExpenses, updateExpenses } from "../../apiService/expensesApi";
-import { Space, Table, Input, Popconfirm, DatePicker } from 'antd';
+import { Space, Table, Input, Popconfirm, DatePicker, Button, Popover } from 'antd';
 
 const { RangePicker } = DatePicker
 
@@ -82,14 +82,19 @@ const Expenses = () => {
         await deleteExpenses(id);
         refresh(!dummy)
     };
-
-    const handleApprove = async (id) => {
-        await updateExpenses(id);
-        refresh(!dummy)
-    }
-
+    
     function formatDate(dateString) {
         return new Date(dateString).toISOString().split("T")[0];
+    }
+    
+    const [expensePayment, setExpensePayment] = useState("")
+
+    const onChangeDate = async (date, dateString, id) => {
+        const newDate = new Date(dateString).toISOString();
+        console.log("date: ", typeof newDate, newDate, "id: ", id)
+        setExpensePayment(newDate)
+        await updateExpenses(id, {expensePayment});
+        refresh(!dummy)
     }
 
 const columns = [
@@ -183,12 +188,12 @@ const columns = [
     ellipsis: true,
 },
 {
-    title: '',
+    title: 'Aprobar',
     key: 'action',
-    width: '5%',
+    width: '7%',
     render: (_, record) => (
-        <Space size="middle" onClick={() => handleApprove(record._id)}>
-        <a>Aprobar</a>
+        <Space size="middle">
+            <DatePicker onChange={(date, dateString) => onChangeDate(date, dateString, record._id)} needConfirm />
         </Space>
     ),
 },
@@ -199,11 +204,11 @@ const columns = [
     render: (_, record) =>
     allExpenses.length >= 1 ? (
         <Space>
-                <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
-                    <a>Eliminar</a>
-                </Popconfirm>
-            </Space>
-        ) : null,
+            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
+                <a>Eliminar</a>
+            </Popconfirm>
+        </Space>
+    ) : null,
 },
 ];
 
@@ -268,6 +273,7 @@ const columns = [
                         </div>
                         <div className="ml-32">
                             <p className="font-bold">Fecha de pago:</p>
+                            {record.expensePayment? record.expensePayment : "-"}
                         </div>
                     </div>
                 ),
