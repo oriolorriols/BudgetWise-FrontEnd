@@ -10,18 +10,14 @@ const Login = () => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
 
-    const onFinish = (values) => {
-        console.log('Received values of form: ', values);
-    };
-
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
     const { setLogIn } = useAuth()
 
-    const clickLogin = async () => {
+    const onFinish = async (values) => {
+        if(values.username === "" || values.password === "") {}
         const response = await login(email, password);
-
         if (!response.msg) {
             setLogIn(response);
             navigate('/');
@@ -74,14 +70,15 @@ const Login = () => {
                             name="username"
                             rules={[
                                 {
+                                    type: "email",
                                     required: true,
-                                    message: 'Escribe tu usuario!',
+                                    message: '¡Escribe tu email!',
                                 },
                             ]}
                         >
                             <Input 
                                 prefix={<UserOutlined className="site-form-item-icon" />} 
-                                placeholder="Usuario" 
+                                placeholder="Email" 
                                 value={email} 
                                 onChange={e => setEmail(e.currentTarget.value)} 
                             />
@@ -91,7 +88,7 @@ const Login = () => {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Introduce tu contraseña!',
+                                    message: '¡Introduce tu contraseña!',
                                 },
                             ]}
                         >
@@ -112,8 +109,7 @@ const Login = () => {
                             </a>
                         </div>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" className="w-full mb-3"
-                                onClick={clickLogin}>
+                            <Button type="primary" htmlType="submit" className="w-full mb-3">
                                 Iniciar
                             </Button>
                             ¡O <Link to="/register"><span className='link'>registrate</span></Link>!
