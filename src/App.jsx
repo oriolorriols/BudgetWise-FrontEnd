@@ -18,6 +18,7 @@ import { useAuth } from "./contexts/authContext"
 
 
 import './App.scss'
+import { Register } from "./pages/register/register"
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         <Routes>
           <Route path="*" element={<Navigate to="/"/>}/>
           <Route path="/login" element={isAuthenticated ? <Navigate replace to={"/"}/> : <Login/>} />
+          <Route path="/register" element={<Register/>}/>
           <Route element={<PrivateRoutes/>}>
             <Route path='/' element={<Home/>}>
               <Route path='/' element={<DashBoard/>}/>
