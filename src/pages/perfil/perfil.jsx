@@ -55,7 +55,7 @@ const Perfil = () => {
           position: data.position,
           personalMail: data.personalMail,
           phoneExt: data.phoneExt,
-          bankAccount: data.bankAccount
+          bankAccount: data.bankAccount,
         }
         setInitialValues(formValues)
         form.setFieldsValue(formValues)
@@ -158,7 +158,7 @@ const Perfil = () => {
           name="validate_other"
           {...formItemLayout}
           onFinish={onFinishData}
-          style={{ width: 500 }}
+          style={{ width: 600 }}
         >
           <h2 className='text-lg font-bold mb-7'>Datos Personales</h2>
           <Form.Item
@@ -247,6 +247,46 @@ const Perfil = () => {
           <Form.Item label="Data Nacimiento">
             <DatePicker defaultValue={dayjs('2015/01/01', dateFormat)} />
           </Form.Item>
+
+
+
+
+
+
+          <Form.Item
+            label="Actualizar contraseña"
+            name="password"
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item
+            label="Confirmar contraseña"
+            name="password2"
+            dependencies={['password']}
+            rules={[
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('Las contraseñas tienen que coincidir'));
+                },
+              }),
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+
+
+
+
+
+
+
+
+
 
           <Form.Item
             wrapperCol={{ span: 12, offset: 6 }}
