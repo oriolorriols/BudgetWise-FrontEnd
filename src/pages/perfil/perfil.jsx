@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from "../../contexts/authContext"
 import { getOneUser, updateUser, updateUserPic } from '../../apiService/userApi'
+import { getCompany } from '../../apiService/companyApi'
 import { useNavigate } from 'react-router-dom'
 import { UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
@@ -29,6 +30,7 @@ const Perfil = () => {
   const navigate = useNavigate()
   const { userId, setLogOut } = useAuth()
   const [user, setUser] = useState({})
+  const [ companyData, setCompanyData] = useState({})
   const [form] = Form.useForm()
   const [initialValues, setInitialValues] = useState({})
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -37,7 +39,9 @@ const Perfil = () => {
     try {
       const data = await getOneUser(userId)
       setUser(data)
-      console.log(data)
+      const company = await getCompany(data.companyId)
+      setCompanyData(company)
+      console.log(company)
       if (data.error && data.error.name === "TokenExpiredError") {
         alert("Token is expired. Please Log In again.")
         setLogOut()
@@ -136,6 +140,10 @@ const Perfil = () => {
       </div>
       <div className='flex'>
         <div className='bg-green-200 rounded-lg max-w-72 h-fit p-5 mr-10'>
+          <div className="mt-2 mb-5">
+            <p className='text-xl font-bold text-center'>{companyData.companyName}</p>
+            <p className='text-lg font-medium text-center'>{user.profileType}</p>
+          </div>
           <div className='overflow-hidden rounded-full'>
             <img className='aspect-square object-cover' src={user.profilePic} alt="" />
           </div>
@@ -154,12 +162,10 @@ const Perfil = () => {
               </Button>
             )}
           </div>
-          <div className='mt-5'>
+          <div className='mt-7 mb-2'>
             <p className='font-medium text-center'>{user.name} {user.surname}</p>
             <p className='text-center'>{user.email}</p>
             <p className='text-center'>{user.dni}</p>
-            <p className='mt-5 font-medium text-center'>{user.profileType}</p>
-            <p className='text-center'>{user.position}</p>
           </div>
         </div>
         <Form
