@@ -16,6 +16,18 @@ export const getCompany = async (id) => {
     }
 }
 
+export const updateCompany = async (id, companyData) => {
+    const token = localStorage.getItem("access_token")
+
+    const response = await fetch(`${baseUrl}/companies/${id}`, {
+        method: 'PUT', 
+        body: JSON.stringify(companyData), 
+        headers: {"Content-Type": "application/json", "authorization": `Bearer ${token}`}
+    })
+    const changedCompany = await response.json();
+    console.log(changedCompany)
+    return changedCompany
+}
 
 export const updateCompanyLogo = async (companyLogo, id) => {
     const token = localStorage.getItem("access_token")

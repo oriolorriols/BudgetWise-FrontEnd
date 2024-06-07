@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from "../../contexts/authContext"
 import { getOneUser } from '../../apiService/userApi'
-import { getCompany, updateCompanyLogo } from '../../apiService/companyApi'
+import { getCompany, updateCompany, updateCompanyLogo } from '../../apiService/companyApi'
 import { useNavigate } from 'react-router-dom'
 import { UploadOutlined } from '@ant-design/icons'
 import {
@@ -70,6 +70,8 @@ const CompanyProfile = () => {
 
   const onFinishData = async (values) => {
     try {
+      await updateCompany(companyData._id, values)
+      await getCompanyData()
       message.success("User data updated successfully!")
     } catch (error) {
       message.error("Failed to update user data")
@@ -166,7 +168,7 @@ const CompanyProfile = () => {
             className='w-full'
             name="companyCountry"
             label="País"
-            rules={[{message: 'Introduce tu posición!' }]}
+            rules={[{message: 'Introduce el país!' }]}
           >
             <Input />
           </Form.Item>
@@ -190,7 +192,6 @@ const CompanyProfile = () => {
             className='w-full'
             name="companyPostalCode"
             label="Codigo Postal"
-            rules={[{message: 'Introduce tu posición!' }]}
           >
             <Input />
           </Form.Item>
