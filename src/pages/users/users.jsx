@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getUsers } from '../../apiService/userApi';
+import { getOneUser, getUsers } from '../../apiService/userApi';
 import { useAuth } from "../../contexts/authContext";
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, InputNumber, Popconfirm, Table, Typography, Space } from 'antd';
@@ -47,10 +47,9 @@ const Users = () => {
     ...restProps
   }) => {
     const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-    
     return (
       <td {...restProps}>
-            {editing ? (
+       {editing ? (
   <Form.Item
     name={dataIndex}
     style={{ margin: 0 }}
@@ -80,6 +79,25 @@ const Users = () => {
           <Input style={{ width: '100%' }} placeholder="Surname" />
         </Form.Item>
       </Space>
+    ) : dataIndex === 'department' ? ( // Agregar esta condición para el campo "department"
+      <Space compact style={{ display: 'flex', width: '100%' }}>
+        <Form.Item
+          name="departmentId"
+          noStyle
+          rules={[{ required: true, message: 'Please input departmentId!' }]}
+          style={{ margin: 0, flex: '50%' }}
+        >
+          <Input style={{ width: '100%' }} placeholder="Department ID" />
+        </Form.Item>
+        <Form.Item
+          name="departmentName"
+          noStyle
+          rules={[{ required: true, message: 'Please input departmentName!' }]}
+          style={{ margin: 0, flex: '50%' }}
+        >
+          <Input style={{ width: '100%' }} placeholder="Department Name" />
+        </Form.Item>
+      </Space>
     ) : inputNode}
   </Form.Item>
 ) : (
@@ -92,23 +110,19 @@ const Users = () => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
   const isEditing = (record) => record.key === editingKey;
-
   const edit = (record) => {
-   form.setFieldsValue({
-      name: record.name,
-      surname: record.surname,
-      position: record.position,
-      address: record.address,
-      department: record.department,
-      status: record.status,
+    form.setFieldsValue({
+      name: '',
+      position: '',
+      address: '',
+      department: '',
+      ...record,
     });
     setEditingKey(record.key);
   };
-
   const cancel = () => {
     setEditingKey('');
   };
-
   const save = async (key) => {
     try {
       const row = await form.validateFields();
@@ -116,7 +130,10 @@ const Users = () => {
       const index = newData.findIndex((item) => key === item.key);
       if (index > -1) {
         const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
+        newData.splice(index, 1, {
+          ...item,
+          ...row,
+        });
         setAllUsers(newData);
         setEditingKey('');
       } else {
@@ -128,11 +145,10 @@ const Users = () => {
       console.log('Validate Failed:', errInfo);
     }
   }
-
   const handleDelete = async (key) => {
     const newData = allUsers.filter((item) => item.key !== key);
     setAllUsers(newData);
-    refresh(!dummy);
+    refresh(!dummy)
   };
 
   const columns = [
@@ -191,7 +207,9 @@ const Users = () => {
           <span>
             <Typography.Link
               onClick={() => save(record.key)}
-              style={{ marginRight: 8 }}
+              style={{
+                marginRight: 8,
+              }}
             >
               Save
             </Typography.Link>
