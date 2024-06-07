@@ -4,7 +4,7 @@ import { useAuth } from "../../contexts/authContext"
 
 
 import {
-  DesktopOutlined,
+  ContactsOutlined,
   CalendarOutlined,
   SolutionOutlined,
   LogoutOutlined,
@@ -14,7 +14,8 @@ import {
   MenuUnfoldOutlined,
   PieChartOutlined,
   BankOutlined,
-  CarryOutOutlined
+  CarryOutOutlined,
+  DeploymentUnitOutlined
 } from '@ant-design/icons';
 import {  Menu, Layout, Button } from 'antd';
 const { Sider } = Layout;
@@ -30,7 +31,7 @@ const items = [
   },
   {
     key: '/usuarios',
-    icon: <DesktopOutlined />,
+    icon: <ContactsOutlined />,
     label: 'Lista de empleados',
   },
   {
@@ -62,6 +63,11 @@ const items = [
     key: '/solicitudes',
     icon: <CarryOutOutlined />,
     label: 'Solicitudes',
+  },
+  {
+    key: '/empresa',
+    icon: <DeploymentUnitOutlined />,
+    label: 'Empresa',
   },
   {
     key: '/logout',
