@@ -254,13 +254,14 @@ const Perfil = () => {
           >
             <Input />
           </Form.Item>
+
           <Form.Item
             label="Fecha de Nacimiento"
             name="birthDate"
-            rules={[{ message: 'Introduce tu fecha de nacimiento!' }]}
           >
             <DatePicker format={dateFormat} />
           </Form.Item>
+
           <Form.Item
             label="Actualizar Contraseña"
             name="password"
