@@ -160,7 +160,7 @@ const CompanyProfile = () => {
             className='w-full'
             name="companyName"
             label="Nombre"
-            rules={[{ required: true, message: 'Introduce tu nombre!' }]}
+            rules={[{ required: true, message: 'Introduce el nombre!' }]}
           >
             <Input />
           </Form.Item>
@@ -168,7 +168,7 @@ const CompanyProfile = () => {
             className='w-full'
             name="companyCountry"
             label="País"
-            rules={[{message: 'Introduce el país!' }]}
+            rules={[{ required: true, message: 'Introduce el país!' }]}
           >
             <Input />
           </Form.Item>
@@ -176,7 +176,7 @@ const CompanyProfile = () => {
             className='w-full'
             name="companyCity"
             label="Ciudad"
-            rules={[{ required: true, message: 'Introduce tu DNI!' }]}
+            rules={[{ required: true, message: 'Introduce la ciudad!' }]}
           >
             <Input />
           </Form.Item>
@@ -184,7 +184,7 @@ const CompanyProfile = () => {
             className='w-full'
             name="companyAddress"
             label="Dirección"
-            rules={[{ required: true, message: 'Introduce tus apellidos!' }]}
+            rules={[{ required: true, message: 'Introduce la dirección!' }]}
           >
             <Input />
           </Form.Item>
@@ -192,6 +192,7 @@ const CompanyProfile = () => {
             className='w-full'
             name="companyPostalCode"
             label="Codigo Postal"
+            rules={[{ required: true, message: 'Introduce el codigo postal!' }]}
           >
             <Input />
           </Form.Item>
@@ -199,7 +200,7 @@ const CompanyProfile = () => {
           <Form.Item
             label="Teléfono"
             name="companyPhone"
-            rules={[{ required: true, message: 'Introduce tu correo electrónico' }]}
+            rules={[{ required: true, message: 'Introduce el teléfono' }]}
           >
             <Input />
           </Form.Item>
@@ -209,7 +210,7 @@ const CompanyProfile = () => {
             className='w-full'
             name="companyPlan"
             label="Plan"
-            rules={[{ message: 'Selecciona un estado' }]}
+            rules={[{ message: 'Selecciona un plan' }]}
           >
             <Select>
               <Option value="Small">Pequeña Empresa (1-50)</Option>
