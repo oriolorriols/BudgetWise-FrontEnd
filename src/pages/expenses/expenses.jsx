@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { deleteExpenses, getExpenses } from "../../apiService/expensesApi";
-import { Space, Table, Input, Popconfirm, DatePicker } from 'antd';
+import { deleteExpenses, getExpenses, updateExpenses } from "../../apiService/expensesApi";
+import { Space, Table, Input, Popconfirm, DatePicker, Button, Popover } from 'antd';
+
 const { RangePicker } = DatePicker
 
 const { Search } = Input;
@@ -12,8 +13,9 @@ const Expenses = () => {
     const [filtering, setFiltering] = useState([])
     
     const getAllExpenses = async () => {
-        const expenses = await getExpenses();
-        if (expenses.length) setAllExpenses(expenses);
+        const expenses = await getExpenses()
+        const notRemoved = expenses.filter(user => !user.removedAt);
+        if (expenses.length) setAllExpenses(notRemoved);
         else setError(expenses.message)
     }
     
@@ -29,11 +31,14 @@ const Expenses = () => {
         const newList = [...allExpenses]
         if (info) { 
             const filteredData = newList.filter(info => 
+                info.absenceId.absenceCodeId.absenceName.toLowerCase().includes(value.toLowerCase()) ||
                 info.absenceId.employeeId.name.toLowerCase().includes(value.toLowerCase()) ||
                 info.absenceId.employeeId.surname.toLowerCase().includes(value.toLowerCase()) ||
-                info.absenceId.absenceCodeId.absenceName.toLowerCase().includes(value.toLowerCase()) ||
-                info.absenceId.absenceCodeId.absenceService.toLowerCase().includes(value.toLowerCase())
-            )
+                info.absenceId.country.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.city.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.absenceCodeId.absenceService.toLowerCase().includes(value.toLowerCase()) ||
+                info.absenceId.absenceCodeId.absenceCode?.toLowerCase().includes(value.toLowerCase())
+                )
             if (filteredData) return setFiltering(filteredData)
         }
         if (!info) allExpenses
@@ -73,16 +78,23 @@ const Expenses = () => {
     setSortedInfo(sorter);
     };
 
-    const handleDelete = async (id) => { //revisar porque no elimina
+    const handleDelete = async (id) => {
         await deleteExpenses(id);
         refresh(!dummy)
-        // const newData = allExpenses.filter(item => item._id !== id);
-        // console.log(newData)
-        // setAllExpenses(data);
     };
-
+    
     function formatDate(dateString) {
         return new Date(dateString).toISOString().split("T")[0];
+    }
+    
+    const [expensePayment, setExpensePayment] = useState("")
+
+    const onChangeDate = async (date, dateString, id) => {
+        const newDate = new Date(dateString).toISOString();
+        console.log("date: ", typeof newDate, newDate, "id: ", id)
+        setExpensePayment(newDate)
+        await updateExpenses(id, {expensePayment});
+        refresh(!dummy)
     }
 
 const columns = [
@@ -99,12 +111,6 @@ const columns = [
     title: 'Título',
     dataIndex: ['absenceId', 'absenceCodeId', 'absenceName'],
     key: 'absenceName',
-    render: (text) => <a>{text}</a>,
-},
-{
-    title: 'Motivo',
-    dataIndex: ['absenceId', 'absenceCodeId', 'absenceService'],
-    key: 'absenceService',
 },
 {
     title: 'Nombre',
@@ -156,24 +162,38 @@ const columns = [
             value: 'Aprobado',
         },
     ],
-    filteredValue: filteredInfo.status || null,
-    onFilter: (value, record) => record.status.includes(value),
+    filteredValue: filteredInfo.expenseStatus || null,
+    onFilter: (value, record) => record.expenseStatus.includes(value),
 },
 {
     title: 'Monto en Euros',
-    dataIndex: 'expenseEuros',
-    key: 'expenseEuros',
+    dataIndex: 'expenseCodeId',
+    key: 'expenseCodeId',
+    render: (codes) => (
+        <div className="flex">
+            <ul>
+                {codes.map((code, index) => (
+                    <li key={index}>
+                        {(code.Traslados > 0 ? code.Traslados : 0) + 
+                        (code.Dietas > 0 ? code.Dietas : 0) + 
+                        (code.Hospedajes > 0 ? code.Hospedajes : 0)} 
+                    </li>
+                ))}
+            </ul>
+            <p className="ml-1">€</p>
+        </div>
+    ),
     sorter: (a, b) => a.amount - b.amount,
     sortOrder: sortedInfo.columnKey === 'amount' ? sortedInfo.order : null,
     ellipsis: true,
 },
 {
-    title: '',
+    title: 'Aprobar',
     key: 'action',
-    width: '5%',
+    width: '7%',
     render: (_, record) => (
         <Space size="middle">
-        <a>Aprobar {record.title}</a>
+            <DatePicker onChange={(date, dateString) => onChangeDate(date, dateString, record._id)} needConfirm />
         </Space>
     ),
 },
@@ -184,47 +204,13 @@ const columns = [
     render: (_, record) =>
     allExpenses.length >= 1 ? (
         <Space>
-                <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
-                    <a>Eliminar</a>
-                </Popconfirm>
-            </Space>
-        ) : null,
+            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
+                <a>Eliminar</a>
+            </Popconfirm>
+        </Space>
+    ) : null,
 },
-
 ];
-
-// const data = [
-// {
-//     key: '1',
-//     purpose: 'V-084',
-//     requestDate: '14/05/2024',
-//     name: 'John', 
-//     surname: 'Gonzalez',
-//     expenseDate: '10/05/2024',
-//     status: 'Pendiente',
-//     amount: 20,
-// },
-// {
-//     key: '2',
-//     purpose: 'PV-080',
-//     requestDate: '08/05/2024',
-//     name: 'Jim', 
-//     surname: 'Fernandez',
-//     expenseDate: '05/05/2024',
-//     status: 'Aprobado',
-//     amount: 268,
-// },
-// {
-//     key: '3',
-//     purpose: 'V-083',
-//     requestDate: '17/05/2024',
-//     name: 'Joe', 
-//     surname: 'Rodriguez',
-//     expenseDate: '16/05/2024',
-//     status: 'Pendiente',
-//     amount: 64,
-// },
-// ];
 
     return (
     <>
@@ -256,16 +242,48 @@ const columns = [
                 </div>
             </div>
         </div>
-
-        {console.log(allExpenses)}
         <Table 
-            columns={columns} 
+            columns={columns}
+            expandable={{
+                expandedRowRender: record => (
+                    <div className="flex">
+                        {record.expenseCodeId.map((code, index) => (
+                        <div key={index}>
+                            <p className="font-bold">Gastos:</p>
+                            <p>Hospedajes: {code.Hospedajes > 0 ? code.Hospedajes : 0} €</p>
+                            <p>Dietas: {code.Dietas > 0 ? code.Dietas : 0} €</p>
+                            <p>Traslados: {code.Traslados > 0 ? code.Traslados : 0} €</p>
+                        </div>
+                    ))}
+                        <div className="ml-32">
+                            <p className="font-bold">País:</p>
+                            {record.absenceId.country}
+                            <p className="font-bold">Ciudad:</p>
+                            {record.absenceId.city}
+                        </div>
+                        <div className="ml-32">
+                            <p className="font-bold">Motivo:</p>
+                            {record.absenceId.absenceCodeId.absenceService}
+                            <p className="font-bold">Código:</p>
+                            {record.absenceId.absenceCodeId.absenceCode? record.absenceId.absenceCodeId.absenceCode : "-"}
+                        </div>
+                        <div className="ml-32">
+                            <p className="font-bold">Business Card:</p>
+                            {record.creditCardEnd? record.creditCardEnd : "-"}
+                        </div>
+                        <div className="ml-32">
+                            <p className="font-bold">Fecha de pago:</p>
+                            {record.expensePayment? record.expensePayment : "-"}
+                        </div>
+                    </div>
+                ),
+            }}
             dataSource={filtering.length > 0 ? filtering : allExpenses} 
             onChange={handleChange} 
-            // key={}
-        />
+            rowKey="_id"
+            />
         {error && <p>Ha habido un error: {error}</p>}
-    </>
+        </>
     )}
     
 export default Expenses;
