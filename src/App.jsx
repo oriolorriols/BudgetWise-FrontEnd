@@ -30,18 +30,18 @@ function App() {
         <Routes>
           <Route path="*" element={<Navigate to="/"/>}/>
           <Route path="/login" element={isAuthenticated ? <Navigate replace to={"/"}/> : <Login/>} />
-          <Route path="/register" element={<Register/>}/>
+          <Route path="/registro" element={<Register/>}/>
           <Route element={<PrivateRoutes/>}>
               <Route path='/' element={<Home/>}>
-              <Route path='/' element={<DashBoard/>}/>
-              <Route path='/users' element={<Users/>}/>
-              <Route path='/calendario' element={<Calendario/>}/>
-              <Route path='/objetivos' element={<Objetivos/>}/>
-              <Route path='/perfil' element={<Perfil/>}/>
-              <Route path='/ausencias' element={<Absences/>}/>
-              <Route path='/requests' element={<Requests/>}/>
-              <Route path='/expenses' element={<Expenses/>}/>
-            </Route>
+                  <Route path='/' element={<DashBoard/>}/>
+                  <Route path='/usuarios' element={<Users/>}/>
+                  <Route path='/calendario' element={<Calendario/>}/>
+                  <Route path='/objetivos' element={<Objetivos/>}/>
+                  <Route path='/perfil' element={<Perfil/>}/>
+                  <Route path='/ausencias' element={<Absences/>}/>
+                  <Route path='/solicitudes' element={<Requests/>}/>
+                  <Route path='/gastos' element={<Expenses/>}/>
+              </Route>
           </Route>
         </Routes>
     </>

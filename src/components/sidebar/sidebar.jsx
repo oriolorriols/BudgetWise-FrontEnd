@@ -29,7 +29,7 @@ const items = [
     label: 'Dashboard',
   },
   {
-    key: '/users',
+    key: '/usuarios',
     icon: <DesktopOutlined />,
     label: 'Lista de empleados',
   },
@@ -54,12 +54,12 @@ const items = [
     label: 'Ausencias',
   },
   {
-    key: '/expenses',
+    key: '/gastos',
     icon: <BankOutlined />,
     label: 'Gastos',
   },
   {
-    key: '/requests',
+    key: '/solicitudes',
     icon: <CarryOutOutlined />,
     label: 'Solicitudes',
   },
