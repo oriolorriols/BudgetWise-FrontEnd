@@ -32,7 +32,7 @@ function App() {
           <Route path="/login" element={isAuthenticated ? <Navigate replace to={"/"}/> : <Login/>} />
           <Route path="/register" element={<Register/>}/>
           <Route element={<PrivateRoutes/>}>
-            <Route path='/' element={<Home/>}>
+              <Route path='/' element={<Home/>}>
               <Route path='/' element={<DashBoard/>}/>
               <Route path='/users' element={<Users/>}/>
               <Route path='/calendario' element={<Calendario/>}/>
