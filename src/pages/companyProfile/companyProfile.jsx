@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from "../../contexts/authContext"
 import { getOneUser } from '../../apiService/userApi'
-import { getCompany } from '../../apiService/companyApi'
-import { updateUserPic } from '../../apiService/profileApi'
+import { getCompany, updateCompanyLogo } from '../../apiService/companyApi'
 import { useNavigate } from 'react-router-dom'
 import { UploadOutlined } from '@ant-design/icons'
 import {
@@ -84,12 +83,12 @@ const CompanyProfile = () => {
 
     setUploading(true)
     try {
-      await updateUserPic(file)
-      await getUserData()
+      await updateCompanyLogo(file, companyData._id)
+      await getCompanyData()
       setFileList([])
-      message.success("Profile picture updated successfully!")
+      message.success("Company logo updated successfully!")
     } catch (error) {
-      message.error("Failed to update profile picture")
+      message.error("Failed to update company logo")
       console.error(error)
     } finally {
       setUploading(false)

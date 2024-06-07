@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from "../../contexts/authContext"
-import { getOneUser, updateUser } from '../../apiService/userApi'
-import { updateUserPic } from '../../apiService/profileApi'
+import { getOneUser, updateUser, updateUserPic } from '../../apiService/userApi'
 import { useNavigate } from 'react-router-dom'
 import { UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'

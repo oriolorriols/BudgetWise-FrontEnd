@@ -50,6 +50,26 @@ export const updateUser = async (id, userData) => {
     return changedUser
 }
 
+export const updateUserPic = async (userPic) => {
+    const token = localStorage.getItem("access_token")
+
+    const formData = new FormData();
+    formData.append("file", userPic);
+
+    try {
+        const response = await fetch(`${baseUrl}/upload/user`, {
+            method: 'POST', 
+            body: formData, 
+            headers: {"authorization": `Bearer ${token}`}
+        })
+        const changedUser = await response.json();
+        console.log(changedUser)
+    } catch (error) {
+        console.error('Error updating user:', error)
+        throw error
+    }
+}
+
 export const login = async (email, password) => {
     const token = localStorage.getItem("access_token")
 

@@ -17,21 +17,21 @@ export const getCompany = async (id) => {
 }
 
 
-export const updateUserPic = async (userPic) => {
+export const updateCompanyLogo = async (companyLogo, id) => {
     const token = localStorage.getItem("access_token")
 
     const formData = new FormData();
-    formData.append("file", userPic);
+    formData.append("file", companyLogo);
 
     try {
-        const response = await fetch(`${baseUrl}/upload/`, {
+        const response = await fetch(`${baseUrl}/upload/company/${id}`, {
             method: 'POST', 
             body: formData, 
             headers: {"authorization": `Bearer ${token}`}
         })
-        const changedUser = await response.json();
-        console.log(changedUser)
-        return changedUser
+        const companyLogoURL = await response.json();
+        console.log(companyLogoURL)
+        return companyLogoURL
     } catch (error) {
         console.error('Error updating user:', error)
         throw error
