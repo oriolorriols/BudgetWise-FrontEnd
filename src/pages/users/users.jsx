@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { getOneUser, getUsers } from '../../apiService/userApi';
 import { useAuth } from "../../contexts/authContext";
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, InputNumber, Popconfirm, Table, Typography, Space } from 'antd';
+import { Form, Input, InputNumber, Popconfirm, Table, Typography, Space, Select } from 'antd';
+const { Option } = Select;
 
 const Users = () => {
   const [allUsers, setAllUsers] = useState([]);
@@ -50,75 +51,81 @@ const Users = () => {
     return (
       <td {...restProps}>
        {editing ? (
-  <Form.Item
-    name={dataIndex}
-    style={{ margin: 0 }}
-    rules={[
-      {
-        required: true,
-        message: `Please Input ${title}!`,
-      },
-    ]}
-  >
-    {dataIndex === 'name' ? (
-      <Space compact style={{ display: 'flex', width: '100%' }}>
         <Form.Item
-          name="name"
-          noStyle
-          rules={[{ required: true, message: 'Please input name!' }]}
-          style={{ margin: 0, flex: '50%' }}
+          name={dataIndex}
+          style={{ margin: 0 }}
+          rules={[
+            {
+              required: true,
+              message: `Please Input ${title}!`,
+            },
+          ]}
         >
-          <Input style={{ width: '100%' }} placeholder="Name" />
+          {dataIndex === 'name' ? (
+            <Space compact style={{ display: 'flex', width: '100%' }}>
+              <Form.Item
+                name="name"
+                noStyle
+                rules={[{ required: true, message: 'Please input name!' }]}
+                style={{ margin: 0, flex: '50%' }}
+              >
+                <Input style={{ width: '100%' }} placeholder="Name" />
+              </Form.Item>
+              <Form.Item
+                name="surname"
+                noStyle
+                rules={[{ required: true, message: 'Please input surname!' }]}
+                style={{ margin: 0, flex: '50%' }}
+              >
+                <Input style={{ width: '100%' }} placeholder="Surname" />
+              </Form.Item>
+            </Space>
+          ) : dataIndex === 'department' ? (
+            <Space compact style={{ display: 'flex', width: '100%' }}>
+              <Form.Item
+                name="departmentId"
+                noStyle
+                rules={[{ required: true, message: 'Please input departmentId!' }]}
+                style={{ margin: 0, flex: '50%' }}
+              >
+                <Input style={{ width: '100%' }} placeholder="Department ID" />
+              </Form.Item>
+              <Form.Item
+                name="departmentName"
+                noStyle
+                rules={[{ required: true, message: 'Please input departmentName!' }]}
+                style={{ margin: 0, flex: '50%' }}
+              >
+                <Input style={{ width: '100%' }} placeholder="Department Name" />
+              </Form.Item>
+            </Space>
+            ) : dataIndex === 'status' ? (
+              <Select placeholder="Select Status" style={{ width: '100%' }}>
+                <Option value="Alta">Alta</Option>
+                <Option value="Baja">Baja</Option>
+                <Option value="Baja Médica">Baja Médica</Option>
+              </Select>
+            ) : inputNode}
         </Form.Item>
-        <Form.Item
-          name="surname"
-          noStyle
-          rules={[{ required: true, message: 'Please input surname!' }]}
-          style={{ margin: 0, flex: '50%' }}
-        >
-          <Input style={{ width: '100%' }} placeholder="Surname" />
-        </Form.Item>
-      </Space>
-    ) : dataIndex === 'department' ? ( // Agregar esta condición para el campo "department"
-      <Space compact style={{ display: 'flex', width: '100%' }}>
-        <Form.Item
-          name="departmentId"
-          noStyle
-          rules={[{ required: true, message: 'Please input departmentId!' }]}
-          style={{ margin: 0, flex: '50%' }}
-        >
-          <Input style={{ width: '100%' }} placeholder="Department ID" />
-        </Form.Item>
-        <Form.Item
-          name="departmentName"
-          noStyle
-          rules={[{ required: true, message: 'Please input departmentName!' }]}
-          style={{ margin: 0, flex: '50%' }}
-        >
-          <Input style={{ width: '100%' }} placeholder="Department Name" />
-        </Form.Item>
-      </Space>
-    ) : inputNode}
-  </Form.Item>
-) : (
-  children
-)}
-      </td>
-    );
-  };
+      ) : (
+        children
+      )}
+            </td>
+          );
+        };
 
-  const [form] = Form.useForm();
-  const [editingKey, setEditingKey] = useState('');
-  const isEditing = (record) => record.key === editingKey;
-  const edit = (record) => {
-    form.setFieldsValue({
-      name: '',
-      position: '',
-      address: '',
-      department: '',
-      ...record,
-    });
-    setEditingKey(record.key);
+        const [form] = Form.useForm();
+        const [editingKey, setEditingKey] = useState('');
+        const isEditing = (record) => record.key === editingKey;
+        const edit = (record) => {
+          form.setFieldsValue({
+            name: '',
+            position: '',
+            address: '',
+            department: '',
+            ...record,
+          });
+          setEditingKey(record.key);
   };
   const cancel = () => {
     setEditingKey('');
