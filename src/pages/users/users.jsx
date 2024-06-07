@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { getOneUser, getUsers } from '../../apiService/userApi';
+import { getUsers } from '../../apiService/userApi';
 import { useAuth } from "../../contexts/authContext";
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, InputNumber, Popconfirm, Table, Typography } from 'antd';
+import { Form, Input, InputNumber, Popconfirm, Table, Typography, Space } from 'antd';
 
 const Users = () => {
   const [allUsers, setAllUsers] = useState([]);
@@ -47,26 +47,44 @@ const Users = () => {
     ...restProps
   }) => {
     const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+    
     return (
       <td {...restProps}>
-        {editing ? (
-          <Form.Item
-            name={dataIndex}
-            style={{
-              margin: 0,
-            }}
-            rules={[
-              {
-                required: true,
-                message: `Please Input ${title}!`,
-              },
-            ]}
-          >
-            {inputNode}
-          </Form.Item>
-        ) : (
-          children
-        )}
+            {editing ? (
+  <Form.Item
+    name={dataIndex}
+    style={{ margin: 0 }}
+    rules={[
+      {
+        required: true,
+        message: `Please Input ${title}!`,
+      },
+    ]}
+  >
+    {dataIndex === 'name' ? (
+      <Space compact style={{ display: 'flex', width: '100%' }}>
+        <Form.Item
+          name="name"
+          noStyle
+          rules={[{ required: true, message: 'Please input name!' }]}
+          style={{ margin: 0, flex: '50%' }}
+        >
+          <Input style={{ width: '100%' }} placeholder="Name" />
+        </Form.Item>
+        <Form.Item
+          name="surname"
+          noStyle
+          rules={[{ required: true, message: 'Please input surname!' }]}
+          style={{ margin: 0, flex: '50%' }}
+        >
+          <Input style={{ width: '100%' }} placeholder="Surname" />
+        </Form.Item>
+      </Space>
+    ) : inputNode}
+  </Form.Item>
+) : (
+  children
+)}
       </td>
     );
   };
@@ -74,19 +92,23 @@ const Users = () => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
   const isEditing = (record) => record.key === editingKey;
+
   const edit = (record) => {
-    form.setFieldsValue({
-      name: '',
-      position: '',
-      address: '',
-      department: '',
-      ...record,
+   form.setFieldsValue({
+      name: record.name,
+      surname: record.surname,
+      position: record.position,
+      address: record.address,
+      department: record.department,
+      status: record.status,
     });
     setEditingKey(record.key);
   };
+
   const cancel = () => {
     setEditingKey('');
   };
+
   const save = async (key) => {
     try {
       const row = await form.validateFields();
@@ -94,10 +116,7 @@ const Users = () => {
       const index = newData.findIndex((item) => key === item.key);
       if (index > -1) {
         const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
+        newData.splice(index, 1, { ...item, ...row });
         setAllUsers(newData);
         setEditingKey('');
       } else {
@@ -109,10 +128,11 @@ const Users = () => {
       console.log('Validate Failed:', errInfo);
     }
   }
+
   const handleDelete = async (key) => {
     const newData = allUsers.filter((item) => item.key !== key);
     setAllUsers(newData);
-    refresh(!dummy)
+    refresh(!dummy);
   };
 
   const columns = [
@@ -171,9 +191,7 @@ const Users = () => {
           <span>
             <Typography.Link
               onClick={() => save(record.key)}
-              style={{
-                marginRight: 8,
-              }}
+              style={{ marginRight: 8 }}
             >
               Save
             </Typography.Link>
