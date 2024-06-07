@@ -115,7 +115,7 @@ const Login = () => {
                             <Button type="primary" htmlType="submit" className="w-full mb-3">
                                 Iniciar
                             </Button>
-                            ¡O <Link to="/register"><span className='link'>registrate</span></Link>!
+                            ¡O <Link to="/registro"><span className='link'>registrate</span></Link>!
                         </Form.Item>
                     </Form>
                 </div>
