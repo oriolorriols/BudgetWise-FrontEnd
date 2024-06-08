@@ -1,41 +1,40 @@
-import { useState, useEffect } from "react";
-import { getOneUser, getUsers } from '../../apiService/userApi';
-import { useAuth } from "../../contexts/authContext";
-import { useNavigate } from 'react-router-dom';
-import { Form, Input, InputNumber, Popconfirm, Table, Typography, Space, Select } from 'antd';
-const { Option } = Select;
+import { useState, useEffect } from "react"
+import { updateUser, getUsers } from '../../apiService/userApi'
+import { useAuth } from "../../contexts/authContext"
+import { useNavigate } from 'react-router-dom'
+import { Form, Input, InputNumber, Popconfirm, Table, Typography, Space, Select } from 'antd'
+const { Option } = Select
 
 const Users = () => {
-  const [allUsers, setAllUsers] = useState([]);
-  const [dummy, refresh] = useState(false);
-  const [error, setError] = useState('');
-  const { setLogOut } = useAuth();
-  const navigate = useNavigate();
+  const [allUsers, setAllUsers] = useState([])
+  const [dummy, refresh] = useState(false)
+  const [error, setError] = useState('')
+  const { setLogOut } = useAuth()
+  const navigate = useNavigate()
 
   const getAllUsers = async () => {
-    const users = await getUsers();
-    console.log(users);
+    const users = await getUsers()
     if (users.length) {
       const usersWithDefaultPic = users.map(user => ({
         ...user,
         profilePic: user.profilePic || "/noProfilePic.jpg",
-        key: user._id, // asegurarse de que cada registro tenga una clave única
-      }));
-      setAllUsers(usersWithDefaultPic);
+        key: user._id,
+      }))
+      setAllUsers(usersWithDefaultPic)
     } else {
-      setError(users.msg);
+      setError(users.msg)
       if (users.error.name === "TokenExpiredError") {
-        alert("Token is expired. Please Log In again.");
-        setLogOut();
-        navigate('/login');
+        alert("Token is expired. Please Log In again.")
+        setLogOut()
+        navigate('/login')
       }
     }
-    refresh();
-  };
+    refresh()
+  }
 
   useEffect(() => {
-    getAllUsers();
-  }, [dummy]);
+    getAllUsers()
+  }, [dummy])
 
   const EditableCell = ({
     editing,
@@ -47,7 +46,7 @@ const Users = () => {
     children,
     ...restProps
   }) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />
     return (
       <td {...restProps}>
        {editing ? (
@@ -111,12 +110,12 @@ const Users = () => {
         children
       )}
             </td>
-          );
-        };
+          )
+        }
 
-        const [form] = Form.useForm();
-        const [editingKey, setEditingKey] = useState('');
-        const isEditing = (record) => record.key === editingKey;
+        const [form] = Form.useForm()
+        const [editingKey, setEditingKey] = useState('')
+        const isEditing = (record) => record.key === editingKey
         const edit = (record) => {
           form.setFieldsValue({
             name: '',
@@ -124,27 +123,23 @@ const Users = () => {
             address: '',
             department: '',
             ...record,
-          });
-          setEditingKey(record.key);
-  };
+          })
+          setEditingKey(record.key)
+  }
   const cancel = () => {
-    setEditingKey('');
-  };
+    setEditingKey('')
+  }
   const save = async (key) => {
     try {
       const row = await form.validateFields();
-      const newData = [...allUsers];
-      const index = newData.findIndex((item) => key === item.key);
+      const index = allUsers.findIndex((item) => key === item.key);
       if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        setAllUsers(newData);
-        setEditingKey('');
-      } else {
-        newData.push(row);
+        const updatedUser = { ...allUsers[index], ...row };
+        const userId = updatedUser._id;
+        const departmentId = updatedUser.departmentId; 
+        await updateUser(userId, { ...updatedUser, departmentId })
+        const newData = [...allUsers];
+        newData.splice(index, 1, updatedUser);
         setAllUsers(newData);
         setEditingKey('');
       }
@@ -153,10 +148,10 @@ const Users = () => {
     }
   }
   const handleDelete = async (key) => {
-    const newData = allUsers.filter((item) => item.key !== key);
-    setAllUsers(newData);
+    const newData = allUsers.filter((item) => item.key !== key)
+    setAllUsers(newData)
     refresh(!dummy)
-  };
+  }
 
   const columns = [
     {
@@ -209,7 +204,7 @@ const Users = () => {
       title: 'Editar',
       dataIndex: 'operation',
       render: (_, record) => {
-        const editable = isEditing(record);
+        const editable = isEditing(record)
         return editable ? (
           <span>
             <Typography.Link
@@ -228,7 +223,7 @@ const Users = () => {
           <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
             Edit
           </Typography.Link>
-        );
+        )
       },
     },
     {
@@ -241,11 +236,11 @@ const Users = () => {
           </Popconfirm>
         ) : null,
     },
-  ];
+  ]
 
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
-      return col;
+      return col
     }
     return {
       ...col,
@@ -256,8 +251,8 @@ const Users = () => {
         title: col.title,
         editing: isEditing(record),
       }),
-    };
-  });
+    }
+  })
 
   return (
     <Form form={form} component={false}>
@@ -276,7 +271,7 @@ const Users = () => {
         }}
       />
     </Form>
-  );
-};
+  )
+}
 
-export default Users;
+export default Users
