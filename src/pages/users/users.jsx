@@ -21,6 +21,7 @@ const Users = () => {
         key: user._id,
       }))
       setAllUsers(usersWithDefaultPic)
+      console.log(usersWithDefaultPic)
     } else {
       setError(users.msg)
       if (users.error.name === "TokenExpiredError") {

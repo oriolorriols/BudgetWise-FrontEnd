@@ -34,10 +34,8 @@ const CompanyProfile = () => {
   const getCompanyData = async () => {
     try {
       const user = await getOneUser(userId)
-      console.log(user)
-      const company = await getCompany(user.companyId)
+      const company = await getCompany(user.companyId._id)
       setCompanyData(company)
-      console.log(company)
       
       if (user.error && user.error.name === "TokenExpiredError") {
         alert("Token is expired. Please Log In again.")
