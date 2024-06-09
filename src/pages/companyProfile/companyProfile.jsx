@@ -25,7 +25,7 @@ const formItemLayout = {
 }
 
 const CompanyProfile = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
   const { userId } = useAuth()
   const [ companyData, setCompanyData] = useState({})
   const [form] = Form.useForm()
@@ -35,7 +35,7 @@ const CompanyProfile = () => {
     try {
       const data = await getOneUser(userId)
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
-        setIsModalVisible(true)
+        setIsModalTokenVisible(true)
       }
       else {
         const company = await getCompany(data.companyId._id)
@@ -116,7 +116,7 @@ const CompanyProfile = () => {
   return (
     <>
       <TokenModal
-        visible={isModalVisible}
+        visible={isModalTokenVisible}
       />
       <div className='mb-5'>
         <h2 className='font-medium text-2xl'>Datos de {companyData.companyName}</h2>

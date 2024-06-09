@@ -6,7 +6,7 @@ import TokenModal from '../../components/modal/modalToken'
 const { Option } = Select;
 
 const Users = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
 
   const [allUsers, setAllUsers] = useState([])
   const [dummy, refresh] = useState(false)
@@ -25,7 +25,7 @@ const Users = () => {
     } else {
       setError(data.msg);
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
-        setIsModalVisible(true);
+        setIsModalTokenVisible(true);
       }
     }
     refresh();
@@ -257,7 +257,7 @@ const Users = () => {
   return (
     <>
       <TokenModal
-        visible={isModalVisible}
+        visible={isModalTokenVisible}
       />
       <Form form={form} component={false}>
         <Table

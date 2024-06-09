@@ -26,7 +26,7 @@ const formItemLayout = {
 }
 
 const Profile = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
   const { userId } = useAuth()
   const [user, setUser] = useState({})
   const [form] = Form.useForm()
@@ -39,7 +39,7 @@ const Profile = () => {
       setUser(data)
       console.log(data)
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
-        setIsModalVisible(true)
+        setIsModalTokenVisible(true)
       } else {
         if (data.profilePic === "" || !data.profilePic) data.profilePic = "/noProfilePic.jpg"
         const formValues = {
@@ -130,7 +130,7 @@ const Profile = () => {
   return (
     <>
       <TokenModal
-        visible={isModalVisible}
+        visible={isModalTokenVisible}
       />
       <div className='mb-5'>
         <h2 className='font-medium text-2xl'>Hola, {user.name}!</h2>
