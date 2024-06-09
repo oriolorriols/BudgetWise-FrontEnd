@@ -1,76 +1,98 @@
 import { useState, useEffect } from "react"
-import { getUsers } from '../../apiService/userApi'
+import { getUsers, updateUser, createUser } from '../../apiService/userApi'
 import { getDepartments } from '../../apiService/departmentApi'
-import { Form, Table, Typography } from 'antd'
+import { Form, Table, Typography, Button, message } from 'antd'
 import TokenModal from '../../components/modals/modalToken'
-import UserFormModal  from '../../components/modals/modalUserForm'
+import UserFormModal from '../../components/modals/modalUserForm'
 
 const Users = () => {
   const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
-  const [isModalEditUserVisible, setIsModalEditUserVisible] = useState(false)
-
+  const [isModalUserVisible, setIsModalUserVisible] = useState(false)
   const [allUsers, setAllUsers] = useState([])
-  const [departments, setDepartments] = useState()
-
-  const [error, setError] = useState('')
-  
+  const [company, setComapny] = useState()
+  const [departments, setDepartments] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
 
+  const checkTokenValidity = () => {
+    const token = localStorage.getItem("access_token")
+    if (!token) {
+      setIsModalTokenVisible(true)
+      return false
+    }
+    return true
+  }
 
   const getDepartmentsData = async () => {
     try {
       const data = await getDepartments()
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
-        setIsModalTokenVisible(true)}
-      setDepartments(data)
-      console.log(data)
+        setIsModalTokenVisible(true)
+      } else {
+        setDepartments(data)
+        console.log(data)
+      }
     } catch (error) {
       console.error("Failed to fetch departments data", error)
     }
   }
 
   const getAllUsers = async () => {
-    const data = await getUsers()
-    if (data.length) {
-      const usersWithDefaultPic = data.map(user => ({
-        ...user,
-        profilePic: user.profilePic || "/noProfilePic.jpg",
-        key: user._id,
-      }));
-      setAllUsers(usersWithDefaultPic)
-      console.log(usersWithDefaultPic)
-    } else {
-      setError(data.msg);
+    try {
+      const data = await getUsers()
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
-        setIsModalTokenVisible(true);
+        setIsModalTokenVisible(true)
+      } else {
+        const usersWithDefaultPic = data.map(user => ({
+          ...user,
+          profilePic: user.profilePic || "/noProfilePic.jpg",
+          key: user._id,
+        }))
+        setAllUsers(usersWithDefaultPic)
+        const companyName = data[0].companyId._id
+        setComapny(companyName)
+        console.log(usersWithDefaultPic)
       }
+    } catch (error) {
+      console.error("Failed to fetch company data", error)
     }
-  };
+  }
 
   useEffect(() => {
-    if (!isModalEditUserVisible) {
-      getAllUsers();
+    if (!isModalUserVisible) {
+      getAllUsers()
     }
-  }, [isModalEditUserVisible]);
+  }, [isModalUserVisible])
 
   useEffect(() => {
     getDepartmentsData()
   }, [])
 
-
-  const [form] = Form.useForm();
+  const [form] = Form.useForm()
 
   const handleEdit = (record) => {
-    setSelectedUser(record);
-    setIsModalEditUserVisible(true);
-  };
+    if (checkTokenValidity()) {
+      setSelectedUser(record)
+      setIsModalUserVisible(true)
+    }
+  }
+
+  const handleAddUser = () => {
+    if (checkTokenValidity()) {
+      setSelectedUser(null)
+      setIsModalUserVisible(true)
+    }
+  }
+
+  const handleCancel = () => {
+    setIsModalUserVisible(false)
+    setSelectedUser(null)
+  }
 
   const columns = [
     {
       title: 'Nombre',
       dataIndex: 'name',
       width: '15%',
-      editable: true,
       render: (text, record) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <img 
@@ -93,25 +115,21 @@ const Users = () => {
       title: 'Posición',
       dataIndex: 'position',
       width: '20%',
-      editable: true,
     },
     {
       title: 'Dirección',
       dataIndex: 'address',
       width: '20%',
-      editable: true,
     },
     {
       title: 'Departamento',
       dataIndex: ['departmentId', 'departmentName'],
       width: '20%',
-      editable: true,
     },
     {
       title: 'Situación',
       dataIndex: 'status',
       width: '10%',
-      editable: true,
     },
     {
       title: 'Editar',
@@ -122,16 +140,20 @@ const Users = () => {
         </Typography.Link>
       ),
     },
-  ];
+  ]
 
   return (
     <>
+      <Button type="primary" onClick={handleAddUser}>
+        Añadir Usuario
+      </Button>
       <TokenModal visible={isModalTokenVisible} />
       <UserFormModal
-        visible={isModalEditUserVisible}
+        visible={isModalUserVisible}
         user={selectedUser}
-        onCancel={() => setIsModalEditUserVisible(false)}
+        onCancel={handleCancel}
         departments={departments}
+        companyId={company}
       />
       <Form form={form} component={false}>
         <Table

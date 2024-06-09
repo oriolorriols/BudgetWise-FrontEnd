@@ -18,9 +18,9 @@ export const getOneUser = async (id) => {
     return user
 }
 
-export const addUsuario = async (userData) => {
+export const createUser = async (userData) => {
     const token = localStorage.getItem("access_token")
-    const response = await fetch(`${baseUrl}/users`, {
+    const response = await fetch(`${baseUrl}/users/create`, {
         method: 'POST', 
         body: JSON.stringify(userData), 
         headers: {"Content-Type": "application/json", "authorization": `Bearer ${token}`}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { updateUser } from '../../apiService/userApi';
+import { updateUser, createUser } from '../../apiService/userApi';
 import dayjs from 'dayjs';
 import { Modal, Button, Form, Input, Select, Space, DatePicker, message } from 'antd';
 
@@ -13,7 +13,7 @@ const formItemLayout = {
   },
 };
 
-const UserFormModal = ({ user, visible, onCancel, departments }) => {
+const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
   const [form] = Form.useForm();
   const [initialValues, setInitialValues] = useState({});
 
@@ -47,10 +47,22 @@ const UserFormModal = ({ user, visible, onCancel, departments }) => {
 
   const onFinishData = async (values) => {
     try {
-      const sanitizedValues = JSON.parse(JSON.stringify(values));
-      console.log(sanitizedValues);
-      await updateUser(user._id, sanitizedValues);
-      message.success('User data updated successfully!');
+      const sanitizedValues = JSON.parse(JSON.stringify(values))
+      if(user) {
+        console.log(sanitizedValues);
+        await updateUser(user._id, sanitizedValues);
+        message.success('User data updated successfully!');
+      } else {
+        const newValues = {
+          ...sanitizedValues, 
+          profileType: "Employee", 
+          password: "perro123", 
+          companyId: companyId
+        } 
+        console.log(newValues)
+        await createUser(newValues);
+        message.success('User created successfully!');
+      }
       onCancel();
     } catch (error) {
       message.error('Failed to update user data');
