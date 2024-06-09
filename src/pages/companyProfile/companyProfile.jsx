@@ -54,7 +54,7 @@ const CompanyProfile = () => {
         form.setFieldsValue(formValues)
       }
     } catch (error) {
-      console.error("Failed to fetch user data", error)
+      console.error("Failed to fetch company data", error)
     }
   }
 

@@ -32,8 +32,10 @@ const Users = () => {
   };
 
   useEffect(() => {
-    getAllUsers();
-  }, [dummy]);
+    if (!isModalEditUserVisible) {
+      getAllUsers();
+    }
+  }, [dummy, isModalEditUserVisible]);
 
   const [form] = Form.useForm();
 
@@ -106,10 +108,8 @@ const Users = () => {
       <TokenModal visible={isModalTokenVisible} />
       <UserFormModal
         visible={isModalEditUserVisible}
-        setVisible={setIsModalEditUserVisible}
         user={selectedUser}
         onCancel={() => setIsModalEditUserVisible(false)}
-        onOk={() => setIsModalEditUserVisible(false)}
       />
       <Form form={form} component={false}>
         <Table

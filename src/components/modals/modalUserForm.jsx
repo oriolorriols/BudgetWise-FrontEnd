@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { updateUser } from '../../apiService/userApi';
-import dayjs from 'dayjs';
-import { Button, Form, Input, Select, Space, DatePicker, message } from 'antd';
+import React, { useState, useEffect } from 'react'
+import { updateUser } from '../../apiService/userApi'
+import { getDepartments } from '../../apiService/departmentApi'
+import dayjs from 'dayjs'
+import { Modal, Button, Form, Input, Select, Space, DatePicker, message } from 'antd'
 
-const { Option } = Select;
+const { Option } = Select
 const formItemLayout = {
   labelCol: {
     span: 6,
@@ -11,21 +12,31 @@ const formItemLayout = {
   wrapperCol: {
     span: 14,
   },
-};
+}
 
-const UserFormModal = ({ user }) => {
-  const [form] = Form.useForm();
-  const [initialValues, setInitialValues] = useState({});
+const UserFormModal = ({ user, visible, onCancel }) => {
+  const [form] = Form.useForm()
+  const [initialValues, setInitialValues] = useState({})
+  const [departments, setDepartments] = useState()
+
+  const getDepartmentsData = async () => {
+    try {
+      const data = await getDepartments()
+      setDepartments(data)
+      console.log(data)
+    } catch (error) {
+      console.error("Failed to fetch departments data", error)
+    }
+  }
 
   useEffect(() => {
     if (user) {
       getUserData(user)
-      console.log(user)
+      getDepartmentsData()
     }
-  }, [user]);
+  }, [user])
 
   const getUserData = async (data) => {
-    if (data.profilePic === '' || !data.profilePic) data.profilePic = '/noProfilePic.jpg';
     const formValues = {
       name: data.name,
       surname: data.surname,
@@ -35,37 +46,51 @@ const UserFormModal = ({ user }) => {
       email: data.email,
       phoneNumber: data.phoneNumber,
       position: data.position,
+      departmentId: data.departmentId.departmentName,
       personalMail: data.personalMail,
       phoneExt: data.phoneExt,
       bankAccount: data.bankAccount,
       birthDate: data.birthDate ? dayjs(data.birthDate) : null,
-    };
-    setInitialValues(formValues);
-    form.setFieldsValue(formValues);
-  };
+    }
+    setInitialValues(formValues)
+    form.setFieldsValue(formValues)
+  }
 
   const onFinishData = async (values) => {
     try {
-      await updateUser(user._id, values);
-      await getUserData(values);
-      message.success('User data updated successfully!');
+      const sanitizedValues = JSON.parse(JSON.stringify(values))
+      if(sanitizedValues.departmentId) {
+        delete sanitizedValues.departmentId
+      }
+      console.log(sanitizedValues)
+      await updateUser(user._id, sanitizedValues)
+      await getUserData(values)
+      message.success('User data updated successfully!')
+      onCancel()
     } catch (error) {
-      message.error('Failed to update user data');
-      console.error(error);
+      message.error('Failed to update user data')
+      console.error(error)
     }
-  };
+  }
 
-  const dateFormat = 'YYYY/MM/DD';
+  const dateFormat = 'YYYY/MM/DD'
 
   const handleReset = () => {
-    form.setFieldsValue(initialValues);
-  };
+    form.setFieldsValue(initialValues)
+  }
 
   return (
     <>
-      <div className='flex'>
-        <Form form={form} name='validate_other' {...formItemLayout} onFinish={onFinishData} style={{ width: 650 }}>
-          <h2 className='text-lg font-bold mb-7'>Datos Personales</h2>
+      <Modal
+        title={<h3 style={{ fontSize: '20px' }}>Datos de {user?.name}</h3>}
+        open={visible}
+        onCancel={onCancel}
+        footer={null}
+        width={700}
+      >
+
+      <div className='flex mt-5'>
+        <Form form={form} name='validate_other' {...formItemLayout} onFinish={onFinishData} style={{ width: 700 }}>
           <Form.Item className='w-full' name='name' label='Nombre' rules={[{ required: true, message: 'Introduce tu nombre!' }]}>
             <Input />
           </Form.Item>
@@ -79,6 +104,9 @@ const UserFormModal = ({ user }) => {
             <Input />
           </Form.Item>
           <Form.Item className='w-full' name='position' label='Posición' rules={[{ message: 'Introduce tu posición!' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item className='w-full' name='departmentId' label='Departamento' rules={[{ message: 'Introduce tu departamento!' }]}>
             <Input />
           </Form.Item>
           <Form.Item className='w-full' name='status' label='Estado' rules={[{ message: 'Selecciona un estado' }]}>
@@ -121,6 +149,8 @@ const UserFormModal = ({ user }) => {
           </Form.Item>
         </Form>
       </div>
+
+      </Modal>
     </>
   )
 }
