@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from "../../contexts/authContext"
+import TokenModal from '../../components/modal/modalToken'
 import { getOneUser } from '../../apiService/userApi'
 import { getCompany, updateCompany, updateCompanyLogo } from '../../apiService/companyApi'
-import { useNavigate } from 'react-router-dom'
 import { UploadOutlined } from '@ant-design/icons'
 import {
   Button,
@@ -25,23 +25,21 @@ const formItemLayout = {
 }
 
 const CompanyProfile = () => {
-  const navigate = useNavigate()
-  const { userId, setLogOut } = useAuth()
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const { userId } = useAuth()
   const [ companyData, setCompanyData] = useState({})
   const [form] = Form.useForm()
   const [initialValues, setInitialValues] = useState({})
 
   const getCompanyData = async () => {
     try {
-      const user = await getOneUser(userId)
-      const company = await getCompany(user.companyId._id)
-      setCompanyData(company)
-      
-      if (user.error && user.error.name === "TokenExpiredError") {
-        alert("Token is expired. Please Log In again.")
-        setLogOut()
-        navigate('/login')
-      } else {
+      const data = await getOneUser(userId)
+      if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
+        setIsModalVisible(true)
+      }
+      else {
+        const company = await getCompany(data.companyId._id)
+        setCompanyData(company)
         if (company.companyLogo === "" || !company.companyLogo) company.companyLogo = "/noProfilePic.jpg"
         const formValues = {
           companyName: company.companyName,
@@ -117,6 +115,9 @@ const CompanyProfile = () => {
 
   return (
     <>
+      <TokenModal
+        visible={isModalVisible}
+      />
       <div className='mb-5'>
         <h2 className='font-medium text-2xl'>Datos de {companyData.companyName}</h2>
       </div>

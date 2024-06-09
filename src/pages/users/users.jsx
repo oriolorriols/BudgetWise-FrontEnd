@@ -1,41 +1,39 @@
 import { useState, useEffect } from "react"
 import { updateUser, getUsers } from '../../apiService/userApi'
-import { useAuth } from "../../contexts/authContext"
-import { useNavigate } from 'react-router-dom'
 import { Form, Input, InputNumber, Popconfirm, Table, Typography, Space, Select } from 'antd'
-const { Option } = Select
+import TokenModal from '../../components/modal/modalToken'
+
+const { Option } = Select;
 
 const Users = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
   const [allUsers, setAllUsers] = useState([])
   const [dummy, refresh] = useState(false)
   const [error, setError] = useState('')
-  const { setLogOut } = useAuth()
-  const navigate = useNavigate()
 
   const getAllUsers = async () => {
-    const users = await getUsers()
-    if (users.length) {
-      const usersWithDefaultPic = users.map(user => ({
+    const data = await getUsers();
+    if (data.length) {
+      const usersWithDefaultPic = data.map(user => ({
         ...user,
         profilePic: user.profilePic || "/noProfilePic.jpg",
         key: user._id,
-      }))
-      setAllUsers(usersWithDefaultPic)
-      console.log(usersWithDefaultPic)
+      }));
+      setAllUsers(usersWithDefaultPic);
+      console.log(usersWithDefaultPic);
     } else {
-      setError(users.msg)
-      if (users.error.name === "TokenExpiredError") {
-        alert("Token is expired. Please Log In again.")
-        setLogOut()
-        navigate('/login')
+      setError(data.msg);
+      if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
+        setIsModalVisible(true);
       }
     }
-    refresh()
-  }
+    refresh();
+  };
 
   useEffect(() => {
-    getAllUsers()
-  }, [dummy])
+    getAllUsers();
+  }, [dummy]);
 
   const EditableCell = ({
     editing,
@@ -47,58 +45,58 @@ const Users = () => {
     children,
     ...restProps
   }) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />
+    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
     return (
       <td {...restProps}>
-       {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{ margin: 0 }}
-          rules={[
-            {
-              required: true,
-              message: `Please Input ${title}!`,
-            },
-          ]}
-        >
-          {dataIndex === 'name' ? (
-            <Space compact style={{ display: 'flex', width: '100%' }}>
-              <Form.Item
-                name="name"
-                noStyle
-                rules={[{ required: true, message: 'Please input name!' }]}
-                style={{ margin: 0, flex: '50%' }}
-              >
-                <Input style={{ width: '100%' }} placeholder="Name" />
-              </Form.Item>
-              <Form.Item
-                name="surname"
-                noStyle
-                rules={[{ required: true, message: 'Please input surname!' }]}
-                style={{ margin: 0, flex: '50%' }}
-              >
-                <Input style={{ width: '100%' }} placeholder="Surname" />
-              </Form.Item>
-            </Space>
-          ) : dataIndex === 'department' ? (
-            <Space compact style={{ display: 'flex', width: '100%' }}>
-              <Form.Item
-                name="departmentId"
-                noStyle
-                rules={[{ required: true, message: 'Please input departmentId!' }]}
-                style={{ margin: 0, flex: '50%' }}
-              >
-                <Input style={{ width: '100%' }} placeholder="Department ID" />
-              </Form.Item>
-              <Form.Item
-                name="departmentName"
-                noStyle
-                rules={[{ required: true, message: 'Please input departmentName!' }]}
-                style={{ margin: 0, flex: '50%' }}
-              >
-                <Input style={{ width: '100%' }} placeholder="Department Name" />
-              </Form.Item>
-            </Space>
+        {editing ? (
+          <Form.Item
+            name={dataIndex}
+            style={{ margin: 0 }}
+            rules={[
+              {
+                required: true,
+                message: `Please Input ${title}!`,
+              },
+            ]}
+          >
+            {dataIndex === 'name' ? (
+              <Space compact style={{ display: 'flex', width: '100%' }}>
+                <Form.Item
+                  name="name"
+                  noStyle
+                  rules={[{ required: true, message: 'Please input name!' }]}
+                  style={{ margin: 0, flex: '50%' }}
+                >
+                  <Input style={{ width: '100%' }} placeholder="Name" />
+                </Form.Item>
+                <Form.Item
+                  name="surname"
+                  noStyle
+                  rules={[{ required: true, message: 'Please input surname!' }]}
+                  style={{ margin: 0, flex: '50%' }}
+                >
+                  <Input style={{ width: '100%' }} placeholder="Surname" />
+                </Form.Item>
+              </Space>
+            ) : dataIndex === 'department' ? (
+              <Space compact style={{ display: 'flex', width: '100%' }}>
+                <Form.Item
+                  name="departmentId"
+                  noStyle
+                  rules={[{ required: true, message: 'Please input departmentId!' }]}
+                  style={{ margin: 0, flex: '50%' }}
+                >
+                  <Input style={{ width: '100%' }} placeholder="Department ID" />
+                </Form.Item>
+                <Form.Item
+                  name="departmentName"
+                  noStyle
+                  rules={[{ required: true, message: 'Please input departmentName!' }]}
+                  style={{ margin: 0, flex: '50%' }}
+                >
+                  <Input style={{ width: '100%' }} placeholder="Department Name" />
+                </Form.Item>
+              </Space>
             ) : dataIndex === 'status' ? (
               <Select placeholder="Select Status" style={{ width: '100%' }}>
                 <Option value="Alta">Alta</Option>
@@ -106,30 +104,30 @@ const Users = () => {
                 <Option value="Baja Médica">Baja Médica</Option>
               </Select>
             ) : inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-            </td>
-          )
-        }
+          </Form.Item>
+        ) : (
+          children
+        )}
+      </td>
+    );
+  };
 
-        const [form] = Form.useForm()
-        const [editingKey, setEditingKey] = useState('')
-        const isEditing = (record) => record.key === editingKey
-        const edit = (record) => {
-          form.setFieldsValue({
-            name: '',
-            position: '',
-            address: '',
-            department: '',
-            ...record,
-          })
-          setEditingKey(record.key)
-  }
+  const [form] = Form.useForm();
+  const [editingKey, setEditingKey] = useState('');
+  const isEditing = (record) => record.key === editingKey;
+  const edit = (record) => {
+    form.setFieldsValue({
+      name: '',
+      position: '',
+      address: '',
+      department: '',
+      ...record,
+    });
+    setEditingKey(record.key);
+  };
   const cancel = () => {
-    setEditingKey('')
-  }
+    setEditingKey('');
+  };
   const save = async (key) => {
     try {
       const row = await form.validateFields();
@@ -138,7 +136,7 @@ const Users = () => {
         const updatedUser = { ...allUsers[index], ...row };
         const userId = updatedUser._id;
         const departmentId = updatedUser.departmentId; 
-        await updateUser(userId, { ...updatedUser, departmentId })
+        await updateUser(userId, { ...updatedUser, departmentId });
         const newData = [...allUsers];
         newData.splice(index, 1, updatedUser);
         setAllUsers(newData);
@@ -149,10 +147,10 @@ const Users = () => {
     }
   }
   const handleDelete = async (key) => {
-    const newData = allUsers.filter((item) => item.key !== key)
-    setAllUsers(newData)
-    refresh(!dummy)
-  }
+    const newData = allUsers.filter((item) => item.key !== key);
+    setAllUsers(newData);
+    refresh(!dummy);
+  };
 
   const columns = [
     {
@@ -165,6 +163,7 @@ const Users = () => {
           <img 
             src={record.profilePic} 
             alt="profile" 
+            draggable="false"
             style={{ 
               aspectRatio: '1/1', 
               objectFit: 'cover', 
@@ -205,7 +204,7 @@ const Users = () => {
       title: 'Editar',
       dataIndex: 'operation',
       render: (_, record) => {
-        const editable = isEditing(record)
+        const editable = isEditing(record);
         return editable ? (
           <span>
             <Typography.Link
@@ -224,7 +223,7 @@ const Users = () => {
           <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
             Edit
           </Typography.Link>
-        )
+        );
       },
     },
     {
@@ -237,11 +236,11 @@ const Users = () => {
           </Popconfirm>
         ) : null,
     },
-  ]
+  ];
 
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
-      return col
+      return col;
     }
     return {
       ...col,
@@ -252,27 +251,32 @@ const Users = () => {
         title: col.title,
         editing: isEditing(record),
       }),
-    }
-  })
+    };
+  });
 
   return (
-    <Form form={form} component={false}>
-      <Table
-        components={{
-          body: {
-            cell: EditableCell,
-          },
-        }}
-        bordered
-        dataSource={allUsers}
-        columns={mergedColumns}
-        rowClassName="editable-row"
-        pagination={{
-          onChange: cancel,
-        }}
+    <>
+      <TokenModal
+        visible={isModalVisible}
       />
-    </Form>
-  )
-}
+      <Form form={form} component={false}>
+        <Table
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          bordered
+          dataSource={allUsers}
+          columns={mergedColumns}
+          rowClassName="editable-row"
+          pagination={{
+            onChange: cancel,
+          }}
+        />
+      </Form>
+    </>
+  );
+};
 
-export default Users
+export default Users;

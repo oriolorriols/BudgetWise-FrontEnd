@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from "../../contexts/authContext"
 import { getOneUser, updateUser, updateUserPic } from '../../apiService/userApi'
-import { useNavigate } from 'react-router-dom'
+import { useAuth } from "../../contexts/authContext"
+import TokenModal from '../../components/modal/modalToken'
 import { UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import {
@@ -25,9 +25,9 @@ const formItemLayout = {
   },
 }
 
-const Perfil = () => {
-  const navigate = useNavigate()
-  const { userId, setLogOut } = useAuth()
+const Profile = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const { userId } = useAuth()
   const [user, setUser] = useState({})
   const [form] = Form.useForm()
   const [initialValues, setInitialValues] = useState({})
@@ -38,10 +38,8 @@ const Perfil = () => {
       const data = await getOneUser(userId)
       setUser(data)
       console.log(data)
-      if (data.error && data.error.name === "TokenExpiredError") {
-        alert("Token is expired. Please Log In again.")
-        setLogOut()
-        navigate('/login')
+      if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
+        setIsModalVisible(true)
       } else {
         if (data.profilePic === "" || !data.profilePic) data.profilePic = "/noProfilePic.jpg"
         const formValues = {
@@ -131,6 +129,9 @@ const Perfil = () => {
 
   return (
     <>
+      <TokenModal
+        visible={isModalVisible}
+      />
       <div className='mb-5'>
         <h2 className='font-medium text-2xl'>Hola, {user.name}!</h2>
       </div>
@@ -309,4 +310,4 @@ const Perfil = () => {
   )
 }
 
-export default Perfil
+export default Profile
