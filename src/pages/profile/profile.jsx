@@ -160,7 +160,6 @@ const Profile = () => {
             )}
           </div>
           <div className='mt-7 mb-2'>
-            <p className='text-ml font-bold text-center'>{user.profileType}</p>
             <p className='font-medium text-center'>{user.name} {user.surname}</p>
             <p className='text-center'>{user.email}</p>
             <p className='text-center'>{user.dni}</p>
