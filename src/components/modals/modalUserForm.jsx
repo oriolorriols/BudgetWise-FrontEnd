@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { updateUser } from '../../apiService/userApi'
-import { getDepartments } from '../../apiService/departmentApi'
 import dayjs from 'dayjs'
 import { Modal, Button, Form, Input, Select, Space, DatePicker, message } from 'antd'
 
@@ -14,25 +13,14 @@ const formItemLayout = {
   },
 }
 
-const UserFormModal = ({ user, visible, onCancel }) => {
+const UserFormModal = ({ user, visible, onCancel, departments }) => {
   const [form] = Form.useForm()
   const [initialValues, setInitialValues] = useState({})
-  const [departments, setDepartments] = useState()
 
-  const getDepartmentsData = async () => {
-    try {
-      const data = await getDepartments()
-      setDepartments(data)
-      console.log(data)
-    } catch (error) {
-      console.error("Failed to fetch departments data", error)
-    }
-  }
 
   useEffect(() => {
     if (user) {
       getUserData(user)
-      getDepartmentsData()
     }
   }, [user])
 
@@ -59,9 +47,6 @@ const UserFormModal = ({ user, visible, onCancel }) => {
   const onFinishData = async (values) => {
     try {
       const sanitizedValues = JSON.parse(JSON.stringify(values))
-      if(sanitizedValues.departmentId) {
-        delete sanitizedValues.departmentId
-      }
       console.log(sanitizedValues)
       await updateUser(user._id, sanitizedValues)
       await getUserData(values)
@@ -107,7 +92,13 @@ const UserFormModal = ({ user, visible, onCancel }) => {
             <Input />
           </Form.Item>
           <Form.Item className='w-full' name='departmentId' label='Departamento' rules={[{ message: 'Introduce tu departamento!' }]}>
-            <Input />
+            <Select>
+              {departments?.map(department => (
+                <Option key={department._id} value={department._id}>
+                  {department.departmentName}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item className='w-full' name='status' label='Estado' rules={[{ message: 'Selecciona un estado' }]}>
             <Select>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { getUsers } from '../../apiService/userApi'
+import { getDepartments } from '../../apiService/departmentApi'
 import { Form, Table, Typography } from 'antd'
 import TokenModal from '../../components/modals/modalToken'
 import UserFormModal  from '../../components/modals/modalUserForm'
@@ -7,35 +8,55 @@ import UserFormModal  from '../../components/modals/modalUserForm'
 const Users = () => {
   const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
   const [isModalEditUserVisible, setIsModalEditUserVisible] = useState(false)
+
   const [allUsers, setAllUsers] = useState([])
-  const [dummy, refresh] = useState(false)
+  const [departments, setDepartments] = useState()
+
   const [error, setError] = useState('')
+  
   const [selectedUser, setSelectedUser] = useState(null)
 
+
+  const getDepartmentsData = async () => {
+    try {
+      const data = await getDepartments()
+      if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
+        setIsModalTokenVisible(true)}
+      setDepartments(data)
+      console.log(data)
+    } catch (error) {
+      console.error("Failed to fetch departments data", error)
+    }
+  }
+
   const getAllUsers = async () => {
-    const data = await getUsers();
+    const data = await getUsers()
     if (data.length) {
       const usersWithDefaultPic = data.map(user => ({
         ...user,
         profilePic: user.profilePic || "/noProfilePic.jpg",
         key: user._id,
       }));
-      setAllUsers(usersWithDefaultPic);
-      console.log(usersWithDefaultPic);
+      setAllUsers(usersWithDefaultPic)
+      console.log(usersWithDefaultPic)
     } else {
       setError(data.msg);
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
         setIsModalTokenVisible(true);
       }
     }
-    refresh();
   };
 
   useEffect(() => {
     if (!isModalEditUserVisible) {
       getAllUsers();
     }
-  }, [dummy, isModalEditUserVisible]);
+  }, [isModalEditUserVisible]);
+
+  useEffect(() => {
+    getDepartmentsData()
+  }, [])
+
 
   const [form] = Form.useForm();
 
@@ -110,6 +131,7 @@ const Users = () => {
         visible={isModalEditUserVisible}
         user={selectedUser}
         onCancel={() => setIsModalEditUserVisible(false)}
+        departments={departments}
       />
       <Form form={form} component={false}>
         <Table
