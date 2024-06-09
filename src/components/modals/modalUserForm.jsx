@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { updateUser } from '../../apiService/userApi'
-import dayjs from 'dayjs'
-import { Modal, Button, Form, Input, Select, Space, DatePicker, message } from 'antd'
+import React, { useState, useEffect } from 'react';
+import { updateUser } from '../../apiService/userApi';
+import dayjs from 'dayjs';
+import { Modal, Button, Form, Input, Select, Space, DatePicker, message } from 'antd';
 
-const { Option } = Select
+const { Option } = Select;
 const formItemLayout = {
   labelCol: {
     span: 6,
@@ -11,18 +11,19 @@ const formItemLayout = {
   wrapperCol: {
     span: 14,
   },
-}
+};
 
 const UserFormModal = ({ user, visible, onCancel, departments }) => {
-  const [form] = Form.useForm()
-  const [initialValues, setInitialValues] = useState({})
-
+  const [form] = Form.useForm();
+  const [initialValues, setInitialValues] = useState({});
 
   useEffect(() => {
     if (user) {
-      getUserData(user)
+      getUserData(user);
+    } else {
+      form.resetFields();
     }
-  }, [user])
+  }, [user]);
 
   const getUserData = async (data) => {
     const formValues = {
@@ -34,46 +35,43 @@ const UserFormModal = ({ user, visible, onCancel, departments }) => {
       email: data.email,
       phoneNumber: data.phoneNumber,
       position: data.position,
-      departmentId: data.departmentId.departmentName,
+      departmentId: data.departmentId?._id,
       personalMail: data.personalMail,
       phoneExt: data.phoneExt,
       bankAccount: data.bankAccount,
       birthDate: data.birthDate ? dayjs(data.birthDate) : null,
-    }
-    setInitialValues(formValues)
-    form.setFieldsValue(formValues)
-  }
+    };
+    setInitialValues(formValues);
+    form.setFieldsValue(formValues);
+  };
 
   const onFinishData = async (values) => {
     try {
-      const sanitizedValues = JSON.parse(JSON.stringify(values))
-      console.log(sanitizedValues)
-      await updateUser(user._id, sanitizedValues)
-      await getUserData(values)
-      message.success('User data updated successfully!')
-      onCancel()
+      const sanitizedValues = JSON.parse(JSON.stringify(values));
+      console.log(sanitizedValues);
+      await updateUser(user._id, sanitizedValues);
+      message.success('User data updated successfully!');
+      onCancel();
     } catch (error) {
-      message.error('Failed to update user data')
-      console.error(error)
+      message.error('Failed to update user data');
+      console.error(error);
     }
-  }
+  };
 
-  const dateFormat = 'YYYY/MM/DD'
+  const dateFormat = 'YYYY/MM/DD';
 
   const handleReset = () => {
-    form.setFieldsValue(initialValues)
-  }
+    form.setFieldsValue(initialValues);
+  };
 
   return (
-    <>
-      <Modal
-        title={<h3 style={{ fontSize: '20px' }}>Datos de {user?.name}</h3>}
-        open={visible}
-        onCancel={onCancel}
-        footer={null}
-        width={700}
-      >
-
+    <Modal
+      title={<h3 style={{ fontSize: '20px' }}>{user ? `Datos de ${user.name} ${user.surname}` : 'Añadir Nuevo Usuario'}</h3>}
+      open={visible}
+      onCancel={onCancel}
+      footer={null}
+      width={700}
+    >
       <div className='flex mt-5'>
         <Form form={form} name='validate_other' {...formItemLayout} onFinish={onFinishData} style={{ width: 700 }}>
           <Form.Item className='w-full' name='name' label='Nombre' rules={[{ required: true, message: 'Introduce tu nombre!' }]}>
@@ -91,7 +89,7 @@ const UserFormModal = ({ user, visible, onCancel, departments }) => {
           <Form.Item className='w-full' name='position' label='Posición' rules={[{ message: 'Introduce tu posición!' }]}>
             <Input />
           </Form.Item>
-          <Form.Item className='w-full' name='departmentId' label='Departamento' rules={[{ message: 'Introduce tu departamento!' }]}>
+          <Form.Item className='w-full' name='departmentId' label='Departamento' rules={[{ required: true, message: 'Selecciona un departamento' }]}>
             <Select>
               {departments?.map(department => (
                 <Option key={department._id} value={department._id}>
@@ -100,7 +98,7 @@ const UserFormModal = ({ user, visible, onCancel, departments }) => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item className='w-full' name='status' label='Estado' rules={[{ message: 'Selecciona un estado' }]}>
+          <Form.Item className='w-full' name='status' label='Estado' rules={[{ required: true, message: 'Selecciona un estado' }]}>
             <Select>
               <Option value='Alta'>Alta</Option>
               <Option value='Baja'>Baja</Option>
@@ -110,7 +108,6 @@ const UserFormModal = ({ user, visible, onCancel, departments }) => {
           <Form.Item label='Dirección' name='address' rules={[{ message: 'Introduce una dirección!' }]}>
             <Input />
           </Form.Item>
-
           <Form.Item label='E-mail Personal' name='personalMail'>
             <Input />
           </Form.Item>
@@ -123,15 +120,13 @@ const UserFormModal = ({ user, visible, onCancel, departments }) => {
           <Form.Item label='IBAN' name='bankAccount'>
             <Input />
           </Form.Item>
-
           <Form.Item label='Fecha de Nacimiento' name='birthDate'>
             <DatePicker format={dateFormat} />
           </Form.Item>
-
           <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
             <Space>
               <Button type='primary' htmlType='submit'>
-                Actualizar
+                {user ? 'Actualizar' : 'Añadir'}
               </Button>
               <Button htmlType='button' onClick={handleReset}>
                 Restablecer
@@ -140,10 +135,8 @@ const UserFormModal = ({ user, visible, onCancel, departments }) => {
           </Form.Item>
         </Form>
       </div>
+    </Modal>
+  );
+};
 
-      </Modal>
-    </>
-  )
-}
-
-export default UserFormModal
+export default UserFormModal;
