@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getOneUser, updateUser, updateUserPic } from '../../apiService/userApi'
 import { useAuth } from "../../contexts/authContext"
-import TokenModal from '../../components/modal/modalToken'
+import TokenModal from '../../components/modals/modalToken'
 import { UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import {

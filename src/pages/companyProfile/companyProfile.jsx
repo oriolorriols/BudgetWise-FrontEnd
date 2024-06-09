@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from "../../contexts/authContext"
-import TokenModal from '../../components/modal/modalToken'
+import TokenModal from '../../components/modals/modalToken'
 import { getOneUser } from '../../apiService/userApi'
 import { getCompany, updateCompany, updateCompanyLogo } from '../../apiService/companyApi'
 import { UploadOutlined } from '@ant-design/icons'

@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react"
-import { updateUser, getUsers } from '../../apiService/userApi'
-import { Form, Input, InputNumber, Popconfirm, Table, Typography, Space, Select } from 'antd'
-import TokenModal from '../../components/modal/modalToken'
-
-const { Option } = Select;
+import { getUsers } from '../../apiService/userApi'
+import { Form, Table, Typography } from 'antd'
+import TokenModal from '../../components/modals/modalToken'
+import UserFormModal  from '../../components/modals/modalUserForm'
 
 const Users = () => {
   const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
-
+  const [isModalEditUserVisible, setIsModalEditUserVisible] = useState(false)
   const [allUsers, setAllUsers] = useState([])
   const [dummy, refresh] = useState(false)
   const [error, setError] = useState('')
+  const [selectedUser, setSelectedUser] = useState(null)
 
   const getAllUsers = async () => {
     const data = await getUsers();
@@ -35,121 +35,11 @@ const Users = () => {
     getAllUsers();
   }, [dummy]);
 
-  const EditableCell = ({
-    editing,
-    dataIndex,
-    title,
-    inputType,
-    record,
-    index,
-    children,
-    ...restProps
-  }) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-    return (
-      <td {...restProps}>
-        {editing ? (
-          <Form.Item
-            name={dataIndex}
-            style={{ margin: 0 }}
-            rules={[
-              {
-                required: true,
-                message: `Please Input ${title}!`,
-              },
-            ]}
-          >
-            {dataIndex === 'name' ? (
-              <Space compact style={{ display: 'flex', width: '100%' }}>
-                <Form.Item
-                  name="name"
-                  noStyle
-                  rules={[{ required: true, message: 'Please input name!' }]}
-                  style={{ margin: 0, flex: '50%' }}
-                >
-                  <Input style={{ width: '100%' }} placeholder="Name" />
-                </Form.Item>
-                <Form.Item
-                  name="surname"
-                  noStyle
-                  rules={[{ required: true, message: 'Please input surname!' }]}
-                  style={{ margin: 0, flex: '50%' }}
-                >
-                  <Input style={{ width: '100%' }} placeholder="Surname" />
-                </Form.Item>
-              </Space>
-            ) : dataIndex === 'department' ? (
-              <Space compact style={{ display: 'flex', width: '100%' }}>
-                <Form.Item
-                  name="departmentId"
-                  noStyle
-                  rules={[{ required: true, message: 'Please input departmentId!' }]}
-                  style={{ margin: 0, flex: '50%' }}
-                >
-                  <Input style={{ width: '100%' }} placeholder="Department ID" />
-                </Form.Item>
-                <Form.Item
-                  name="departmentName"
-                  noStyle
-                  rules={[{ required: true, message: 'Please input departmentName!' }]}
-                  style={{ margin: 0, flex: '50%' }}
-                >
-                  <Input style={{ width: '100%' }} placeholder="Department Name" />
-                </Form.Item>
-              </Space>
-            ) : dataIndex === 'status' ? (
-              <Select placeholder="Select Status" style={{ width: '100%' }}>
-                <Option value="Alta">Alta</Option>
-                <Option value="Baja">Baja</Option>
-                <Option value="Baja Médica">Baja Médica</Option>
-              </Select>
-            ) : inputNode}
-          </Form.Item>
-        ) : (
-          children
-        )}
-      </td>
-    );
-  };
-
   const [form] = Form.useForm();
-  const [editingKey, setEditingKey] = useState('');
-  const isEditing = (record) => record.key === editingKey;
-  const edit = (record) => {
-    form.setFieldsValue({
-      name: '',
-      position: '',
-      address: '',
-      department: '',
-      ...record,
-    });
-    setEditingKey(record.key);
-  };
-  const cancel = () => {
-    setEditingKey('');
-  };
-  const save = async (key) => {
-    try {
-      const row = await form.validateFields();
-      const index = allUsers.findIndex((item) => key === item.key);
-      if (index > -1) {
-        const updatedUser = { ...allUsers[index], ...row };
-        const userId = updatedUser._id;
-        const departmentId = updatedUser.departmentId; 
-        await updateUser(userId, { ...updatedUser, departmentId });
-        const newData = [...allUsers];
-        newData.splice(index, 1, updatedUser);
-        setAllUsers(newData);
-        setEditingKey('');
-      }
-    } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
-    }
-  }
-  const handleDelete = async (key) => {
-    const newData = allUsers.filter((item) => item.key !== key);
-    setAllUsers(newData);
-    refresh(!dummy);
+
+  const handleEdit = (record) => {
+    setSelectedUser(record);
+    setIsModalEditUserVisible(true);
   };
 
   const columns = [
@@ -203,80 +93,32 @@ const Users = () => {
     {
       title: 'Editar',
       dataIndex: 'operation',
-      render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <span>
-            <Typography.Link
-              onClick={() => save(record.key)}
-              style={{
-                marginRight: 8,
-              }}
-            >
-              Save
-            </Typography.Link>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
-            </Popconfirm>
-          </span>
-        ) : (
-          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-            Edit
-          </Typography.Link>
-        );
-      },
-    },
-    {
-      title: 'Delete',
-      dataIndex: 'operation',
-      render: (_, record) =>
-        allUsers.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-            <a>Delete</a>
-          </Popconfirm>
-        ) : null,
+      render: (_, record) => (
+        <Typography.Link onClick={() => handleEdit(record)}>
+          Editar
+        </Typography.Link>
+      ),
     },
   ];
 
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(record),
-      }),
-    };
-  });
-
   return (
     <>
-      <TokenModal
-        visible={isModalTokenVisible}
+      <TokenModal visible={isModalTokenVisible} />
+      <UserFormModal
+        visible={isModalEditUserVisible}
+        setVisible={setIsModalEditUserVisible}
+        user={selectedUser}
+        onCancel={() => setIsModalEditUserVisible(false)}
+        onOk={() => setIsModalEditUserVisible(false)}
       />
       <Form form={form} component={false}>
         <Table
-          components={{
-            body: {
-              cell: EditableCell,
-            },
-          }}
-          bordered
           dataSource={allUsers}
-          columns={mergedColumns}
-          rowClassName="editable-row"
-          pagination={{
-            onChange: cancel,
-          }}
+          columns={columns}
         />
       </Form>
     </>
-  );
-};
+  )
+}
 
-export default Users;
+export default Users
