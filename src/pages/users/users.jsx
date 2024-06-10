@@ -144,9 +144,15 @@ const Users = () => {
 
   return (
     <>
-      <Button type="primary" onClick={handleAddUser}>
-        Añadir Usuario
-      </Button>
+      <div>
+        <h2 className="text-xl font-bold">Lista de Empleados</h2>
+      </div>
+      <div className="flex justify-end">
+        <Button className="mb-9" type="primary" onClick={handleAddUser}>
+          Añadir Usuario
+        </Button>
+      </div>
+
       <TokenModal visible={isModalTokenVisible} />
       <UserFormModal
         visible={isModalUserVisible}
