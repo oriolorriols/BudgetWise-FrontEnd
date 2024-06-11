@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
-import { getUsers, updateUser, createUser } from '../../apiService/userApi'
+import { getUsers } from '../../apiService/userApi'
 import { getDepartments } from '../../apiService/departmentApi'
-import { Form, Table, Typography, Button, message } from 'antd'
+import { Form, Table, Typography, Button, Space, Input } from 'antd'
 import TokenModal from '../../components/modals/modalToken'
 import UserFormModal from '../../components/modals/modalUserForm'
 
@@ -9,9 +9,12 @@ const Users = () => {
   const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
   const [isModalUserVisible, setIsModalUserVisible] = useState(false)
   const [allUsers, setAllUsers] = useState([])
-  const [company, setComapny] = useState()
+  const [company, setCompany] = useState()
   const [departments, setDepartments] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
+
+  const [filtering, setFiltering] = useState([])
+  const [searchValue, setSearchValue] = useState('')
 
   const checkTokenValidity = () => {
     const token = localStorage.getItem("access_token")
@@ -48,8 +51,8 @@ const Users = () => {
           key: user._id,
         }))
         setAllUsers(usersWithDefaultPic)
-        const companyName = data[0].companyId._id
-        setComapny(companyName)
+        const companyName = data[0]?.companyId?._id || null
+        setCompany(companyName)
         console.log(usersWithDefaultPic)
       }
     } catch (error) {
@@ -62,6 +65,13 @@ const Users = () => {
       getAllUsers()
     }
   }, [isModalUserVisible])
+
+
+  useEffect(() => {
+    if(filtering) {
+      onSearch(searchValue)
+    }
+  }, [allUsers])
 
   useEffect(() => {
     getDepartmentsData()
@@ -88,11 +98,28 @@ const Users = () => {
     setSelectedUser(null)
   }
 
+  const { Search } = Input
+
+  const onSearch = (value) => {
+    setSearchValue(value)
+    const filteredData = allUsers.filter(user => {
+      const nameMatch = user.name?.toLowerCase().includes(value.toLowerCase())
+      const positionMatch = user.position?.toLowerCase().includes(value.toLowerCase())
+      const phoneExtMatch = user.phoneExt?.toLowerCase().includes(value.toLowerCase())
+      const departmentMatch = user.departmentId?.departmentName?.toLowerCase().includes(value.toLowerCase())
+      const statusMatch = user.status?.toLowerCase().includes(value.toLowerCase())
+      const dniMatch = user.dni?.toLowerCase().includes(value.toLowerCase())
+      return nameMatch || positionMatch || phoneExtMatch || departmentMatch || statusMatch || dniMatch
+    })
+    setFiltering(filteredData)
+  }
+
   const columns = [
     {
       title: 'Nombre',
       dataIndex: 'name',
       width: '15%',
+      sorter: (a, b) => (a.name || "").localeCompare(b.name || ""),
       render: (text, record) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <img 
@@ -114,26 +141,42 @@ const Users = () => {
     {
       title: 'Posición',
       dataIndex: 'position',
-      width: '20%',
+      width: '12%',
+      sorter: (a, b) => (a.position || "").localeCompare(b.position || ""),
     },
     {
-      title: 'Dirección',
-      dataIndex: 'address',
-      width: '20%',
+      title: 'Email',
+      dataIndex: 'email',
+      width: '17%',
+      sorter: (a, b) => (a.email || "").localeCompare(b.email || ""),
+    },
+    {
+      title: 'Extensión',
+      dataIndex: 'phoneExt',
+      width: '5%',
+      sorter: (a, b) => (a.phoneExt || "").localeCompare(b.phoneExt || ""),
     },
     {
       title: 'Departamento',
       dataIndex: ['departmentId', 'departmentName'],
-      width: '20%',
+      width: '15%',
+      sorter: (a, b) => (a.departmentId?.departmentName || "").localeCompare(b.departmentId?.departmentName || ""),
     },
     {
       title: 'Situación',
       dataIndex: 'status',
       width: '10%',
+      sorter: (a, b) => (a.status || "").localeCompare(b.status || ""),
+    },
+    {
+      title: 'DNI',
+      dataIndex: 'dni',
+      width: '10%',
     },
     {
       title: 'Editar',
       dataIndex: 'operation',
+      width: '10%',
       render: (_, record) => (
         <Typography.Link onClick={() => handleEdit(record)}>
           Editar
@@ -147,10 +190,20 @@ const Users = () => {
       <div>
         <h2 className="text-xl font-bold">Lista de Empleados</h2>
       </div>
-      <div className="flex justify-end">
-        <Button className="mb-9" type="primary" onClick={handleAddUser}>
-          Añadir Usuario
+      
+      <div className="flex justify-between my-5">
+        <Button className="" type="primary" onClick={handleAddUser}>
+            Añadir Usuario
         </Button>
+        <Space direction="vertical">
+          <Search
+              placeholder="Buscar texto..."
+              allowClear
+              enterButton="Buscar"
+              size="large"
+              onSearch={onSearch}
+          />
+        </Space> 
       </div>
 
       <TokenModal visible={isModalTokenVisible} />
@@ -163,7 +216,7 @@ const Users = () => {
       />
       <Form form={form} component={false}>
         <Table
-          dataSource={allUsers}
+          dataSource={filtering.length > 0 ? filtering : allUsers}
           columns={columns}
         />
       </Form>

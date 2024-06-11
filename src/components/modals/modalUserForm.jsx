@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { updateUser, createUser } from '../../apiService/userApi';
+import { updateUser, createUser, deleteUser } from '../../apiService/userApi';
 import dayjs from 'dayjs';
-import { Modal, Button, Form, Input, Select, Space, DatePicker, message } from 'antd';
+import { Modal, Button, Form, Input, Select, Space, DatePicker, message, Popconfirm } from 'antd';
 
 const { Option } = Select;
 const formItemLayout = {
@@ -59,9 +59,20 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
           password: "perro123", 
           companyId: companyId
         } 
-        console.log(newValues)
-        await createUser(newValues);
-        message.success('User created successfully!');
+        try {
+          const response = await createUser(newValues)
+          if(response.error !== "")
+            if(response.error.includes('email')){
+              message.error('El correo ya esta registrado')
+              console.error(response.error)
+            }
+            else {
+              message.error('No se ha podido crear el usuario, comprueba que los datos sean únicos!')
+              console.error(response.error)
+            }
+        } catch (error) {
+          message.error(error)
+        }
       }
       onCancel();
     } catch (error) {
@@ -69,6 +80,21 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
       console.error(error);
     }
   };
+
+  const cancelDeleteUser = (e) => {
+  }
+  const confirmDeleteUser = async (e) => {
+    try {
+      if(user) {
+        await deleteUser(user._id)
+        message.success('Usuario borrado correctamente')
+        onCancel()
+      }
+    } catch (error) {
+      message.error('Algo ha fallado :/');
+      console.error(error)
+    }
+  }
 
   const dateFormat = 'YYYY/MM/DD';
 
@@ -135,6 +161,7 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
           <Form.Item label='Fecha de Nacimiento' name='birthDate'>
             <DatePicker format={dateFormat} />
           </Form.Item>
+
           <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
             <Space>
               <Button type='primary' htmlType='submit'>
@@ -143,6 +170,20 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
               <Button htmlType='button' onClick={handleReset}>
                 Restablecer
               </Button>
+              {user ? (
+                  <Popconfirm
+                  title="Delete the task"
+                  description="Are you sure to delete this task?"
+                  onConfirm={confirmDeleteUser}
+                  onCancel={cancelDeleteUser}
+                  okText="Yes"
+                  cancelText="No"
+                  >
+                  <Button danger>
+                    Eliminar
+                  </Button>
+                  </Popconfirm>
+                ) : ''}
             </Space>
           </Form.Item>
         </Form>
