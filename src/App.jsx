@@ -24,7 +24,7 @@ import { Register } from "./pages/register/register"
 
 function App() {
 
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isHR } = useAuth()
 
   return (
     <>
@@ -35,7 +35,7 @@ function App() {
           <Route element={<PrivateRoutes/>}>
               <Route path='/' element={<Home/>}>
                   <Route path='/' element={<DashBoard/>}/>
-                  <Route path='/usuarios' element={<Users/>}/>
+                  {isHR === 'HR' ? <Route path="/usuarios" element={<Users />} /> : null}
                   <Route path='/calendario' element={<Calendario/>}/>
                   <Route path='/objetivos' element={<Objetivos/>}/>
                   <Route path='/perfil' element={<Profile/>}/>

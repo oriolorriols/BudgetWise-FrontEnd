@@ -79,19 +79,24 @@ const items = [
 const SideBar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate()
-  const { setLogOut } = useAuth()
+  const { setLogOut, isHR } = useAuth()
 
+  const filteredItems = items.filter(item => {
+    if (isHR !== 'HR' && item.key === '/usuarios') {
+      return false
+    }
+    return true
+  })
 
   return (
   <div className='sidebar h-screen sticky top-0'>
     <Sider trigger={null} collapsible collapsed={collapsed} className={`h-full pt-10 ${collapsed ? '' : 'mr-8'} `}>
       <div className={`${collapsed ? 'nav-logo-collapsed ml-4' : 'nav-logo ml-7'}`}/>
-
         <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={['1']}
-          items={items}
+          items={filteredItems}
           onClick={({key}) => {
             if (key === '/logout') {
             setLogOut()
