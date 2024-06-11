@@ -82,11 +82,11 @@ const SideBar = () => {
   const { setLogOut, isHR } = useAuth()
 
   const filteredItems = items.filter(item => {
-    if (isHR !== 'HR' && item.key === '/usuarios') {
-      return false
+    if (isHR !== 'HR' && (item.key === '/usuarios')) {
+      return false;
     }
-    return true
-  })
+    return true;
+  });
 
   return (
   <div className='sidebar h-screen sticky top-0'>

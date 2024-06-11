@@ -4,6 +4,7 @@ import TokenModal from '../../components/modals/modalToken'
 import { getOneUser } from '../../apiService/userApi'
 import { getCompany, updateCompany, updateCompanyLogo } from '../../apiService/companyApi'
 import { UploadOutlined } from '@ant-design/icons'
+import './companyProfile.scss'
 import {
   Button,
   Form,
@@ -26,7 +27,7 @@ const formItemLayout = {
 
 const CompanyProfile = () => {
   const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
-  const { userId } = useAuth()
+  const { userId, isHR } = useAuth()
   const [ companyData, setCompanyData] = useState({})
   const [form] = Form.useForm()
   const [initialValues, setInitialValues] = useState({})
@@ -48,7 +49,8 @@ const CompanyProfile = () => {
           companyPostalCode: company.companyPostalCode,
           companyPlan: company.companyPlan,
           companyCountry: company.companyCountry,
-          companyAddress: company.companyAddress
+          companyAddress: company.companyAddress,
+          companyNIF: company.companyNIF
         }
         setInitialValues(formValues)
         form.setFieldsValue(formValues)
@@ -107,7 +109,6 @@ const CompanyProfile = () => {
     fileList,
   }
 
-
   const handleReset = () => {
     form.setFieldsValue(initialValues)
   }
@@ -123,28 +124,32 @@ const CompanyProfile = () => {
       </div>
       <div className='flex'>
         <div className='bg-green-200 rounded-lg max-w-72 h-fit p-5 mr-10'>
+        <div className="mt-2 mb-5">
+            <p className='text-xl font-bold text-center'>{companyData.companyName}</p>
+            <p className='text-lg font-medium text-center'>{companyData.companyNIF}</p>
+          </div>
           <div className='overflow-hidden rounded-full'>
             <img className='aspect-square object-cover' src={companyData.companyLogo} alt="" />
           </div>
-          <div className='text-center mt-4'>
-            <Upload {...props}>
-              <Button icon={<UploadOutlined />}>Selecciona tu logotipo</Button>
-            </Upload>
-            {fileList.length > 0 && (
-              <Button
-                type="primary"
-                onClick={handleUpload}
-                loading={uploading}
-                style={{ marginTop: 16 }}
-              >
-                {uploading ? 'Subiendo' : 'Actualizar'}
-              </Button>
-            )}
-          </div>
+          {isHR === 'HR' ? 
+           <div className='text-center mt-4'>
+           <Upload {...props}>
+             <Button icon={<UploadOutlined />}>Selecciona tu logotipo</Button>
+           </Upload>
+           {fileList.length > 0 && (
+             <Button
+               type="primary"
+               onClick={handleUpload}
+               loading={uploading}
+               style={{ marginTop: 16 }}
+             >
+               {uploading ? 'Subiendo' : 'Actualizar'}
+             </Button>
+           )}
+         </div> 
+         : null }
+         
           <div className='mt-5 mb-2'>
-            <p className='font-bold text-center'>{companyData.companyName}</p>
-            <p className='text-center'>{companyData.companyCity}</p>
-            <p className='text-center'>{companyData.companyCountry}</p>
           </div>
         </div>
         <Form
@@ -159,53 +164,61 @@ const CompanyProfile = () => {
             className='w-full'
             name="companyName"
             label="Nombre"
-            rules={[{ required: true, message: 'Introduce el nombre!' }]}
+            rules={[{ required: isHR === 'HR', message: 'Introduce el nombre!' }]}
           >
-            <Input />
+            <Input disabled={isHR !== 'HR'} />
+          </Form.Item>
+          <Form.Item
+            className='w-full'
+            name="companyNIF"
+            label="NIF"
+            rules={[{ required: isHR === 'HR', message: 'Introduce el nombre!' }]}
+          >
+            <Input disabled={isHR !== 'HR'} />
           </Form.Item>
           <Form.Item
             className='w-full'
             name="companyCountry"
             label="País"
-            rules={[{ required: true, message: 'Introduce el país!' }]}
+            rules={[{ required: isHR === 'HR', message: 'Introduce el país!' }]}
           >
-            <Input />
+            <Input disabled={isHR !== 'HR'} />
           </Form.Item>
           <Form.Item
             className='w-full'
             name="companyCity"
             label="Ciudad"
-            rules={[{ required: true, message: 'Introduce la ciudad!' }]}
+            rules={[{ required: isHR === 'HR', message: 'Introduce la ciudad!' }]}
           >
-            <Input />
+            <Input disabled={isHR !== 'HR'} />
           </Form.Item>
           <Form.Item
             className='w-full'
             name="companyAddress"
             label="Dirección"
-            rules={[{ required: true, message: 'Introduce la dirección!' }]}
+            rules={[{ required: isHR === 'HR', message: 'Introduce la dirección!' }]}
           >
-            <Input />
+            <Input disabled={isHR !== 'HR'} />
           </Form.Item>
           <Form.Item
             className='w-full'
             name="companyPostalCode"
             label="Codigo Postal"
-            rules={[{ required: true, message: 'Introduce el codigo postal!' }]}
+            rules={[{ required: isHR === 'HR', message: 'Introduce el codigo postal!' }]}
           >
-            <Input />
+            <Input disabled={isHR !== 'HR'} />
           </Form.Item>
   
           <Form.Item
             label="Teléfono"
             name="companyPhone"
-            rules={[{ required: true, message: 'Introduce el teléfono' }]}
+            rules={[{ required: isHR === 'HR', message: 'Introduce el teléfono' }]}
           >
-            <Input />
+            <Input disabled={isHR !== 'HR'} />
           </Form.Item>
 
-
-          <Form.Item
+          {isHR !== 'HR' ? null :
+            <Form.Item
             className='w-full'
             name="companyPlan"
             label="Plan"
@@ -217,18 +230,21 @@ const CompanyProfile = () => {
               <Option value="Large">Gran Empresa (+150)</Option>
             </Select>
           </Form.Item>
+          }
 
-            
-          <Form.Item
-            wrapperCol={{ span: 12, offset: 6 }}
-          >
-            <Space>
-              <Button type="primary" htmlType="submit">
-                Actualizar
-              </Button>
-              <Button htmlType="button" onClick={handleReset}>Restablecer</Button>
-            </Space>
-          </Form.Item>
+          {isHR !== 'HR' ? null : 
+            <Form.Item
+              wrapperCol={{ span: 12, offset: 6 }}
+            >
+              <Space>
+                <Button type="primary" htmlType="submit">
+                  Actualizar
+                </Button>
+                <Button htmlType="button" onClick={handleReset}>Restablecer</Button>
+              </Space>
+            </Form.Item>
+          }
+          
         </Form>
       </div>
     </>
