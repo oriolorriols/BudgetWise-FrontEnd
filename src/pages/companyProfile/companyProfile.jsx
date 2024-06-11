@@ -124,11 +124,7 @@ const CompanyProfile = () => {
       </div>
       <div className='flex'>
         <div className='bg-green-200 rounded-lg max-w-72 h-fit p-5 mr-10'>
-        <div className="mt-2 mb-5">
-            <p className='text-xl font-bold text-center'>{companyData.companyName}</p>
-            <p className='text-lg font-medium text-center'>{companyData.companyNIF}</p>
-          </div>
-          <div className='overflow-hidden rounded-full'>
+          <div className='overflow-hidden rounded-full mt-3'>
             <img className='aspect-square object-cover' src={companyData.companyLogo} alt="" />
           </div>
           {isHR === 'HR' ? 
@@ -150,6 +146,8 @@ const CompanyProfile = () => {
          : null }
          
           <div className='mt-5 mb-2'>
+            <p className='text-xl font-bold text-center'>{companyData.companyName}</p>
+            <p className='text-lg font-medium text-center'>{companyData.companyNIF}</p>
           </div>
         </div>
         <Form
