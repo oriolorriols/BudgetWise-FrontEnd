@@ -85,10 +85,16 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
   }
   const confirmDeleteUser = async (e) => {
     try {
+      if(user.profileType === "HR"){
+        message.error('No puedes eliminar un usuario de este rango.')
+        onCancel()
+        return
+      }
       if(user) {
         await deleteUser(user._id)
         message.success('Usuario borrado correctamente')
         onCancel()
+        return
       }
     } catch (error) {
       message.error('Algo ha fallado :/');

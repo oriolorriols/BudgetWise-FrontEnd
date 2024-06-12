@@ -29,6 +29,13 @@ const Login = () => {
                         errors: [response.msg],
                     },
                 ]);
+            } else if (response.msg === "Tu correo ya no esta activo.") {
+                form.setFields([
+                    {
+                        name: 'username',
+                        errors: [response.msg],
+                    },
+                ]);
             } else if (response.msg === "Contraseña incorrecta") {
                 form.setFields([
                     {
