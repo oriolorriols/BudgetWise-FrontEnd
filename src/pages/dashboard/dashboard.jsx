@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useAuth } from "../../contexts/authContext"
 import { getOneUser } from '../../apiService/userApi'
 import TokenModal from '../../components/modals/modalToken'
-import { Flex, Progress, Modal } from 'antd'
+import ExpenseModal from '../../components/modals/modalExpenses'
+import { Flex, Progress, Button, Modal } from 'antd'
 
 const Dashboard = () => {
   const { userId } = useAuth()
   const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
+  const [isModalExpensesVisible, setModalExpensesVisible] = useState(false)
   const [user, setUser] = useState(null)
 
   const getUserData = async () => {
@@ -35,8 +37,12 @@ const Dashboard = () => {
       <TokenModal
         visible={isModalTokenVisible}
       />
+      <ExpenseModal 
+        visible={isModalExpensesVisible}
+        onCancel={() => setModalExpensesVisible(false)}/>
       <div>
-      <h2 className='font-medium text-2xl'>Hola, {user?.name}!</h2>
+        <h2 className='font-medium text-2xl'>Hola, {user?.name}!</h2>
+        <Button onClick={() => setModalExpensesVisible(true)} >Añadir gasto</Button>
       </div>
 
       <div className='flex'>
@@ -66,6 +72,7 @@ const Dashboard = () => {
         </div>
 
       </div>
+
 
 
 

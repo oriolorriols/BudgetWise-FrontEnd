@@ -124,9 +124,6 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
           <Form.Item className='w-full' name='dni' label='DNI' rules={[{ required: true, message: 'Introduce tu DNI!' }]}>
             <Input />
           </Form.Item>
-          <Form.Item className='w-full' name='position' label='Posición' rules={[{ message: 'Introduce tu posición!' }]}>
-            <Input />
-          </Form.Item>
           <Form.Item className='w-full' name='departmentId' label='Departamento' rules={[{ required: true, message: 'Selecciona un departamento' }]}>
             <Select>
               {departments?.map(department => (
@@ -142,6 +139,9 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
               <Option value='Baja'>Baja</Option>
               <Option value='Baja medica'>Baja medica</Option>
             </Select>
+          </Form.Item>
+          <Form.Item className='w-full' name='position' label='Posición' rules={[{ message: 'Introduce tu posición!' }]}>
+            <Input />
           </Form.Item>
           <Form.Item label='Dirección' name='address' rules={[{ message: 'Introduce una dirección!' }]}>
             <Input />

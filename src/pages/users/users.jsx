@@ -139,11 +139,12 @@ const Users = () => {
       ),
     },
     {
-      title: 'Posición',
-      dataIndex: 'position',
+      title: 'Departamento',
+      dataIndex: ['departmentId', 'departmentName'],
       width: '12%',
-      sorter: (a, b) => (a.position || "").localeCompare(b.position || ""),
+      sorter: (a, b) => (a.departmentId?.departmentName || "").localeCompare(b.departmentId?.departmentName || ""),
     },
+
     {
       title: 'Email',
       dataIndex: 'email',
@@ -157,10 +158,10 @@ const Users = () => {
       sorter: (a, b) => (a.phoneExt || "").localeCompare(b.phoneExt || ""),
     },
     {
-      title: 'Departamento',
-      dataIndex: ['departmentId', 'departmentName'],
+      title: 'Posición',
+      dataIndex: 'position',
       width: '15%',
-      sorter: (a, b) => (a.departmentId?.departmentName || "").localeCompare(b.departmentId?.departmentName || ""),
+      sorter: (a, b) => (a.position || "").localeCompare(b.position || ""),
     },
     {
       title: 'Situación',
