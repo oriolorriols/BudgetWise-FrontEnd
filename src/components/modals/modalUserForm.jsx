@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { updateUser, createUser, deleteUser } from '../../apiService/userApi';
-import dayjs from 'dayjs';
-import { Modal, Button, Form, Input, Select, Space, DatePicker, message, Popconfirm } from 'antd';
+import React, { useState, useEffect } from 'react'
+import { updateUser, createUser, deleteUser } from '../../apiService/userApi'
+import dayjs from 'dayjs'
+import { Modal, Button, Form, Input, Select, Space, DatePicker, message, Popconfirm } from 'antd'
 
-const { Option } = Select;
+const { Option } = Select
 const formItemLayout = {
   labelCol: {
     span: 6,
@@ -11,19 +11,19 @@ const formItemLayout = {
   wrapperCol: {
     span: 14,
   },
-};
+}
 
 const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
-  const [form] = Form.useForm();
-  const [initialValues, setInitialValues] = useState({});
+  const [form] = Form.useForm()
+  const [initialValues, setInitialValues] = useState({})
 
   useEffect(() => {
     if (user) {
-      getUserData(user);
+      getUserData(user)
     } else {
-      form.resetFields();
+      form.resetFields()
     }
-  }, [user]);
+  }, [user])
 
   const getUserData = async (data) => {
     const formValues = {
@@ -40,18 +40,18 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
       phoneExt: data.phoneExt,
       bankAccount: data.bankAccount,
       birthDate: data.birthDate ? dayjs(data.birthDate) : null,
-    };
-    setInitialValues(formValues);
-    form.setFieldsValue(formValues);
-  };
+    }
+    setInitialValues(formValues)
+    form.setFieldsValue(formValues)
+  }
 
   const onFinishData = async (values) => {
     try {
       const sanitizedValues = JSON.parse(JSON.stringify(values))
       if(user) {
-        console.log(sanitizedValues);
-        await updateUser(user._id, sanitizedValues);
-        message.success('User data updated successfully!');
+        console.log(sanitizedValues)
+        await updateUser(user._id, sanitizedValues)
+        message.success('User data updated successfully!')
       } else {
         const newValues = {
           ...sanitizedValues, 
@@ -74,12 +74,12 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
           message.error(error)
         }
       }
-      onCancel();
+      onCancel()
     } catch (error) {
-      message.error('Failed to update user data');
-      console.error(error);
+      message.error('Failed to update user data')
+      console.error(error)
     }
-  };
+  }
 
   const cancelDeleteUser = (e) => {
   }
@@ -97,16 +97,16 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
         return
       }
     } catch (error) {
-      message.error('Algo ha fallado :/');
+      message.error('Algo ha fallado :/')
       console.error(error)
     }
   }
 
-  const dateFormat = 'YYYY/MM/DD';
+  const dateFormat = 'YYYY/MM/DD'
 
   const handleReset = () => {
-    form.setFieldsValue(initialValues);
-  };
+    form.setFieldsValue(initialValues)
+  }
 
   return (
     <Modal
@@ -195,7 +195,7 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
         </Form>
       </div>
     </Modal>
-  );
-};
+  )
+}
 
-export default UserFormModal;
+export default UserFormModal

@@ -4,10 +4,13 @@ import { getDepartments } from '../../apiService/departmentApi'
 import { Form, Table, Typography, Button, Space, Input } from 'antd'
 import TokenModal from '../../components/modals/modalToken'
 import UserFormModal from '../../components/modals/modalUserForm'
+import DepartmentModal from '../../components/modals/modalDepartments'
 
 const Users = () => {
   const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
   const [isModalUserVisible, setIsModalUserVisible] = useState(false)
+  const [isModalDeparmentVisible, setIsModalDepartmentVisible] = useState(false)
+
   const [allUsers, setAllUsers] = useState([])
   const [company, setCompany] = useState()
   const [departments, setDepartments] = useState([])
@@ -93,7 +96,7 @@ const Users = () => {
     }
   }
 
-  const handleCancel = () => {
+  const handleCancelUser = () => {
     setIsModalUserVisible(false)
     setSelectedUser(null)
   }
@@ -192,10 +195,15 @@ const Users = () => {
         <h2 className="text-xl font-bold">Lista de Empleados</h2>
       </div>
       
-      <div className="flex justify-between my-5">
-        <Button className="" type="primary" onClick={handleAddUser}>
-            Añadir Usuario
-        </Button>
+      <div className="flex justify-between my-5">  
+        <div>
+          <Button className="mr-5" type="primary" onClick={handleAddUser}>
+              Añadir Usuario
+          </Button>
+          <Button className="" type="primary" onClick={() => setIsModalDepartmentVisible('true')}>
+              Editar Departamentos
+          </Button>
+        </div>
         <Space direction="vertical">
           <Search
               placeholder="Buscar texto..."
@@ -211,7 +219,13 @@ const Users = () => {
       <UserFormModal
         visible={isModalUserVisible}
         user={selectedUser}
-        onCancel={handleCancel}
+        onCancel={handleCancelUser}
+        departments={departments}
+        companyId={company}
+      />
+      <DepartmentModal
+        visible={isModalDeparmentVisible}
+        onCancel={() => setIsModalDepartmentVisible(false)}
         departments={departments}
         companyId={company}
       />
