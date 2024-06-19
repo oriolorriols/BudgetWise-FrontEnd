@@ -227,6 +227,7 @@ const Users = () => {
         visible={isModalDeparmentVisible}
         onCancel={() => setIsModalDepartmentVisible(false)}
         departments={departments}
+        allUsers={allUsers}
         companyId={company}
       />
       <Form form={form} component={false}>

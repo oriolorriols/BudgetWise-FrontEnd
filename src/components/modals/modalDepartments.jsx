@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { updateDepartment, createDepartment, deleteDepartment } from '../../apiService/departmentApi';
-import { Modal, Button, Form, Input, message } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react'
+import { updateDepartment, createDepartment, deleteDepartment } from '../../apiService/departmentApi'
+import { Modal, Button, Form, Input, message } from 'antd'
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 
 const formItemLayoutWithOutLabel = {
   wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 20,
-      offset: 4,
-    },
+    xs: { span: 24, offset: 0 },
+    sm: { span: 20, offset: 4 },
   },
-};
+}
 
-const DepartmentModal = ({ visible, onCancel, departments }) => {
-  const [form] = Form.useForm();
-  const [deptsToDelete, setDeptsToDelete] = useState([]);
+const DepartmentModal = ({ visible, onCancel, departments, allUsers }) => {
+  const [form] = Form.useForm()
+  const [deptsToDelete, setDeptsToDelete] = useState([])
 
   useEffect(() => {
     if (visible && departments) {
@@ -27,69 +21,83 @@ const DepartmentModal = ({ visible, onCancel, departments }) => {
           _id: dept._id,
           departmentName: dept.departmentName,
         })),
-      });
+      })
     }
-  }, [visible, departments]);
+  }, [visible, departments])
 
   const onFinishData = async (values) => {
     try {
-      const updates = values.departments.filter(dept => dept._id);
-      const creates = values.departments.filter(dept => !dept._id);
+      const updates = values.departments.filter(dept => dept._id)
+      const creates = values.departments.filter(dept => !dept._id)
 
       await Promise.all(updates.map(dept =>
         updateDepartment(dept._id, { departmentName: dept.departmentName })
-      ));
+      ))
 
       await Promise.all(creates.map(dept =>
         createDepartment({ departmentName: dept.departmentName })
-      ));
+      ))
 
       await Promise.all(deptsToDelete.map(id =>
         deleteDepartment(id)
       ))
-      setDeptsToDelete([])
-      message.success("Departments updated successfully!");
-      onCancel();
-    } catch (error) {
-      message.error("Failed to update departments");
-      console.error(error);
-    }
-  };
 
-  const handleDelete = async (index) => {
-    const idToDelete = form.getFieldValue(['departments', index, '_id']);
-    if (idToDelete) {
-      setDeptsToDelete(prevDepts => [...prevDepts, idToDelete]);
+      message.success("¡Departamentos actualizados!")
+      onCancel()
+    } catch (error) {
+      message.error("Failed to update departments")
+      console.error(error)
+    } finally {
+      setDeptsToDelete([])
     }
-    form.setFieldsValue({
-      departments: form.getFieldValue('departments').filter((_, i) => i !== index),
-    });
-  };
+  }
+
+  const handleDelete = async (key, name) => {
+    const idToDelete = form.getFieldValue(['departments', key, '_id'])
+    
+    const usersInDepartment = allUsers.filter(user => user.departmentId._id === idToDelete)
+    
+    if (usersInDepartment.length > 0) {
+      message.error("Para borrar este Departamento asegurate que no hay nadie en él.")
+    } else {
+      const fields = form.getFieldsValue(['departments'])
+      const updatedFields = fields.departments.filter((dept, index) => index !== key)
+      form.setFieldsValue({ departments: updatedFields })
+  
+      setDeptsToDelete(prevDepts => [...prevDepts, idToDelete])
+    }
+  }
+  
+
+  const handleCancel = () => {
+    onCancel()
+    setDeptsToDelete([])
+  }
 
   return (
     <Modal
       title={<h3 style={{ fontSize: '20px' }}>Añadir o editar departamentos</h3>}
-      open={visible}
+      visible={visible}
       footer={null}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       width={700}
     >
       <style jsx>{`
         .dynamic-delete-button {
-          position: relative;
-          top: 4px;
-          margin: 0 8px;
-          color: #999;
-          font-size: 24px;
-          cursor: pointer;
-          transition: all 0.3s;
+          position: relative
+          top: 4px
+          margin: 0 8px
+          color: #999
+          font-size: 24px
+          cursor: pointer
+          transition: all 0.3s
         }
         .dynamic-delete-button:hover {
-          color: #777;
+          color: #777
         }
         .dynamic-delete-button[disabled] {
-          cursor: not-allowed;
-          opacity: 0.5;
+          cursor: not-allowed
+          opacity: 0.5
         }
       `}</style>
 
@@ -109,7 +117,7 @@ const DepartmentModal = ({ visible, onCancel, departments }) => {
             {
               validator: async (_, departments) => {
                 if (!departments || departments.length < 1) {
-                  return Promise.reject(new Error('At least 1 Department'));
+                  return Promise.reject(new Error('Como mínimo un departamento'))
                 }
               },
             },
@@ -154,8 +162,7 @@ const DepartmentModal = ({ visible, onCancel, departments }) => {
                     <MinusCircleOutlined
                       className="dynamic-delete-button"
                       onClick={() => {
-                        handleDelete(key);
-                        remove(key);
+                        handleDelete(key, name)
                       }}
                     />
                   ) : null}
@@ -184,7 +191,7 @@ const DepartmentModal = ({ visible, onCancel, departments }) => {
         </Form.Item>
       </Form>
     </Modal>
-  );
-};
+  )
+}
 
-export default DepartmentModal;
+export default DepartmentModal
