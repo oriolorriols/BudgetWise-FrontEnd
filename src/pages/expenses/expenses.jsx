@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { deleteExpenses, getExpenses, updateExpenses } from "../../apiService/expensesApi";
-import { Space, Table, Input, Popconfirm, DatePicker, Typography } from 'antd';
+import { Space, Table, Input, Popconfirm, DatePicker, Typography, Button, Form, Modal, Radio } from 'antd';
 const { Text } = Typography;
 
 const { RangePicker } = DatePicker
@@ -111,6 +111,15 @@ const Expenses = () => {
         refresh(!dummy)
     }
 
+    const [form] = Form.useForm();
+    const [formValues, setFormValues] = useState();
+    const [open, setOpen] = useState(false);
+    const onCreate = (values) => {
+        console.log('Received values of form: ', values);
+        setFormValues(values);
+        setOpen(false);
+    };
+
 const columns = [
 {
     title: 'Fecha de envío',
@@ -137,11 +146,11 @@ const columns = [
     key: 'surname',
 },
 {
-    title: 'Fecha de gasto',
-    dataIndex: 'expenseDate',
+    title: 'Fecha de inicio',
+    dataIndex: ['absenceId', 'startDate'],
     key: 'expenseDate',
     render: text => formatDate(text),
-    sorter: (a, b) => (new Date(a.expenseDate)) - (new Date(b.expenseDate)),
+    sorter: (a, b) => (new Date(a.absenceId.startDate)) - (new Date(b.absenceId.startDate)),
     sortOrder: sortedInfo.columnKey === 'expenseDate' ? sortedInfo.order : null,
     ellipsis: true,
 },
@@ -229,7 +238,81 @@ const columns = [
 
     return (
     <>
-        <h1>Todos los gastos: </h1>
+        <div className="flex justify-end my-5">
+            <Button type="primary" onClick={() => setOpen(true)}>
+                Crear gasto
+            </Button>
+            <pre>{JSON.stringify(formValues, null, 2)}</pre>
+            <Modal
+                open={open}
+                title="Nuevo gasto de ausencia"
+                okText="Ok"
+                cancelText="Cancel"
+                okButtonProps={{
+                    autoFocus: true,
+                    htmlType: 'submit',
+                }}
+                onCancel={() => setOpen(false)}
+                destroyOnClose
+                modalRender={(dom) => (
+                    <Form
+                        layout="vertical"
+                        form={form}
+                        name="form_in_modal"
+                        initialValues={{
+                        modifier: 'public',
+                        }}
+                        clearOnDestroy
+                        onFinish={(values) => onCreate(values)}
+                    >
+                    {dom}
+                    </Form>
+                )}
+            >
+                <Form.Item
+                    name="title"
+                    label="Título"
+                    rules={[
+                        {
+                        required: true,
+                        message: 'Es necesario que escribas un título',
+                        },
+                    ]}
+                >
+                <Input type="textarea"/>
+                </Form.Item>
+                <Form.Item 
+                    label="Método de pago" 
+                    name="modifier" 
+                    className="collection-create-form_last-form-item"
+                    rules={[
+                        {
+                        required: true,
+                        message: 'Es necesario que selecciones un método de pago',
+                        },
+                    ]}
+                >
+                    <Radio.Group>
+                        <Radio value="public">Personal</Radio>
+                        <Radio value="private">Business Card</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                <Form.Item 
+                    name="description" 
+                    label="Últimos 4 dígitos de la tarjeta de empresa (si aplica)"
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item 
+                className="flex inline-row"
+                    name="description" 
+                >
+                    <p>Traslados</p> <Input />
+                    <p>Hospedajes</p> <Input />
+                    <p>Dietas</p> <Input />
+                </Form.Item>
+            </Modal>
+        </div>
         <div className="flex flex-row-reverse justify-between items-center my-5">
             <div className="flex justify-end my-5">
                 <Space direction="vertical">
