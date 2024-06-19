@@ -64,10 +64,10 @@ const Users = () => {
   }
 
   useEffect(() => {
-    if (!isModalUserVisible) {
+    if (!isModalUserVisible || !isModalDeparmentVisible) {
       getAllUsers()
     }
-  }, [isModalUserVisible])
+  }, [isModalUserVisible, isModalDeparmentVisible])
 
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const Users = () => {
 
   useEffect(() => {
     getDepartmentsData()
-  }, [])
+  }, [isModalDeparmentVisible])
 
   const [form] = Form.useForm()
 

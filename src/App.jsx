@@ -35,14 +35,15 @@ function App() {
           <Route element={<PrivateRoutes/>}>
               <Route path='/' element={<Home/>}>
                   <Route path='/' element={<DashBoard/>}/>
-                  {isHR === 'HR' ? <Route path="/usuarios" element={<Users />} /> : null}
+                  {/*isHR === 'HR' ? <Route path="/usuarios" element={<Users />} /> : null*/}
+                  <Route path="/usuarios" element={<Users />} />
                   <Route path='/calendario' element={<Calendario/>}/>
                   <Route path='/objetivos' element={<Objetivos/>}/>
                   <Route path='/perfil' element={<Profile/>}/>
                   <Route path='/ausencias' element={<Absences/>}/>
                   <Route path='/solicitudes' element={<Requests/>}/>
                   <Route path='/gastos' element={<Expenses/>}/>
-                  <Route path="/empresa" element={<CompanyProfile/>}/>
+                  <Route path="/empresa" element={<CompanyProfile/>}/>        
               </Route>
           </Route>
         </Routes>

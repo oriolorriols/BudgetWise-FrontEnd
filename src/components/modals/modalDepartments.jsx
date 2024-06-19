@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
-import { updateDepartment } from '../../apiService/departmentApi'
-import { Modal, Button, Form, Input, message } from 'antd'
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import React, { useEffect, useState } from 'react';
+import { updateDepartment, createDepartment, deleteDepartment } from '../../apiService/departmentApi';
+import { Modal, Button, Form, Input, message } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 const formItemLayoutWithOutLabel = {
   wrapperCol: {
@@ -14,29 +14,56 @@ const formItemLayoutWithOutLabel = {
       offset: 4,
     },
   },
-}
+};
 
 const DepartmentModal = ({ visible, onCancel, departments }) => {
   const [form] = Form.useForm();
+  const [deptsToDelete, setDeptsToDelete] = useState([]);
 
   useEffect(() => {
     if (visible && departments) {
       form.setFieldsValue({
-        names: departments.map(dept => dept.departmentName)
+        departments: departments.map(dept => ({
+          _id: dept._id,
+          departmentName: dept.departmentName,
+        })),
       });
     }
   }, [visible, departments]);
 
   const onFinishData = async (values) => {
     try {
-    console.log(values)
-     // await Promise.all(values.names.map(name => updateDepartment(name)));
-      message.success("Departments updated successfully!")
-      onCancel()
+      const updates = values.departments.filter(dept => dept._id);
+      const creates = values.departments.filter(dept => !dept._id);
+
+      await Promise.all(updates.map(dept =>
+        updateDepartment(dept._id, { departmentName: dept.departmentName })
+      ));
+
+      await Promise.all(creates.map(dept =>
+        createDepartment({ departmentName: dept.departmentName })
+      ));
+
+      await Promise.all(deptsToDelete.map(id =>
+        deleteDepartment(id)
+      ))
+      setDeptsToDelete([])
+      message.success("Departments updated successfully!");
+      onCancel();
     } catch (error) {
-      message.error("Failed to update departments")
-      console.error(error)
+      message.error("Failed to update departments");
+      console.error(error);
     }
+  };
+
+  const handleDelete = async (index) => {
+    const idToDelete = form.getFieldValue(['departments', index, '_id']);
+    if (idToDelete) {
+      setDeptsToDelete(prevDepts => [...prevDepts, idToDelete]);
+    }
+    form.setFieldsValue({
+      departments: form.getFieldValue('departments').filter((_, i) => i !== index),
+    });
   };
 
   return (
@@ -73,15 +100,15 @@ const DepartmentModal = ({ visible, onCancel, departments }) => {
         onFinish={onFinishData}
         style={{
           maxWidth: 800,
-          marginTop: 20
+          marginTop: 20,
         }}
       >
         <Form.List
-          name="names"
+          name="departments"
           rules={[
             {
-              validator: async (_, names) => {
-                if (!names || names.length < 1) {
+              validator: async (_, departments) => {
+                if (!departments || departments.length < 1) {
                   return Promise.reject(new Error('At least 1 Department'));
                 }
               },
@@ -90,15 +117,15 @@ const DepartmentModal = ({ visible, onCancel, departments }) => {
         >
           {(fields, { add, remove }, { errors }) => (
             <>
-              {fields.map((field, index) => (
+              {fields.map(({ key, name, ...restField }) => (
                 <Form.Item
                   {...formItemLayoutWithOutLabel}
-                  label={index === 0 ? '' : ''}
                   required={false}
-                  key={field.key}
+                  key={key}
                 >
                   <Form.Item
-                    {...field}
+                    {...restField}
+                    name={[name, 'departmentName']}
                     validateTrigger={['onChange', 'onBlur']}
                     rules={[
                       {
@@ -116,10 +143,20 @@ const DepartmentModal = ({ visible, onCancel, departments }) => {
                       }}
                     />
                   </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, '_id']}
+                    noStyle
+                  >
+                    <Input type="hidden" />
+                  </Form.Item>
                   {fields.length > 1 ? (
                     <MinusCircleOutlined
                       className="dynamic-delete-button"
-                      onClick={() => remove(field.name)}
+                      onClick={() => {
+                        handleDelete(key);
+                        remove(key);
+                      }}
                     />
                   ) : null}
                 </Form.Item>
@@ -147,7 +184,7 @@ const DepartmentModal = ({ visible, onCancel, departments }) => {
         </Form.Item>
       </Form>
     </Modal>
-  )
-}
+  );
+};
 
 export default DepartmentModal;
