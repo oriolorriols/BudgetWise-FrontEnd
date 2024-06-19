@@ -52,13 +52,13 @@ const DepartmentModal = ({ visible, onCancel, departments, allUsers }) => {
     }
   }
 
-  const handleDelete = async (key, name) => {
+  const handleDelete = async (key) => {
     const idToDelete = form.getFieldValue(['departments', key, '_id'])
     
     const usersInDepartment = allUsers.filter(user => user.departmentId._id === idToDelete)
     
     if (usersInDepartment.length > 0) {
-      message.error("Para borrar este Departamento asegurate que no hay nadie en él.")
+      message.error("Para borrar este departamento asegurate que no hay nadie en él.")
     } else {
       const fields = form.getFieldsValue(['departments'])
       const updatedFields = fields.departments.filter((dept, index) => index !== key)
@@ -77,27 +77,27 @@ const DepartmentModal = ({ visible, onCancel, departments, allUsers }) => {
   return (
     <Modal
       title={<h3 style={{ fontSize: '20px' }}>Añadir o editar departamentos</h3>}
-      visible={visible}
+      open={visible}
       footer={null}
       onCancel={handleCancel}
       width={700}
     >
-      <style jsx>{`
+  <style jsx>{`
         .dynamic-delete-button {
-          position: relative
-          top: 4px
-          margin: 0 8px
-          color: #999
-          font-size: 24px
-          cursor: pointer
-          transition: all 0.3s
+          position: relative;
+          top: 4px;
+          margin: 0 8px;
+          color: #999;
+          font-size: 24px;
+          cursor: pointer;
+          transition: all 0.3s;
         }
         .dynamic-delete-button:hover {
-          color: #777
+          color: #777;
         }
         .dynamic-delete-button[disabled] {
-          cursor: not-allowed
-          opacity: 0.5
+          cursor: not-allowed;
+          opacity: 0.5;
         }
       `}</style>
 
