@@ -1,4 +1,4 @@
-const baseUrl = import.meta.env.BACKEND
+const baseUrl = import.meta.env.VITE_BACKEND
 
 export const getTasks = async () => {
     const token = localStorage.getItem('access_token')
