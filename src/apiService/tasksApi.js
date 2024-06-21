@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:3000"
+const baseUrl = import.meta.env.BACKEND
 
 export const getTasks = async () => {
     const token = localStorage.getItem('access_token')
