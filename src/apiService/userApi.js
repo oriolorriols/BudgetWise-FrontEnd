@@ -70,7 +70,6 @@ export const updateUserPic = async (userPic) => {
 
 export const login = async (email, password) => {
     const token = localStorage.getItem("access_token")
-    console.log(import.meta.env.VITE_BACKEND)
     const response = await fetch(`${baseUrl}/users/login`, {
         method: 'POST', 
         body: JSON.stringify({email, password}), 
