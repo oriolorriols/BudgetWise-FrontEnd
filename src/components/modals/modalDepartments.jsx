@@ -55,7 +55,7 @@ const DepartmentModal = ({ visible, onCancel, departments, allUsers }) => {
   const handleDelete = async (key) => {
     const idToDelete = form.getFieldValue(['departments', key, '_id'])
     
-    const usersInDepartment = allUsers.filter(user => user.departmentId._id === idToDelete)
+    const usersInDepartment = allUsers.filter(user => user.departmentId?._id === idToDelete)
     
     if (usersInDepartment.length > 0) {
       message.error("Para borrar este departamento asegurate que no hay nadie en él.")
