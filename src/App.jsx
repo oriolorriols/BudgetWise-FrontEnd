@@ -10,6 +10,7 @@ import DashBoard from './pages/dashboard/dashboard'
 import Calendario from './pages/calendario/calendario'
 import Objetivos from './pages/objetivos/objetivos'
 import Profile from './pages/profile/profile'
+import ObjetivosHR from './pages/objetivosHR/objetivosHR'
 import Absences from "./pages/absence/absence"
 import Expenses from "./pages/expenses/expenses"
 import Requests from "./pages/requests/requests"
@@ -39,6 +40,7 @@ function App() {
                   <Route path="/usuarios" element={<Users />} />
                   <Route path='/calendario' element={<Calendario/>}/>
                   <Route path='/objetivos' element={<Objetivos/>}/>
+                  <Route path='/objetivosHR' element={<ObjetivosHR/>}/>
                   <Route path='/perfil' element={<Profile/>}/>
                   <Route path='/ausencias' element={<Absences/>}/>
                   <Route path='/solicitudes' element={<Requests/>}/>

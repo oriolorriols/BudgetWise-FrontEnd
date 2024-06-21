@@ -9,6 +9,15 @@ export const getTasks = async () => {
     return tasks
 }
 
+export const getUserTasks = async (userId) => {
+    const token = localStorage.getItem('access_token')
+    const response = await fetch(`${baseUrl}/tasks/user/${userId}`, {
+        headers: {"authorization": `Bearer ${token}`}
+    })
+    const tasks = await response.json();
+    return tasks
+}
+
 export const getOneTask = async (id) => {
     const token = localStorage.getItem('access_token')
     const response = await fetch(`${baseUrl}/tasks/${id}`, {
