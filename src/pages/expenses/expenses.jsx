@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { deleteExpenses, getExpenses, updateExpenses } from "../../apiService/expensesApi";
-import { Space, Table, Input, Popconfirm, DatePicker, Button, Popover } from 'antd';
+import { Space, Table, Input, Popconfirm, DatePicker, Typography, Button, Form, Modal, Radio } from 'antd';
+const { Text } = Typography;
 
 const { RangePicker } = DatePicker
 
@@ -72,6 +73,19 @@ const Expenses = () => {
         setFiltering(filtered);
     };
 
+    const onDateChangePayment = (dates, dateStringsP) => {
+        setDates(dateStringsP);
+        filterDataByDateP(dateStringsP);
+    };
+
+    const filterDataByDateP = (dateStringsP) => {
+        const [start, end] = dateStringsP;
+        const filtered = allExpenses.filter(item => 
+            item.expensePayment >= start && item.expensePayment <= end
+        );
+        setFiltering(filtered);
+    };
+
     const handleChange = (pagination, filters, sorter) => {
     console.log('Various parameters', pagination, filters, sorter);
     setFilteredInfo(filters);
@@ -90,12 +104,21 @@ const Expenses = () => {
     const [expensePayment, setExpensePayment] = useState("")
 
     const onChangeDate = async (date, dateString, id) => {
-        const newDate = new Date(dateString).toISOString();
+        const newDate = new Date(dateString);
         console.log("date: ", typeof newDate, newDate, "id: ", id)
         setExpensePayment(newDate)
-        await updateExpenses(id, {expensePayment});
+        await updateExpenses(id, {expensePayment: newDate});
         refresh(!dummy)
     }
+
+    const [form] = Form.useForm();
+    const [formValues, setFormValues] = useState();
+    const [open, setOpen] = useState(false);
+    const onCreate = (values) => {
+        console.log('Received values of form: ', values);
+        setFormValues(values);
+        setOpen(false);
+    };
 
 const columns = [
 {
@@ -123,11 +146,11 @@ const columns = [
     key: 'surname',
 },
 {
-    title: 'Fecha de gasto',
-    dataIndex: 'expenseDate',
+    title: 'Fecha de inicio',
+    dataIndex: ['absenceId', 'startDate'],
     key: 'expenseDate',
     render: text => formatDate(text),
-    sorter: (a, b) => (new Date(a.expenseDate)) - (new Date(b.expenseDate)),
+    sorter: (a, b) => (new Date(a.absenceId.startDate)) - (new Date(b.absenceId.startDate)),
     sortOrder: sortedInfo.columnKey === 'expenseDate' ? sortedInfo.order : null,
     ellipsis: true,
 },
@@ -166,8 +189,9 @@ const columns = [
     onFilter: (value, record) => record.expenseStatus.includes(value),
 },
 {
-    title: 'Monto en Euros',
+    title: 'Monto (€)',
     dataIndex: 'expenseCodeId',
+    width: '8%',
     key: 'expenseCodeId',
     render: (codes) => (
         <div className="flex">
@@ -190,7 +214,7 @@ const columns = [
 {
     title: 'Aprobar',
     key: 'action',
-    width: '7%',
+    width: '10%',
     render: (_, record) => (
         <Space size="middle">
             <DatePicker onChange={(date, dateString) => onChangeDate(date, dateString, record._id)} needConfirm />
@@ -200,7 +224,7 @@ const columns = [
 {
     title: '',
     key: 'action',
-    width: '5%',
+    width: '6%',
     render: (_, record) =>
     allExpenses.length >= 1 ? (
         <Space>
@@ -214,7 +238,81 @@ const columns = [
 
     return (
     <>
-        <h1>Todos los gastos: </h1>
+        <div className="flex justify-end my-5">
+            <Button type="primary" onClick={() => setOpen(true)}>
+                Crear gasto
+            </Button>
+            <pre>{JSON.stringify(formValues, null, 2)}</pre>
+            <Modal
+                open={open}
+                title="Nuevo gasto de ausencia"
+                okText="Ok"
+                cancelText="Cancel"
+                okButtonProps={{
+                    autoFocus: true,
+                    htmlType: 'submit',
+                }}
+                onCancel={() => setOpen(false)}
+                destroyOnClose
+                modalRender={(dom) => (
+                    <Form
+                        layout="vertical"
+                        form={form}
+                        name="form_in_modal"
+                        initialValues={{
+                        modifier: 'public',
+                        }}
+                        clearOnDestroy
+                        onFinish={(values) => onCreate(values)}
+                    >
+                    {dom}
+                    </Form>
+                )}
+            >
+                <Form.Item
+                    name="title"
+                    label="Título"
+                    rules={[
+                        {
+                        required: true,
+                        message: 'Es necesario que escribas un título',
+                        },
+                    ]}
+                >
+                <Input type="textarea"/>
+                </Form.Item>
+                <Form.Item 
+                    label="Método de pago" 
+                    name="modifier" 
+                    className="collection-create-form_last-form-item"
+                    rules={[
+                        {
+                        required: true,
+                        message: 'Es necesario que selecciones un método de pago',
+                        },
+                    ]}
+                >
+                    <Radio.Group>
+                        <Radio value="public">Personal</Radio>
+                        <Radio value="private">Business Card</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                <Form.Item 
+                    name="description" 
+                    label="Últimos 4 dígitos de la tarjeta de empresa (si aplica)"
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item 
+                className="flex inline-row"
+                    name="description" 
+                >
+                    <p>Traslados</p> <Input />
+                    <p>Hospedajes</p> <Input />
+                    <p>Dietas</p> <Input />
+                </Form.Item>
+            </Modal>
+        </div>
         <div className="flex flex-row-reverse justify-between items-center my-5">
             <div className="flex justify-end my-5">
                 <Space direction="vertical">
@@ -238,6 +336,12 @@ const columns = [
                     <div className="mb-3">Buscar por fecha de gasto:</div>
                     <Space direction="vertical" size={12}>
                         <RangePicker onChange={onDateChangeExpense} />
+                    </Space>
+                </div>
+                <div className="mb-5 ml-5">
+                    <div className="mb-3">Buscar por fecha de pago:</div>
+                    <Space direction="vertical" size={12}>
+                        <RangePicker onChange={onDateChangePayment} />
                     </Space>
                 </div>
             </div>
@@ -273,7 +377,7 @@ const columns = [
                         </div>
                         <div className="ml-32">
                             <p className="font-bold">Fecha de pago:</p>
-                            {record.expensePayment? record.expensePayment : "-"}
+                            {record.expensePayment? record.expensePayment.split("T")[0] : "-"}
                         </div>
                     </div>
                 ),
@@ -281,6 +385,28 @@ const columns = [
             dataSource={filtering.length > 0 ? filtering : allExpenses} 
             onChange={handleChange} 
             rowKey="_id"
+
+            summary={(pageData) => {
+                let totalExpenseCodeId = 0;
+                pageData.forEach(({ expenseCodeId }) => {
+                    totalExpenseCodeId += 
+                    (expenseCodeId[0].Traslados? expenseCodeId[0].Traslados : 0) + 
+                    (expenseCodeId[0].Dietas? expenseCodeId[0].Dietas : 0) + 
+                    (expenseCodeId[0].Hospedajes? expenseCodeId[0].Hospedajes : 0);
+                });
+                return (
+                <>
+                    <Table.Summary.Row className="">
+                        <Table.Summary.Cell index={0} colSpan={7} />
+                        <Table.Summary.Cell index={7} className="font-bold">Total</Table.Summary.Cell>
+                        <Table.Summary.Cell>
+                            <Text className="font-bold">{totalExpenseCodeId} €</Text>
+                        </Table.Summary.Cell>
+                    </Table.Summary.Row>
+                </>
+                );
+            }}
+
             />
         {error && <p>Ha habido un error: {error}</p>}
         </>
