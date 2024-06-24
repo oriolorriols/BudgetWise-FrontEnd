@@ -13,21 +13,21 @@ const NewTaskModal = ({ visible, onCancel, onCreate, goalId }) => {
       form.resetFields();
       onCancel();
     } catch (error) {
-      message.error("Please complete the form correctly.");
+      message.error("Por favor, complete el formulario correctamente.");
     }
   };
 
   return (
     <Modal
-      title="Create New Task"
+      title="Crear nueva tarea"
       visible={visible}
       onCancel={onCancel}
       footer={[
         <Button key="back" onClick={onCancel}>
-          Cancel
+          Cancelar
         </Button>,
         <Button key="submit" type="primary" onClick={handleCreate}>
-          Create
+          Crear
         </Button>,
       ]}
     >
@@ -38,23 +38,23 @@ const NewTaskModal = ({ visible, onCancel, onCreate, goalId }) => {
       >
         <Form.Item
           name="taskName"
-          label="Task Name"
-          rules={[{ required: true, message: 'Please enter the task name' }]}
+          label="Nombre de la tarea"
+          rules={[{ required: true, message: 'Por favor, introduce el nombre de la tarea' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="taskDescription"
-          label="Task Description"
+          label="Descripción de la tarea"
         >
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item
           name="taskStatus"
-          label="Task Status"
-          rules={[{ required: true, message: 'Please select a task status' }]}
+          label="Estado de la tarea"
+          rules={[{ required: true, message: 'Por favor, indica el estado de la tarea' }]}
         >
-          <Select placeholder="Select status">
+          <Select placeholder="Selecciona estado">
             <Option value="Pendiente">Pendiente</Option>
             <Option value="Completada">Completada</Option>
           </Select>

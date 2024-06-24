@@ -11,21 +11,21 @@ const NewObjectiveModal = ({ visible, onCancel, onCreate }) => {
       form.resetFields();
       onCancel();
     } catch (error) {
-      message.error("Please complete the form correctly.");
+      message.error("Por favor, complete el formulario correctamente.");
     }
   };
 
   return (
     <Modal
-      title="Create New Objective"
+      title="Crear nuevo objetivo"
       visible={visible}
       onCancel={onCancel}
       footer={[
         <Button key="back" onClick={onCancel}>
-          Cancel
+          Cancelar
         </Button>,
         <Button key="submit" type="primary" onClick={handleCreate}>
-          Create
+          Crear
         </Button>,
       ]}
     >
@@ -36,20 +36,20 @@ const NewObjectiveModal = ({ visible, onCancel, onCreate }) => {
       >
         <Form.Item
           name="objectiveName"
-          label="Objective Name"
-          rules={[{ required: true, message: 'Please enter the objective name' }]}
+          label="Nombre del objetivo"
+          rules={[{ required: true, message: 'Por favor, introduce el nombre del objetivo' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="objectiveDescription"
-          label="Objective Description"
+          label="Descripción del objetivo"
         >
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item
           name="dueDate"
-          label="Due Date"
+          label="Fecha límite"
         >
           <DatePicker />
         </Form.Item>

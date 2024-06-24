@@ -115,10 +115,12 @@ const Objetivos = () => {
 
   return (
     <div className="w-full">
-      <h2 className="text-xl font-bold">Objetivos</h2>
-      <Button type="primary" onClick={() => setIsObjectiveModalVisible(true)} className='my-2'>
-        Crear nuevo objetivo
-      </Button>
+      <div className='flex flex-row items-center justify-between'>
+        <h2 className="text-xl font-bold">Objetivos</h2>
+        <Button type="primary" onClick={() => setIsObjectiveModalVisible(true)} className='my-4'>
+          Crear nuevo objetivo
+        </Button>
+      </div>
       <Collapse
         bordered={true}
         activeKey={activeKey}
