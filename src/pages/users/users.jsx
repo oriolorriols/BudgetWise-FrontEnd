@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { getUsers } from '../../apiService/userApi'
 import { getDepartments } from '../../apiService/departmentApi'
-import { Form, Table, Typography, Button, Space, Input } from 'antd'
+import { Form, Table, Typography, Button, Space, Input, Spin } from 'antd'
 import TokenModal from '../../components/modals/modalToken'
 import UserFormModal from '../../components/modals/modalUserForm'
 import DepartmentModal from '../../components/modals/modalDepartments'
@@ -18,6 +18,8 @@ const Users = () => {
 
   const [filtering, setFiltering] = useState([])
   const [searchValue, setSearchValue] = useState('')
+
+  const [loading, setLoading] = useState(false)
 
   const checkTokenValidity = () => {
     const token = localStorage.getItem("access_token")
@@ -43,6 +45,7 @@ const Users = () => {
   }
 
   const getAllUsers = async () => {
+    setLoading(true)
     try {
       const data = await getUsers()
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
@@ -56,7 +59,7 @@ const Users = () => {
         setAllUsers(usersWithDefaultPic)
         const companyName = data[0]?.companyId?._id || null
         setCompany(companyName)
-        console.log(usersWithDefaultPic)
+        setLoading(false)
       }
     } catch (error) {
       console.error("Failed to fetch company data", error)
@@ -231,9 +234,10 @@ const Users = () => {
         companyId={company}
       />
       <Form form={form} component={false}>
-        <Table
+      <Table
           dataSource={filtering.length > 0 ? filtering : allUsers}
           columns={columns}
+          loading={loading}
         />
       </Form>
     </>
