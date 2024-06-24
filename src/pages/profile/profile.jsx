@@ -34,7 +34,7 @@ const Profile = () => {
   const [initialValues, setInitialValues] = useState({})
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const getUserData = async () => {
     setLoading(true)

@@ -33,7 +33,7 @@ const CompanyProfile = () => {
   const [form] = Form.useForm()
   const [initialValues, setInitialValues] = useState({})
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const getCompanyData = async () => {
     setLoading(true)

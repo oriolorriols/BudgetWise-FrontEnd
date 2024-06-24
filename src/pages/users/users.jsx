@@ -19,7 +19,7 @@ const Users = () => {
   const [filtering, setFiltering] = useState([])
   const [searchValue, setSearchValue] = useState('')
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const checkTokenValidity = () => {
     const token = localStorage.getItem("access_token")
