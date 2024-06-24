@@ -115,8 +115,8 @@ const Objetivos = () => {
 
   return (
     <div className="w-full">
-      <h1>Objetivos</h1>
-      <Button type="primary" onClick={() => setIsObjectiveModalVisible(true)}>
+      <h2 className="text-xl font-bold">Objetivos</h2>
+      <Button type="primary" onClick={() => setIsObjectiveModalVisible(true)} className='my-2'>
         Crear nuevo objetivo
       </Button>
       <Collapse
