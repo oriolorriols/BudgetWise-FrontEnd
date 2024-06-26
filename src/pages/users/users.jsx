@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react"
+import './users.scss'
+
 import { getUsers } from '../../apiService/userApi'
 import { getDepartments } from '../../apiService/departmentApi'
-import { Form, Table, Typography, Button, Space, Input, Spin } from 'antd'
+import { Form, Table, Typography, Button, Space, Input } from 'antd'
 import TokenModal from '../../components/modals/modalToken'
 import UserFormModal from '../../components/modals/modalUserForm'
 import DepartmentModal from '../../components/modals/modalDepartments'
@@ -141,6 +143,11 @@ const Users = () => {
             }} 
           />
           {record.name} {record.surname}
+          {!record.confirmed && (
+              <span style={{ color: 'red', fontStyle: 'italic', marginLeft: 10 }}>
+                (Pendiente)
+              </span>
+            )}
         </div>
       ),
     },
@@ -238,6 +245,7 @@ const Users = () => {
           dataSource={filtering.length > 0 ? filtering : allUsers}
           columns={columns}
           loading={loading}
+          rowClassName={(record) => (record.confirmed ? '' : 'unconfirmed-row')}
         />
       </Form>
     </>
