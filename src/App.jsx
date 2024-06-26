@@ -3,7 +3,7 @@ import {  Routes, Route, Navigate } from "react-router-dom"
 import Home from "./components/home/home"
 
 import Login from './pages/login/login'
-import { Confirm } from "./pages/login/confirm"
+import Confirm from "./pages/login/confirm"
 import { PrivateRoutes } from "./utils/PrivateRoutes"
 
 import Users from "./pages/users/users"
