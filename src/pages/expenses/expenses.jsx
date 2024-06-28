@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { deleteExpenses, getExpenses, updateExpenses } from "../../apiService/expensesApi";
+import { approvedExpenses, deleteExpenses, emailExpenses, getExpenses, updateExpenses } from "../../apiService/expensesApi";
 import { Space, Table, Input, Popconfirm, DatePicker, Typography, Button, Form, Modal, Radio } from 'antd';
 const { Text } = Typography;
 
@@ -102,6 +102,9 @@ const Expenses = () => {
     }
     
     const [expensePayment, setExpensePayment] = useState("")
+    const [send, setSend] = useState(false)
+    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+    const [approved, setApproved] = useState(false)
 
     const onChangeDate = async (date, dateString, id) => {
         const newDate = new Date(dateString);
@@ -109,6 +112,37 @@ const Expenses = () => {
         setExpensePayment(newDate)
         await updateExpenses(id, {expensePayment: newDate});
         refresh(!dummy)
+    }
+
+    const onDeleteDate = async (id) => {
+        await updateExpenses(id, {expensePayment: null, expenseStatus: "Pendiente"});
+        refresh(!dummy)
+    }
+
+    const handleOpenDatePicker = () => {
+        setIsDatePickerVisible(true);
+        setSend(false)
+    };
+    
+    const handleConfirmSendEmail = () => {
+        setIsDatePickerVisible(false);
+        setSend(true);
+    };
+
+    const sendEmail = async (id) => {
+        await emailExpenses(id);
+        refresh(!dummy)
+        setSend(false)
+    }
+
+    const sendApproval = async (id) => {
+        await approvedExpenses(id);
+        refresh(!dummy)
+        setApproved(false)
+    }
+
+    const handleOpenApprove = () => {
+        setApproved(true)
     }
 
     const [form] = Form.useForm();
@@ -212,13 +246,50 @@ const columns = [
     ellipsis: true,
 },
 {
-    title: 'Aprobar',
+    title: '',
     key: 'action',
     width: '10%',
     render: (_, record) => (
+        record.paymentMethod === "Personal" ?
         <Space size="middle">
-            <DatePicker onChange={(date, dateString) => onChangeDate(date, dateString, record._id)} needConfirm />
+            <Button type="primary" onClick={handleOpenDatePicker}>
+                Aprobar
+            </Button>
+            <Modal 
+                title="Selecciona una Fecha"
+                open={isDatePickerVisible}
+                onOk={handleConfirmSendEmail}
+                onCancel={() => setIsDatePickerVisible(false)}
+            >
+                <DatePicker onChange={(date, dateString) => onChangeDate(date, dateString, record._id)} needConfirm/>
+                {console.log(record._id)}
+            </Modal>
+            <Modal 
+                title="Confirmar envio de correo"
+                open={send} 
+                onOk={(_id) => sendEmail(record._id)} 
+                onCancel={handleOpenDatePicker}
+            >
+                <p>Se enviará un correo con la fecha elegida: <strong>{(record.expensePayment)}</strong></p>
+            </Modal> 
         </Space>
+
+        :
+        
+        <Space size="middle">
+            <Button type="primary" onClick={handleOpenApprove}>
+                Aprobar
+            </Button>
+            <Modal 
+                title="Confirmar envio de correo"
+                open={approved} 
+                onOk={(_id) => sendApproval(record._id)} 
+                onCancel={() => setApproved(false)}
+            >
+                <p>Se enviará un correo con la fecha del recibí: <strong>{Date()}</strong></p>
+            </Modal> 
+        </Space>
+        
     ),
 },
 {
@@ -378,6 +449,16 @@ const columns = [
                         <div className="ml-32">
                             <p className="font-bold">Fecha de pago:</p>
                             {record.expensePayment? record.expensePayment.split("T")[0] : "-"}
+                            {record.expensePayment?
+                            <Button  type="link">
+                                <Space>
+                                    <Popconfirm title="Sure to delete?" onConfirm={() => onDeleteDate(record._id)}>
+                                        <a>No aprobado</a>
+                                    </Popconfirm>
+                                </Space>
+                            </Button>
+                            : null
+                            }
                         </div>
                     </div>
                 ),

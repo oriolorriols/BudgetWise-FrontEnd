@@ -46,3 +46,25 @@ export const updateExpenses = async (id, data) => {
     const expensesUpdated = await response.json();
     return expensesUpdated
 }
+
+export const emailExpenses = async (id, data) => {
+    const token = localStorage.getItem('access_token')
+    const response = await fetch(`${baseUrl}/expenses/${id}/sending`, {
+        method: 'PUT', 
+        body: JSON.stringify(data), 
+        headers: {"Content-Type": "application/json", "authorization": `Bearer ${token}`}
+    })
+    const expenses = await response.json();
+    return expenses
+}
+
+export const approvedExpenses = async (id, data) => {
+    const token = localStorage.getItem('access_token')
+    const response = await fetch(`${baseUrl}/expenses/${id}/approving`, {
+        method: 'PUT', 
+        body: JSON.stringify(data), 
+        headers: {"Content-Type": "application/json", "authorization": `Bearer ${token}`}
+    })
+    const expenses = await response.json();
+    return expenses
+}
