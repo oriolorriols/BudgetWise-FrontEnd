@@ -106,12 +106,12 @@ const Expenses = () => {
     const [send, setSend] = useState(false)
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
     const [approved, setApproved] = useState(false)
-
-    const onChangeDate = async (date, dateString, id) => {
+    const [approvedId, setApprovedId] = useState("")
+    
+    const onChangeDate = async (date, dateString) => {
         const newDate = new Date(dateString);
-        console.log("date: ", typeof newDate, newDate, "id: ", id)
         setExpensePayment(newDate)
-        await updateExpenses(id, {expensePayment: newDate});
+        await updateExpenses(approvedId, {expensePayment: newDate});
         refresh(!dummy)
     }
 
@@ -120,7 +120,8 @@ const Expenses = () => {
         refresh(!dummy)
     }
 
-    const handleOpenDatePicker = () => {
+    const handleOpenDatePicker = (id) => {
+        setApprovedId(id)
         setIsDatePickerVisible(true);
         setSend(false)
     };
@@ -130,19 +131,20 @@ const Expenses = () => {
         setSend(true);
     };
 
-    const sendEmail = async (id) => {
-        await emailExpenses(id);
+    const sendEmail = async () => {
+        await emailExpenses(approvedId);
         refresh(!dummy)
         setSend(false)
     }
 
-    const sendApproval = async (id) => {
-        await approvedExpenses(id);
+    const sendApproval = async () => {
+        await approvedExpenses(approvedId);
         refresh(!dummy)
         setApproved(false)
     }
 
-    const handleOpenApprove = () => {
+    const handleOpenApprove = (id) => {
+        setApprovedId(id)
         setApproved(true)
     }
 
@@ -258,38 +260,39 @@ const columns = [
     render: (_, record) => (
         record.paymentMethod === "Personal" ?
         <Space size="middle">
-            <Button type="primary" onClick={handleOpenDatePicker}>
+            <Button key={record._id} type="primary" onClick={() => handleOpenDatePicker(record._id)}>
                 Aprobar
             </Button>
             <Modal 
-                title="Selecciona una Fecha"
+                zIndex={approvedId}
+                title={"Selecciona una Fecha"}
                 open={isDatePickerVisible}
                 onOk={handleConfirmSendEmail}
                 onCancel={() => setIsDatePickerVisible(false)}
             >
-                <DatePicker onChange={(date, dateString) => onChangeDate(date, dateString, record._id)} needConfirm/>
-                {console.log(record._id)}
+                <DatePicker onChange={(date, dateString) => onChangeDate(date, dateString)} needConfirm/>
             </Modal>
             <Modal 
                 title="Confirmar envio de correo"
                 open={send} 
-                onOk={(_id) => sendEmail(record._id)} 
+                onOk={() => sendEmail()} 
                 onCancel={handleOpenDatePicker}
             >
-                <p>Se enviará un correo con la fecha elegida: <strong>{(record.expensePayment)}</strong></p>
+                <p>{"Se enviará un correo con la fecha elegida: " + expensePayment}</p>
             </Modal> 
         </Space>
 
         :
         
         <Space size="middle">
-            <Button type="primary" onClick={handleOpenApprove}>
+            <Button key={record._id} type="primary" onClick={() => handleOpenApprove(record._id)}>
                 Aprobar
             </Button>
             <Modal 
+                zIndex={approvedId}
                 title="Confirmar envio de correo"
                 open={approved} 
-                onOk={(_id) => sendApproval(record._id)} 
+                onOk={() => sendApproval()} 
                 onCancel={() => setApproved(false)}
             >
                 <p>Se enviará un correo con la fecha del recibí: <strong>{Date()}</strong></p>
