@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { approvedExpenses, deleteExpenses, emailExpenses, getExpenses, updateExpenses } from "../../apiService/expensesApi";
-import { Space, Table, Input, Popconfirm, DatePicker, Typography, Button, Form, Modal, Radio } from 'antd';
+import { Space, Table, Input, Popconfirm, DatePicker, Typography, Button, Form, Modal, Radio, Select } from 'antd';
+import ExpenseModal from "../../components/modals/modalExpenses";
 const { Text } = Typography;
 
 const { RangePicker } = DatePicker
@@ -146,13 +147,18 @@ const Expenses = () => {
     }
 
     const [form] = Form.useForm();
-    const [formValues, setFormValues] = useState();
+    // const [formValues, setFormValues] = useState();
     const [open, setOpen] = useState(false);
-    const onCreate = (values) => {
-        console.log('Received values of form: ', values);
-        setFormValues(values);
-        setOpen(false);
-    };
+
+    // const onCreate = (values) => {
+    //     console.log('Received values of form: ', values);
+    //     setFormValues(values);
+    //     setOpen(false);
+    // };
+
+    const addExpense = () => {
+        setOpen(true)
+    }
 
 const columns = [
 {
@@ -310,79 +316,9 @@ const columns = [
     return (
     <>
         <div className="flex justify-end my-5">
-            <Button type="primary" onClick={() => setOpen(true)}>
+            <Button type="primary" onClick={addExpense}>
                 Crear gasto
             </Button>
-            <pre>{JSON.stringify(formValues, null, 2)}</pre>
-            <Modal
-                open={open}
-                title="Nuevo gasto de ausencia"
-                okText="Ok"
-                cancelText="Cancel"
-                okButtonProps={{
-                    autoFocus: true,
-                    htmlType: 'submit',
-                }}
-                onCancel={() => setOpen(false)}
-                destroyOnClose
-                modalRender={(dom) => (
-                    <Form
-                        layout="vertical"
-                        form={form}
-                        name="form_in_modal"
-                        initialValues={{
-                        modifier: 'public',
-                        }}
-                        clearOnDestroy
-                        onFinish={(values) => onCreate(values)}
-                    >
-                    {dom}
-                    </Form>
-                )}
-            >
-                <Form.Item
-                    name="title"
-                    label="Título"
-                    rules={[
-                        {
-                        required: true,
-                        message: 'Es necesario que escribas un título',
-                        },
-                    ]}
-                >
-                <Input type="textarea"/>
-                </Form.Item>
-                <Form.Item 
-                    label="Método de pago" 
-                    name="modifier" 
-                    className="collection-create-form_last-form-item"
-                    rules={[
-                        {
-                        required: true,
-                        message: 'Es necesario que selecciones un método de pago',
-                        },
-                    ]}
-                >
-                    <Radio.Group>
-                        <Radio value="public">Personal</Radio>
-                        <Radio value="private">Business Card</Radio>
-                    </Radio.Group>
-                </Form.Item>
-                <Form.Item 
-                    name="description" 
-                    label="Últimos 4 dígitos de la tarjeta de empresa (si aplica)"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item 
-                className="flex inline-row"
-                    name="description" 
-                >
-                    <p>Traslados</p> <Input />
-                    <p>Hospedajes</p> <Input />
-                    <p>Dietas</p> <Input />
-                </Form.Item>
-            </Modal>
         </div>
         <div className="flex flex-row-reverse justify-between items-center my-5">
             <div className="flex justify-end my-5">
@@ -487,9 +423,12 @@ const columns = [
                 </>
                 );
             }}
-
             />
         {error && <p>Ha habido un error: {error}</p>}
+        <ExpenseModal
+        visible={open}
+        onCancel={() => setOpen(false)}
+        />
         </>
     )}
     
