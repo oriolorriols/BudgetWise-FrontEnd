@@ -18,19 +18,21 @@ import Requests from "./pages/requests/requests"
 import CompanyProfile from "./pages/companyProfile/companyProfile"
 
 import { useAuth } from "./contexts/authContext"
+import { useSocket } from './contexts/socketContext';
 
 
 import './App.scss'
 import { Register } from "./pages/register/register"
 
 
-
 function App() {
 
   const { isAuthenticated, isHR } = useAuth()
+  const { isConnected } = useSocket()
 
   return (
     <>
+        <h2>{isConnected ? 'Conectado' : 'No conectado'}</h2>
         <Routes>
           <Route path="*" element={<Navigate to="/"/>}/>
           <Route path="/login" element={isAuthenticated ? <Navigate replace to={"/"}/> : <Login/>} />
