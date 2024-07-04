@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from 'antd';
+import { Button, Badge } from 'antd';
 import { MessageOutlined, CloseOutlined } from '@ant-design/icons';
 import { Outlet } from "react-router-dom";
 
@@ -51,7 +51,7 @@ const Home = () => {
             icon={isChatOpen ? <CloseOutlined style={{ fontSize: '28px' }} /> : <MessageOutlined style={{ fontSize: '28px' }} />}
             onClick={toggleChatModal}
           >
-            {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
+            {unreadCount > 0 && <Badge className="badge"count={unreadCount}/>}
           </Button>
           {isChatOpen && <ChatModal listMessages={listMessages} />}
           <Outlet />

@@ -156,21 +156,27 @@ const Users = () => {
               }} 
             />
             <Tooltip title={record.isOnline ? "Online" : "Offline"}>
-              <span style={{
-                position: 'absolute',
-                top: 0,
-                right: 5,
-                width: 7,
-                height: 7,
-                borderRadius: '50%',
-                backgroundColor: record.isOnline ? 'green' : 'red',
-              }}></span>
+            {record.confirmed ? (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: -4,
+                  right: 5,
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  backgroundColor: record.isOnline ? '#5fb75f' : '#cf1d1d',
+                }}
+              ></span>
+            ) : null}
             </Tooltip>
           </div>
           <p>{record.name} {record.surname} {!record.confirmed && (
+            <Tooltip title="Falta por confirmar el email">
             <span style={{ color: 'red', fontStyle: 'italic', marginLeft: 0 }}>
               (Pendiente)
             </span>
+            </Tooltip>
           )}</p>
         </div>
       ),
