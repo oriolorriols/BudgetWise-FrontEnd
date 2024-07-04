@@ -34,11 +34,11 @@ const items = [
     icon: <ContactsOutlined />,
     label: 'Lista de empleados',
   },
-  {
+  /*{
     key: '/calendario',
     icon: <CalendarOutlined />,
     label: 'Calendario',
-  },
+  },*/
   {
     key: '/objetivos',
     icon: <RiseOutlined />,
