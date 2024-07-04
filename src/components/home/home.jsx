@@ -45,11 +45,11 @@ const Home = () => {
         <SideBar />
         <div className="p-8 h-full" style={{ width: 'calc(100vw - 200px)' }}>
           <Button
+            id='chatIcon'
             type="primary"
             shape="circle"
             icon={isChatOpen ? <CloseOutlined style={{ fontSize: '28px' }} /> : <MessageOutlined style={{ fontSize: '28px' }} />}
             onClick={toggleChatModal}
-            style={{ position: 'fixed', bottom: 30, right: 30, width: 60, height: 60 }}
           >
             {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
           </Button>
