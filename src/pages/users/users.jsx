@@ -4,7 +4,7 @@ import { getUsers } from '../../apiService/userApi';
 import { getDepartments } from '../../apiService/departmentApi';
 import { useSocket } from "../../contexts/socketContext";
 
-import { Form, Table, Typography, Button, Space, Input } from 'antd';
+import { Form, Table, Typography, Button, Space, Input, Tooltip } from 'antd';
 import TokenModal from '../../components/modals/modalToken';
 import UserFormModal from '../../components/modals/modalUserForm';
 import DepartmentModal from '../../components/modals/modalDepartments';
@@ -155,15 +155,17 @@ const Users = () => {
                 marginRight: 12 
               }} 
             />
-            <span style={{
-              position: 'absolute',
-              top: 0,
-              right: 5,
-              width: 7,
-              height: 7,
-              borderRadius: '50%',
-              backgroundColor: record.isOnline ? 'green' : 'red',
-            }}></span>
+            <Tooltip title={record.isOnline ? "Online" : "Offline"}>
+              <span style={{
+                position: 'absolute',
+                top: 0,
+                right: 5,
+                width: 7,
+                height: 7,
+                borderRadius: '50%',
+                backgroundColor: record.isOnline ? 'green' : 'red',
+              }}></span>
+            </Tooltip>
           </div>
           <p>{record.name} {record.surname} {!record.confirmed && (
             <span style={{ color: 'red', fontStyle: 'italic', marginLeft: 0 }}>
