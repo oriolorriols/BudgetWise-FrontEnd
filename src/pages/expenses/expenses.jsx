@@ -291,9 +291,29 @@ const Expenses = () => {
                     <p className="ml-1">€</p>
                 </div>
             ),
-            sorter: (a, b) => a.amount - b.amount,
+            sorter: (a, b) => {
+                const sumA = a.expenseCodeId.reduce(
+                    (acc, code) =>
+                        acc +
+                        (code.Traslados > 0 ? code.Traslados : 0) +
+                        (code.Dietas > 0 ? code.Dietas : 0) +
+                        (code.Hospedajes > 0 ? code.Hospedajes : 0),
+                    0
+                );
+                const sumB = b.expenseCodeId.reduce(
+                    (acc, code) =>
+                        acc +
+                        (code.Traslados > 0 ? code.Traslados : 0) +
+                        (code.Dietas > 0 ? code.Dietas : 0) +
+                        (code.Hospedajes > 0 ? code.Hospedajes : 0),
+                    0
+                );
+                return sumA - sumB;
+            },
             sortOrder:
-                sortedInfo.columnKey === "amount" ? sortedInfo.order : null,
+                sortedInfo.columnKey === "expenseCodeId"
+                    ? sortedInfo.order
+                    : null,
             ellipsis: true,
         },
         {
