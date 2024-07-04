@@ -19,7 +19,16 @@
   padding: 0;
   margin: 0;
   overflow-y: scroll;
-  height: calc(100% - 60px)
+  height: calc(100% - 80px)
+}
+
+.no-messages{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  text-align: center;
+  height: calc(100% - 80px);
 }
 
 .message {
@@ -72,6 +81,10 @@
   align-items: center;
   padding: 10px;
   border-top: 1px solid #ccc;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
 }
 
 .message-input input {

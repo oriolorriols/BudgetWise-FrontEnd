@@ -13,12 +13,12 @@ const Home = () => {
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [listMessages, setListMessages] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0); // Estado para contar mensajes no leídos
+  const [unreadCount, setUnreadCount] = useState(0)
 
   const toggleChatModal = () => {
     setIsChatOpen(!isChatOpen);
     if (!isChatOpen) {
-      setUnreadCount(0); // Reiniciar el conteo de mensajes no leídos al abrir el modal
+      setUnreadCount(0)
     }
   };
 
@@ -26,11 +26,9 @@ const Home = () => {
     if (!socket) return;
 
     socket.on('chatMessage', (message) => {
-      // Incrementar el conteo de mensajes no leídos si el chat está cerrado
       if (!isChatOpen) {
         setUnreadCount(prevCount => prevCount + 1);
       }
-
       setListMessages(prevMessages => [...prevMessages, message]);
     });
 

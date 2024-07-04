@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Empty } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { getOneUser } from '../../apiService/userApi';
 import { useAuth } from "../../contexts/authContext";
@@ -7,7 +8,7 @@ import './modalChat.scss';
 
 const ChatModal = ({ listMessages }) => {
   const { userId } = useAuth();
-  const { socket } = useSocket();
+  const { socket, connectedUsers } = useSocket();
   const [user, setUser] = useState({});
   const [messageInput, setMessageInput] = useState('');
 
@@ -27,9 +28,8 @@ const ChatModal = ({ listMessages }) => {
     }
   }, [userId]);
 
-
   const sendMessage = () => {
-    if (!messageInput.trim()) return
+    if (!messageInput.trim()) return;
 
     const message = {
       text: messageInput,
@@ -41,25 +41,41 @@ const ChatModal = ({ listMessages }) => {
     };
     
     socket.emit('chatMessage', message);
-
     setMessageInput('');
   };
 
   return (
     <div className="chat-modal">
-      <div className="message-list">
-        <ul>
-          {listMessages.map((msg, index) => (
-            <li key={index} className="message">
-              <img src={msg.user.profilePic} alt="Avatar" className="avatar" />
-              <div className="text">
-                <div className="username">{msg.user.name}</div>
-                <div>{msg.text}</div>
-              </div>
-            </li>
-          ))}
-        </ul>
+      <div className="connected-users">
+        {connectedUsers.length > 0 ? (
+          <p>{connectedUsers.length} personas conectadas</p>
+        ) : (
+          <p>Nadie está conectado actualmente</p>
+        )}
       </div>
+
+      {listMessages.length === 0 && (
+        <div className="no-messages">
+          <Empty description={false} />
+        </div>
+      )}
+
+      {listMessages.length > 0 && (
+        <div className="message-list">
+          <ul>
+            {listMessages.map((msg, index) => (
+              <li key={index} className="message">
+                <img src={msg.user.profilePic} alt="Avatar" className="avatar" />
+                <div className="text">
+                  <div className="username">{msg.user.name}</div>
+                  <div>{msg.text}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
       <div className="message-input">
         <input
           type="text"
