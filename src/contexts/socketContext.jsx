@@ -16,7 +16,7 @@ export const WebSocketProvider = ({ children }) => {
             return
         }
 
-        const newSocket = io(import.meta.env.VITE_SOCKET_URL)
+        const newSocket = io(import.meta.env.VITE_BACKEND)
 
         newSocket.on('connect', () => {
             newSocket.emit('userConnected', { userId })
