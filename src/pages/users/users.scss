@@ -1,2 +1,10 @@
 @import "../../colors.scss";
 
+.unconfirmed-row {
+    background-color: #f8d7da;
+    opacity: 0.8;
+  }
+  
+  td.ant-table-column-sort{
+    background-color: #ffffff00 !important;
+  }

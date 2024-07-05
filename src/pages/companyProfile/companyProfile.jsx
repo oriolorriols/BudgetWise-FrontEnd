@@ -13,6 +13,7 @@ import {
   Upload,
   Space,
   message,
+  Spin
 } from 'antd'
 
 const { Option } = Select
@@ -32,7 +33,10 @@ const CompanyProfile = () => {
   const [form] = Form.useForm()
   const [initialValues, setInitialValues] = useState({})
 
+  const [loading, setLoading] = useState(true)
+
   const getCompanyData = async () => {
+    setLoading(true)
     try {
       const data = await getOneUser(userId)
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
@@ -54,6 +58,7 @@ const CompanyProfile = () => {
         }
         setInitialValues(formValues)
         form.setFieldsValue(formValues)
+        setLoading(false)
       }
     } catch (error) {
       console.error("Failed to fetch company data", error)
@@ -113,6 +118,13 @@ const CompanyProfile = () => {
     form.setFieldsValue(initialValues)
   }
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-dvh">
+        <Spin size="large" />
+      </div>
+    )
+  }
 
   return (
     <>

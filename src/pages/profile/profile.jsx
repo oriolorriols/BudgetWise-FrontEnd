@@ -13,6 +13,7 @@ import {
   Space,
   DatePicker,
   message,
+  Spin
 } from 'antd'
 
 const { Option } = Select
@@ -33,7 +34,10 @@ const Profile = () => {
   const [initialValues, setInitialValues] = useState({})
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+  const [loading, setLoading] = useState(true)
+
   const getUserData = async () => {
+    setLoading(true)
     try {
       const data = await getOneUser(userId)
       setUser(data)
@@ -58,6 +62,7 @@ const Profile = () => {
         }
         setInitialValues(formValues)
         form.setFieldsValue(formValues)
+        setLoading(false)
       }
     } catch (error) {
       console.error("Failed to fetch user data", error)
@@ -125,6 +130,14 @@ const Profile = () => {
     const value = e.target.value
     setShowConfirmPassword(!!value)
     form.validateFields(['password2'])
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-dvh">
+        <Spin size="large" />
+      </div>
+    )
   }
 
   return (

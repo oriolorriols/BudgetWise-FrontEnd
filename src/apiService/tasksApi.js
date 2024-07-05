@@ -56,5 +56,6 @@ export const updateTask = async (id, data) => {
         headers: {"Content-Type": "application/json", "authorization": `Bearer ${token}`}
     })
     const taskUpdated = await response.json();
+    console.log(taskUpdated)
     return taskUpdated
 }

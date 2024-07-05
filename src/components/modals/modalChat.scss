@@ -1,0 +1,114 @@
+/* modalChat.scss */
+
+.chat-modal {
+  position: fixed;
+  z-index: 9999;
+  bottom: 100px;
+  right: 40px;
+  width: 400px;
+  height: 500px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.message-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: scroll;
+  height: calc(100% - 80px)
+}
+
+.no-messages{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  text-align: center;
+  height: calc(100% - 80px);
+}
+
+.message {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.message .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.message .text {
+  flex: 1;
+}
+
+.message .username {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+#chatIcon {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  margin-inline-end: 0 !important;
+  box-shadow: 4px 4px 15px #00000060;
+  z-index: 99999;
+}
+
+#chatIcon > .ant-btn-icon{
+  margin-inline-end: 0 !important;
+}
+
+.badge {
+  position: absolute;
+  top: -13px;
+  right: -13px;
+  padding: 4px 10px;
+}
+
+.message-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+}
+
+.message-input input {
+  flex: 1;
+  height: 36px; /* Ajuste de altura del input */
+  border: none;
+  outline: none;
+  padding: 0 10px;
+  font-size: 14px;
+  border-radius: 18px; /* Ajuste para redondear los bordes del input */
+}
+
+.message-input input::placeholder {
+  color: #ccc;
+}
+
+.message-input input:focus {
+  background-color: #f0f0f0;
+}
+
+.message-input .anticon {
+  font-size: 20px;
+  color: #1890ff;
+  cursor: pointer;
+  margin-left: 10px;
+}

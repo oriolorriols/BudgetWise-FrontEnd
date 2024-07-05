@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import { useJwt } from "react-jwt";
 
 export const AuthContext = createContext();
@@ -20,6 +20,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('access_token')
     setToken(null)
   }
+
+  useEffect(() => {
+    if (isExpired) {
+      setLogOut();
+    }
+  }, [isExpired]);
 
   return (
     <AuthContext.Provider value={{ setLogIn, setLogOut, isAuthenticated, userId, isHR }}>

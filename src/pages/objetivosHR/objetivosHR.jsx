@@ -1,83 +1,230 @@
-import React, { useEffect, useState } from 'react';
-import { getTasks } from '../../apiService/tasksApi';
-import { Table, Badge, Space, Checkbox, Progress } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Modal, Form, Input, Select, notification, Progress, Popconfirm } from 'antd';
+import { getDepartments } from '../../apiService/departmentApi';
+import { getUsers } from '../../apiService/userApi';
+import { getGoals, addGoalForDepartment, deleteGoal, updateGoal } from '../../apiService/goalApi';
+const { Option } = Select;
 
 const ObjetivosHR = () => {
-  const [goals, setGoals] = useState([]);
+    const [departments, setDepartments] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [goals, setGoals] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editingGoal, setEditingGoal] = useState(null);
+    const [form] = Form.useForm();
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const tasks = await getTasks();
-      const grouped = tasks.reduce((acc, item) => {
-        const goalId = item.goalId._id;
-        if (!acc[goalId]) {
-          acc[goalId] = {
-            key: goalId,
-            goalName: item.goalId.goalName,
-            goalDescription: item.goalId.goalDescription,
-            employeeName: item.goalId.employeeId?.name || 'N/A',
-            tasks: []
-          };
-        }
-        acc[goalId].tasks.push({
-          key: item._id,
-          name: item.taskName,
-          description: item.taskDescription,
-          status: item.taskStatus
-        });
-        return acc;
-      }, {});
-      setGoals(Object.values(grouped));
+    useEffect(() => {
+        const fetchDepartments = async () => {
+            const departments = await getDepartments();
+            setDepartments(departments);
+        };
+
+        const fetchUsers = async () => {
+            const users = await getUsers();
+            setUsers(users);
+        };
+
+        const fetchGoals = async () => {
+            const goals = await getGoals();
+            setGoals(goals);
+        };
+
+        fetchDepartments();
+        fetchUsers();
+        fetchGoals();
+    }, []);
+
+    const showModal = () => {
+        setIsEditMode(false);
+        setIsModalVisible(true);
     };
-    fetchTasks();
-  }, []);
 
-  const calculateProgress = tasks => {
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(task => task.status !== 'Pendiente').length;
-    return (completedTasks / totalTasks) * 100;
-  };
+    const showEditModal = (goal) => {
+        setIsEditMode(true);
+        setEditingGoal(goal);
+        form.setFieldsValue({
+            departmentId: goal.employeeId.departmentId,
+            goalName: goal.goalName,
+            goalDescription: goal.goalDescription
+        });
+        setIsModalVisible(true);
+    };
 
-  const expandedRowRender = (record) => {
+    const handleCancel = () => {
+        setIsModalVisible(false);
+        form.resetFields();
+        setEditingGoal(null);
+    };
+
+    const onFinish = async (values) => {
+        if (isEditMode) {
+            try {
+                await updateGoal(editingGoal._id, values);
+                notification.success({ message: 'Objetivo actualizado correctamente' });
+                setIsModalVisible(false);
+                form.resetFields();
+                setEditingGoal(null);
+                // Refresh goals list
+                const goals = await getGoals();
+                setGoals(goals);
+            } catch (error) {
+                notification.error({ message: 'Error al actualizar objetivo' });
+            }
+        } else {
+            try {
+                await addGoalForDepartment(values);
+                notification.success({ message: 'Objetivo creado para todo el departamento' });
+                setIsModalVisible(false);
+                form.resetFields();
+                // Refresh goals list
+                const goals = await getGoals();
+                setGoals(goals);
+            } catch (error) {
+                notification.error({ message: 'Error al crear objetivo' });
+            }
+        }
+    };
+
+    const getCompletionPercentage = (userId) => {
+        const userGoals = goals.filter(goal => goal.employeeId._id === userId);
+        const completedGoals = userGoals.filter(goal => goal.goalStatus === 'Completado');
+        return userGoals.length > 0 ? ((completedGoals.length / userGoals.length) * 100).toFixed(0) : 0;
+    };
+
+    const handleDeleteGoal = async (goalId) => {
+        try {
+            await deleteGoal(goalId);
+            notification.success({ message: 'Objetivo eliminado' });
+            const goals = await getGoals();
+            setGoals(goals);
+        } catch (error) {
+            notification.error({ message: 'Error al eliminar objetivo' });
+        }
+    };
+
+    const removeDuplicateGoals = (departmentId) => {
+        const departmentGoals = goals.filter(goal => goal.employeeId.departmentId === departmentId);
+        const uniqueGoals = [];
+        const goalMap = {};
+
+        departmentGoals.forEach(goal => {
+            const key = `${goal.goalName}-${goal.goalDescription}`;
+            if (!goalMap[key]) {
+                goalMap[key] = true;
+                uniqueGoals.push(goal);
+            }
+        });
+
+        return uniqueGoals;
+    };
+
+    const expandedRowRender = (department) => {
+        const departmentUsers = users.filter(user => user.departmentId._id === department._id);
+        const columns = [
+            { title: 'Empleado', dataIndex: 'name', key: 'name' },
+            { 
+                title: 'Progreso de Objetivos', 
+                key: 'progress',
+                render: (_, user) => (
+                    <Progress percent={getCompletionPercentage(user._id)} />
+                )
+            },
+        ];
+
+        return (
+            <Table
+                columns={columns}
+                dataSource={departmentUsers}
+                rowKey="_id"
+                pagination={false}
+            />
+        );
+    };
+
+    const getDepartmentGoals = (departmentId) => {
+        const uniqueGoals = removeDuplicateGoals(departmentId);
+        const columns = [
+            { title: 'Objetivo', dataIndex: 'goalName', key: 'goalName' },
+            {
+                title: 'Acción',
+                key: 'action',
+                render: (_, goal) => (
+                    <>
+                        <Button type="link" onClick={() => showEditModal(goal)}>Editar</Button>
+                        <Popconfirm
+                            title="¿Seguro que deseas eliminar este objetivo?"
+                            onConfirm={() => handleDeleteGoal(goal._id)}
+                        >
+                            <Button type="link">Eliminar</Button>
+                        </Popconfirm>
+                    </>
+                ),
+            }
+        ];
+
+        return (
+            <Table
+                columns={columns}
+                dataSource={uniqueGoals}
+                rowKey="_id"
+                pagination={false}
+            />
+        );
+    };
+
     const columns = [
-      { title: 'Task Name', dataIndex: 'name', key: 'name' },
-      { title: 'Description', dataIndex: 'description', key: 'description' },
-      {
-        title: 'Status',
-        key: 'status',
-        render: (text, task) => (
-          <Checkbox checked={task.status !== 'Pendiente'}>{task.status}</Checkbox>
-        ),
-      },
+        { title: 'Nombre del Departamento', dataIndex: 'departmentName', key: 'departmentName' },
     ];
 
-    return <Table columns={columns} dataSource={record.tasks} pagination={false} />;
-  };
+    return (
+        <>
+            <Button type="primary" onClick={showModal}>
+                Añadir Objetivo para Departamento
+            </Button>
+            <Table
+                columns={columns}
+                dataSource={departments}
+                rowKey="_id"
+                expandable={{
+                    expandedRowRender: record => (
+                        <>
+                            {getDepartmentGoals(record._id)}
+                            {expandedRowRender(record)}
+                        </>
+                    ),
+                }}
+            />
 
-  const columns = [
-    { title: 'Objective Name', dataIndex: 'goalName', key: 'goalName' },
-    { title: 'Description', dataIndex: 'goalDescription', key: 'goalDescription' },
-    { title: 'Assigned To', dataIndex: 'employeeName', key: 'employeeName' },
-    {
-      title: 'Progress',
-      key: 'progress',
-      render: (text, record) => {
-        const percent = calculateProgress(record.tasks);
-        return <Progress percent={percent} type="line" />;
-      },
-    },
-  ];
-
-  return (
-    <Table
-      columns={columns}
-      expandable={{ expandedRowRender, expandIcon: ({ expanded, onExpand, record }) =>
-        <DownOutlined rotate={expanded ? 180 : 0} onClick={e => onExpand(record, e)} />
-      }}
-      dataSource={goals}
-    />
-  );
+            <Modal
+                title={isEditMode ? "Editar Objetivo" : "Añadir Objetivo para Departamento"}
+                visible={isModalVisible}
+                onCancel={handleCancel}
+                footer={null}
+            >
+                <Form form={form} onFinish={onFinish}>
+                    <Form.Item name="departmentId" label="Departamento" rules={[{ required: true, message: 'Seleccione un departamento' }]}>
+                        <Select placeholder="Seleccione un departamento" disabled={isEditMode}>
+                            {departments.map(dept => (
+                                <Option key={dept._id} value={dept._id}>{dept.departmentName}</Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item name="goalName" label="Nombre del Objetivo" rules={[{ required: true, message: 'Ingrese el nombre del objetivo' }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="goalDescription" label="Descripción del Objetivo">
+                        <Input.TextArea />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit">
+                            {isEditMode ? "Actualizar Objetivo" : "Crear Objetivo"}
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </>
+    );
 };
 
 export default ObjetivosHR;

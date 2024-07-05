@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from "../../contexts/authContext"
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Input, Spin } from 'antd';
 import './login.scss'
 import { login } from '../../apiService/userApi';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,12 +12,15 @@ const Login = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const { setLogIn } = useAuth()
 
     const onFinish = async (values) => {
         if(values.username === "" || values.password === "") {}
-        const response = await login(email, password);
+        setLoading(true)
+        const response = await login(email, password)
+        setLoading(false)
         if (!response.msg) {
             setLogIn(response);
             navigate('/');
@@ -36,7 +39,16 @@ const Login = () => {
                         errors: [response.msg],
                     },
                 ]);
-            } else if (response.msg === "Contraseña incorrecta") {
+            } else if (response.msg === "Tu cuenta aún no está activada.") {
+                form.setFields([
+                    {
+                        name: 'username',
+                        errors: [response.msg],
+                    },
+                ]);
+            }
+            
+            else if (response.msg === "Contraseña incorrecta") {
                 form.setFields([
                     {
                         name: 'password',
@@ -119,8 +131,8 @@ const Login = () => {
                             </a>
                         </div>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" className="w-full mb-3">
-                                Iniciar
+                        <Button type="primary" htmlType="submit" className="w-full mb-3" disabled={loading}>
+                                {loading ? <Spin /> : 'Iniciar'}
                             </Button>
                             ¡O <Link to="/registro"><span className='link'>registrate</span></Link>!
                         </Form.Item>
