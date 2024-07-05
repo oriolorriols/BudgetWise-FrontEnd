@@ -1,125 +1,167 @@
 import React, { useEffect, useState } from 'react';
-import { getTasks } from '../../apiService/tasksApi';
-import { Progress, Collapse, List, Checkbox, Button } from 'antd';
-import NewObjectiveModal from '../../components/modals/modalObjectives';
+import { getTasks, addTask, deleteTask, updateTask } from '../../apiService/tasksApi';
+import { getGoals, updateGoal } from '../../apiService/goalApi';
+import { Progress, Collapse, List, Checkbox, Button, message, Modal } from 'antd';
 import NewTaskModal from '../../components/modals/modalTasks';
+import { useAuth } from '../../contexts/authContext';
 
 const { Panel } = Collapse;
-const createObjective = async (values) => {
-  console.log(values)
-}
-
-const createTask = async (values) => {
-  console.log(values)
-}
 
 const Objetivos = () => {
-  const [goals, setGoals] = useState({});
+  const [goals, setGoals] = useState([]);
   const [activeKey, setActiveKey] = useState([]);
-  const [isObjectiveModalVisible, setIsObjectiveModalVisible] = useState(false);
   const [isTaskModalVisible, setIsTaskModalVisible] = useState(false);
   const [selectedGoalId, setSelectedGoalId] = useState(null);
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const tasks = await getTasks();
-      const grouped = tasks.reduce((acc, item) => {
-        const goalId = item.goalId._id;
-        if (!acc[goalId]) {
-          acc[goalId] = {
-            goalName: item.goalId.goalName,
-            goalDescription: item.goalId.goalDescription,
-            tasks: []
-          };
-        }
-        acc[goalId].tasks.push({
-          id: item._id,
-          name: item.taskName,
-          description: item.taskDescription,
-          status: item.taskStatus
+  const { userId } = useAuth(); 
+  console.log('userId', userId);
+
+  const fetchGoalsAndTasks = async () => {
+    const fetchedGoals = await getGoals();
+    const tasks = await getTasks();
+    console.log('tasks', tasks);
+    console.log('fetchedGoals', fetchedGoals);
+
+    const filteredGoals = fetchedGoals.filter(goal => goal.employeeId._id === userId);
+    console.log('filteredGoals', filteredGoals);
+
+    const grouped = filteredGoals.reduce((acc, goal) => {
+      acc[goal._id] = {
+        goalId: goal._id,
+        goalName: goal.goalName,
+        goalDescription: goal.goalDescription,
+        goalStatus: goal.goalStatus,
+        tasks: []
+      };
+      return acc;
+    }, {});
+
+    tasks.forEach(task => {
+      if (grouped[task.goalId._id]) {
+        grouped[task.goalId._id].tasks.push({
+          id: task._id,
+          goalId: task.goalId._id,
+          name: task.taskName,
+          description: task.taskDescription,
+          status: task.taskStatus
         });
-        return acc;
-      }, {});
-      setGoals(grouped);
-    };
-    fetchTasks();
-  }, []);
+      }
+    });
+
+    setGoals(Object.values(grouped));
+    return Object.values(grouped);
+  };
+
+  useEffect(() => {
+    fetchGoalsAndTasks();
+  }, [userId]);
 
   const togglePanel = key => {
     setActiveKey(key.length ? key : []);
   };
 
-  const calculateProgress = tasks => {
+  const calculateProgress = (goal) => {
+    const tasks = goal.tasks;
+    if (goal.goalStatus === 'Completado') {
+      return 100;
+    }
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter(task => task.status !== 'Pendiente').length;
-    return (completedTasks / totalTasks) * 100;
+    return totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
   };
 
-  const handleCreateObjective = async (values) => {
-    try {
-      await createObjective(values);
-      message.success('Objective created successfully!');
-      // Refresh tasks after creating the new objective
-      const tasks = await getTasks();
-      const grouped = tasks.reduce((acc, item) => {
-        const goalId = item.goalId._id;
-        if (!acc[goalId]) {
-          acc[goalId] = {
-            goalName: item.goalId.goalName,
-            goalDescription: item.goalId.goalDescription,
-            tasks: []
-          };
-        }
-        acc[goalId].tasks.push({
-          id: item._id,
-          name: item.taskName,
-          description: item.taskDescription,
-          status: item.taskStatus
-        });
-        return acc;
-      }, {});
-      setGoals(grouped);
-    } catch (error) {
-      message.error('Failed to create objective');
+  const updateGoalStatus = async (goalId) => {
+    const updatedGoals = await fetchGoalsAndTasks();
+
+    const goal = updatedGoals.find(goal => goal.goalId === goalId);
+    const totalTasks = goal.tasks.length;
+    const completedTasks = goal.tasks.filter(task => task.status === 'Completado').length;
+
+    let newStatus = 'Pendiente';
+    if (completedTasks === totalTasks && totalTasks > 0) {
+      newStatus = 'Completado';
+    } else if (completedTasks > 0) {
+      newStatus = 'En proceso';
     }
+
+    await handleUpdateGoal(goalId, { goalStatus: newStatus });
+    fetchGoalsAndTasks();
   };
 
   const handleCreateTask = async (values) => {
     try {
-      await createTask(values);
+      await addTask(values);
       message.success('Task created successfully!');
-      // Refresh tasks after creating the new task
-      const tasks = await getTasks();
-      const grouped = tasks.reduce((acc, item) => {
-        const goalId = item.goalId._id;
-        if (!acc[goalId]) {
-          acc[goalId] = {
-            goalName: item.goalId.goalName,
-            goalDescription: item.goalId.goalDescription,
-            tasks: []
-          };
-        }
-        acc[goalId].tasks.push({
-          id: item._id,
-          name: item.taskName,
-          description: item.taskDescription,
-          status: item.taskStatus
-        });
-        return acc;
-      }, {});
-      setGoals(grouped);
+      await fetchGoalsAndTasks();
     } catch (error) {
       message.error('Failed to create task');
     }
   };
 
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await deleteTask(taskId);
+      message.success('Task deleted successfully!');
+      await fetchGoalsAndTasks();
+    } catch (error) {
+      message.error('Failed to delete task');
+    }
+  };
+
+  const handleUpdateTask = async (taskId, data) => {
+    try {
+      await updateTask(taskId, data);
+      message.success('Task updated successfully!');
+    } catch (error) {
+      message.error('Failed to update task');
+    }
+  };
+
+  const handleUpdateGoal = async (goalId, data) => {
+    try {
+      await updateGoal(goalId, data);
+      message.success('Goal updated successfully!');
+      await fetchGoalsAndTasks();
+    } catch (error) {
+      message.error('Failed to update goal');
+    }
+  };
+
+  const handleTaskStatusChange = async (task) => {
+    const newStatus = task.status === 'Pendiente' ? 'Completado' : 'Pendiente';
+    await handleUpdateTask(task.id, { taskStatus: newStatus });
+
+    const updatedGoals = await fetchGoalsAndTasks();
+    const goal = updatedGoals.find(goal => goal.goalId === task.goalId);
+    console.log('goal', goal);
+    const pendingTasks = goal.tasks.filter(t => t.status === 'Pendiente');
+
+    if (newStatus === 'Completado' && pendingTasks.length === 0) {
+      Modal.confirm({
+        title: '¿Deseas marcar el objetivo como completado?',
+        onOk: async () => {
+          await handleUpdateGoal(task.goalId, { goalStatus: 'Completado' });
+        }
+      });
+    } else {
+      await updateGoalStatus(task.goalId);
+    }
+  };
+
+  const markGoalAsCompleted = async (goalId) => {
+    Modal.confirm({
+      title: '¿Deseas marcar el objetivo como completado?',
+      onOk: async () => {
+        await handleUpdateGoal(goalId, { goalStatus: 'Completado' });
+      }
+    });
+    await fetchGoalsAndTasks();
+  };
+
   return (
     <div className="w-full">
-      <div className='flex flex-row items-center justify-between'>
+      <div className="flex flex-row items-center justify-between">
         <h2 className="text-xl font-bold">Objetivos</h2>
-        <Button type="primary" onClick={() => setIsObjectiveModalVisible(true)} className='my-4'>
-          Crear nuevo objetivo
-        </Button>
       </div>
       <Collapse
         bordered={true}
@@ -127,8 +169,8 @@ const Objetivos = () => {
         onChange={togglePanel}
         expandIconPosition="right"
       >
-        {Object.entries(goals).map(([goalId, goal]) => {
-          const percent = calculateProgress(goal.tasks);
+        {goals.map(goal => {
+          const percent = calculateProgress(goal);
           const header = (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>{goal.goalName}</span>
@@ -137,38 +179,56 @@ const Objetivos = () => {
           );
 
           return (
-            <Panel header={header} key={goalId}>
+            <Panel header={header} key={goal.goalId}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <p>{goal.goalDescription}</p>
-                <Button type="dashed" onClick={() => {
-                  setSelectedGoalId(goalId);
-                  setIsTaskModalVisible(true);
-                }}>
-                  Añadir tarea
-                </Button>
+                <div>
+                  <Button
+                    type="dashed"
+                    onClick={() => {
+                      setSelectedGoalId(goal.goalId);
+                      setIsTaskModalVisible(true);
+                    }}
+                    style={{ marginRight: '8px' }}
+                  >
+                    Añadir tarea
+                  </Button>
+                  <Button
+                    type="dashed"
+                    onClick={() => markGoalAsCompleted(goal.goalId)}
+                  >
+                    Marcar como completado
+                  </Button>
+                </div>
               </div>
-              <List
-                itemLayout="horizontal"
-                dataSource={goal.tasks}
-                renderItem={task => (
-                  <List.Item>
-                    <List.Item.Meta
-                      avatar={<Checkbox checked={task.status !== 'Pendiente'} />}
-                      title={task.name}
-                      description={task.description}
-                    />
-                  </List.Item>
-                )}
-              />
+              {goal.tasks.length > 0 ? (
+                <List
+                  itemLayout="horizontal"
+                  dataSource={goal.tasks}
+                  renderItem={task => (
+                    <List.Item
+                      actions={[
+                        <Button type="link" onClick={() => handleDeleteTask(task.id)}>Eliminar</Button>,
+                        <Checkbox
+                          checked={task.status !== 'Pendiente'}
+                          onChange={() => handleTaskStatusChange(task)}
+                        />,
+                      ]}
+                    >
+                      <List.Item.Meta
+                        title={task.name}
+                        description={task.description}
+                      />
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <p>No hay tareas asignadas a este objetivo.</p>
+              )}
             </Panel>
           );
         })}
       </Collapse>
-      <NewObjectiveModal
-        visible={isObjectiveModalVisible}
-        onCancel={() => setIsObjectiveModalVisible(false)}
-        onCreate={handleCreateObjective}
-      />
       <NewTaskModal
         visible={isTaskModalVisible}
         onCancel={() => setIsTaskModalVisible(false)}
