@@ -39,7 +39,16 @@ const Login = () => {
                         errors: [response.msg],
                     },
                 ]);
-            } else if (response.msg === "Contraseña incorrecta") {
+            } else if (response.msg === "Tu cuenta aún no está activada.") {
+                form.setFields([
+                    {
+                        name: 'username',
+                        errors: [response.msg],
+                    },
+                ]);
+            }
+            
+            else if (response.msg === "Contraseña incorrecta") {
                 form.setFields([
                     {
                         name: 'password',

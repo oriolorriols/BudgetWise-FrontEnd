@@ -3,6 +3,7 @@ import {  Routes, Route, Navigate } from "react-router-dom"
 import Home from "./components/home/home"
 
 import Login from './pages/login/login'
+import Confirm from "./pages/login/confirm"
 import { PrivateRoutes } from "./utils/PrivateRoutes"
 
 import Users from "./pages/users/users"
@@ -23,6 +24,7 @@ import './App.scss'
 import { Register } from "./pages/register/register"
 
 
+
 function App() {
 
   const { isAuthenticated, isHR } = useAuth()
@@ -32,6 +34,7 @@ function App() {
         <Routes>
           <Route path="*" element={<Navigate to="/"/>}/>
           <Route path="/login" element={isAuthenticated ? <Navigate replace to={"/"}/> : <Login/>} />
+          <Route path='/confirmregister/:userid' element={<Confirm/>}></Route>
           <Route path="/registro" element={<Register/>}/>
           <Route element={<PrivateRoutes/>}>
               <Route path='/' element={<Home/>}>
