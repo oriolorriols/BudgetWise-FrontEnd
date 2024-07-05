@@ -12,6 +12,7 @@ const Objetivos = () => {
   const [activeKey, setActiveKey] = useState([]);
   const [isTaskModalVisible, setIsTaskModalVisible] = useState(false);
   const [selectedGoalId, setSelectedGoalId] = useState(null);
+  const [taskToEdit, setTaskToEdit] = useState(null); // Nuevo estado para la tarea a editar
 
   const { userId } = useAuth(); 
   console.log('userId', userId);
@@ -90,11 +91,18 @@ const Objetivos = () => {
 
   const handleCreateTask = async (values) => {
     try {
-      await addTask(values);
-      message.success('Task created successfully!');
+      if (taskToEdit) {
+        await updateTask(taskToEdit.id, {taskName: values.name, taskDescription: values.description, taskStatus: values.status});
+        message.success('Task updated successfully!');
+      } else {
+        // Add new task
+        await addTask(values);
+        message.success('Task created successfully!');
+      }
+      setTaskToEdit(null);
       await fetchGoalsAndTasks();
     } catch (error) {
-      message.error('Failed to create task');
+      message.error('Failed to save task');
     }
   };
 
@@ -153,9 +161,15 @@ const Objetivos = () => {
       title: '¿Deseas marcar el objetivo como completado?',
       onOk: async () => {
         await handleUpdateGoal(goalId, { goalStatus: 'Completado' });
+        await fetchGoalsAndTasks();
       }
     });
-    await fetchGoalsAndTasks();
+  };
+
+  const openTaskModal = (goalId, task = null) => {
+    setSelectedGoalId(goalId);
+    setTaskToEdit(task);
+    setIsTaskModalVisible(true);
   };
 
   return (
@@ -185,10 +199,7 @@ const Objetivos = () => {
                 <div>
                   <Button
                     type="dashed"
-                    onClick={() => {
-                      setSelectedGoalId(goal.goalId);
-                      setIsTaskModalVisible(true);
-                    }}
+                    onClick={() => openTaskModal(goal.goalId)}
                     style={{ marginRight: '8px' }}
                   >
                     Añadir tarea
@@ -209,6 +220,7 @@ const Objetivos = () => {
                     <List.Item
                       actions={[
                         <Button type="link" onClick={() => handleDeleteTask(task.id)}>Eliminar</Button>,
+                        <Button type="link" onClick={() => openTaskModal(goal.goalId, task)}>Editar</Button>,
                         <Checkbox
                           checked={task.status !== 'Pendiente'}
                           onChange={() => handleTaskStatusChange(task)}
@@ -234,6 +246,7 @@ const Objetivos = () => {
         onCancel={() => setIsTaskModalVisible(false)}
         onCreate={handleCreateTask}
         goalId={selectedGoalId}
+        task={taskToEdit} // Pasar la tarea a editar al modal
       />
     </div>
   );

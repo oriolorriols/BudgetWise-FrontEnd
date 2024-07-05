@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, Select, notification, Progress, Popconfirm } from 'antd';
 import { getDepartments } from '../../apiService/departmentApi';
 import { getUsers } from '../../apiService/userApi';
-import { getGoals, addGoalForDepartment, deleteGoal } from '../../apiService/goalApi';
+import { getGoals, addGoalForDepartment, deleteGoal, updateGoal } from '../../apiService/goalApi';
 const { Option } = Select;
 
 const ObjetivosHR = () => {
@@ -10,6 +10,8 @@ const ObjetivosHR = () => {
     const [users, setUsers] = useState([]);
     const [goals, setGoals] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editingGoal, setEditingGoal] = useState(null);
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -34,30 +36,57 @@ const ObjetivosHR = () => {
     }, []);
 
     const showModal = () => {
+        setIsEditMode(false);
+        setIsModalVisible(true);
+    };
+
+    const showEditModal = (goal) => {
+        setIsEditMode(true);
+        setEditingGoal(goal);
+        form.setFieldsValue({
+            departmentId: goal.employeeId.departmentId,
+            goalName: goal.goalName,
+            goalDescription: goal.goalDescription
+        });
         setIsModalVisible(true);
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
         form.resetFields();
+        setEditingGoal(null);
     };
 
     const onFinish = async (values) => {
-        try {
-            await addGoalForDepartment(values);
-            notification.success({ message: 'Objetivo creado para todo el departamento' });
-            setIsModalVisible(false);
-            form.resetFields();
-            // Refresh goals list
-            const goals = await getGoals();
-            setGoals(goals);
-        } catch (error) {
-            notification.error({ message: 'Error al crear objetivo' });
+        if (isEditMode) {
+            try {
+                await updateGoal(editingGoal._id, values);
+                notification.success({ message: 'Objetivo actualizado correctamente' });
+                setIsModalVisible(false);
+                form.resetFields();
+                setEditingGoal(null);
+                // Refresh goals list
+                const goals = await getGoals();
+                setGoals(goals);
+            } catch (error) {
+                notification.error({ message: 'Error al actualizar objetivo' });
+            }
+        } else {
+            try {
+                await addGoalForDepartment(values);
+                notification.success({ message: 'Objetivo creado para todo el departamento' });
+                setIsModalVisible(false);
+                form.resetFields();
+                // Refresh goals list
+                const goals = await getGoals();
+                setGoals(goals);
+            } catch (error) {
+                notification.error({ message: 'Error al crear objetivo' });
+            }
         }
     };
 
     const getCompletionPercentage = (userId) => {
-        console.log(goals);
         const userGoals = goals.filter(goal => goal.employeeId._id === userId);
         const completedGoals = userGoals.filter(goal => goal.goalStatus === 'Completado');
         return userGoals.length > 0 ? ((completedGoals.length / userGoals.length) * 100).toFixed(0) : 0;
@@ -74,9 +103,23 @@ const ObjetivosHR = () => {
         }
     };
 
+    const removeDuplicateGoals = (departmentId) => {
+        const departmentGoals = goals.filter(goal => goal.employeeId.departmentId === departmentId);
+        const uniqueGoals = [];
+        const goalMap = {};
+
+        departmentGoals.forEach(goal => {
+            const key = `${goal.goalName}-${goal.goalDescription}`;
+            if (!goalMap[key]) {
+                goalMap[key] = true;
+                uniqueGoals.push(goal);
+            }
+        });
+
+        return uniqueGoals;
+    };
+
     const expandedRowRender = (department) => {
-        console.log(department)
-        console.log(users)
         const departmentUsers = users.filter(user => user.departmentId._id === department._id);
         const columns = [
             { title: 'Empleado', dataIndex: 'name', key: 'name' },
@@ -100,19 +143,22 @@ const ObjetivosHR = () => {
     };
 
     const getDepartmentGoals = (departmentId) => {
-        const departmentGoals = goals.filter(goal => goal.employeeId.departmentId === departmentId);
+        const uniqueGoals = removeDuplicateGoals(departmentId);
         const columns = [
             { title: 'Objetivo', dataIndex: 'goalName', key: 'goalName' },
             {
                 title: 'Acción',
                 key: 'action',
                 render: (_, goal) => (
-                    <Popconfirm
-                        title="¿Seguro que deseas eliminar este objetivo?"
-                        onConfirm={() => handleDeleteGoal(goal._id)}
-                    >
-                        <Button type="link">Eliminar</Button>
-                    </Popconfirm>
+                    <>
+                        <Button type="link" onClick={() => showEditModal(goal)}>Editar</Button>
+                        <Popconfirm
+                            title="¿Seguro que deseas eliminar este objetivo?"
+                            onConfirm={() => handleDeleteGoal(goal._id)}
+                        >
+                            <Button type="link">Eliminar</Button>
+                        </Popconfirm>
+                    </>
                 ),
             }
         ];
@@ -120,7 +166,7 @@ const ObjetivosHR = () => {
         return (
             <Table
                 columns={columns}
-                dataSource={departmentGoals}
+                dataSource={uniqueGoals}
                 rowKey="_id"
                 pagination={false}
             />
@@ -151,14 +197,14 @@ const ObjetivosHR = () => {
             />
 
             <Modal
-                title="Añadir Objetivo para Departamento"
+                title={isEditMode ? "Editar Objetivo" : "Añadir Objetivo para Departamento"}
                 visible={isModalVisible}
                 onCancel={handleCancel}
                 footer={null}
             >
                 <Form form={form} onFinish={onFinish}>
                     <Form.Item name="departmentId" label="Departamento" rules={[{ required: true, message: 'Seleccione un departamento' }]}>
-                        <Select placeholder="Seleccione un departamento">
+                        <Select placeholder="Seleccione un departamento" disabled={isEditMode}>
                             {departments.map(dept => (
                                 <Option key={dept._id} value={dept._id}>{dept.departmentName}</Option>
                             ))}
@@ -171,7 +217,9 @@ const ObjetivosHR = () => {
                         <Input.TextArea />
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" htmlType="submit">Crear Objetivo</Button>
+                        <Button type="primary" htmlType="submit">
+                            {isEditMode ? "Actualizar Objetivo" : "Crear Objetivo"}
+                        </Button>
                     </Form.Item>
                 </Form>
             </Modal>
