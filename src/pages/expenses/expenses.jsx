@@ -16,10 +16,9 @@ import {
     Button,
     Form,
     Modal,
-    Radio,
-    Select,
 } from "antd";
 import ExpenseModal from "../../components/modals/modalExpenses";
+import { getAbsences } from "../../apiService/absencesApi";
 const { Text } = Typography;
 
 const { RangePicker } = DatePicker;
@@ -28,6 +27,7 @@ const { Search } = Input;
 
 const Expenses = () => {
     const [allExpenses, setAllExpenses] = useState([]);
+    const [allAbsences, setAllAbsences] = useState([]);
     const [error, setError] = useState("");
     const [dummy, refresh] = useState(false);
     const [filtering, setFiltering] = useState([]);
@@ -39,8 +39,16 @@ const Expenses = () => {
         else setError(expenses.message);
     };
 
+    const getAllAbsences = async () => {
+        const absences = await getAbsences();
+        const notRemoved = absences.filter((absence) => !absence.removeAt);
+        if (absences.length) setAllAbsences(notRemoved);
+        else setError(absences.message);
+    };
+
     useEffect(() => {
         getAllExpenses();
+        getAllAbsences();
     }, [dummy]);
 
     const [filteredInfo, setFilteredInfo] = useState({});
@@ -132,7 +140,7 @@ const Expenses = () => {
     };
 
     function formatDate(dateString) {
-        return new Date(dateString).toISOString().split("T")[0];
+        return dateString.split("T")[0];
     }
 
     const [expensePayment, setExpensePayment] = useState("");
@@ -185,14 +193,7 @@ const Expenses = () => {
     };
 
     const [form] = Form.useForm();
-    // const [formValues, setFormValues] = useState();
     const [open, setOpen] = useState(false);
-
-    // const onCreate = (values) => {
-    //     console.log('Received values of form: ', values);
-    //     setFormValues(values);
-    //     setOpen(false);
-    // };
 
     const addExpense = () => {
         setOpen(true);
@@ -274,44 +275,27 @@ const Expenses = () => {
         },
         {
             title: "Monto (€)",
-            dataIndex: "expenseCodeId",
             width: "8%",
-            key: "expenseCodeId",
-            render: (codes) => (
-                <div className="flex">
-                    <ul>
-                        {codes.map((code, index) => (
-                            <li key={index}>
-                                {(code.Traslados > 0 ? code.Traslados : 0) +
-                                    (code.Dietas > 0 ? code.Dietas : 0) +
-                                    (code.Hospedajes > 0 ? code.Hospedajes : 0)}
-                            </li>
-                        ))}
-                    </ul>
-                    <p className="ml-1">€</p>
-                </div>
-            ),
+            dataIndex: "expenseCodes",
+            key: "expenseCodes",
+            render: (_, record) =>
+                (record.expenseFood ? record.expenseFood : 0) +
+                (record.expenseLodging ? record.expenseLodging : 0) +
+                (record.expenseTravel ? record.expenseTravel : 0) +
+                " €",
             sorter: (a, b) => {
-                const sumA = a.expenseCodeId.reduce(
-                    (acc, code) =>
-                        acc +
-                        (code.Traslados > 0 ? code.Traslados : 0) +
-                        (code.Dietas > 0 ? code.Dietas : 0) +
-                        (code.Hospedajes > 0 ? code.Hospedajes : 0),
-                    0
-                );
-                const sumB = b.expenseCodeId.reduce(
-                    (acc, code) =>
-                        acc +
-                        (code.Traslados > 0 ? code.Traslados : 0) +
-                        (code.Dietas > 0 ? code.Dietas : 0) +
-                        (code.Hospedajes > 0 ? code.Hospedajes : 0),
-                    0
-                );
-                return sumA - sumB;
+                const totalA =
+                    (a.expenseFood ? a.expenseFood : 0) +
+                    (a.expenseLodging ? a.expenseLodging : 0) +
+                    (a.expenseTravel ? a.expenseTravel : 0);
+                const totalB =
+                    (b.expenseFood ? b.expenseFood : 0) +
+                    (b.expenseLodging ? b.expenseLodging : 0) +
+                    (b.expenseTravel ? b.expenseTravel : 0);
+                return totalA - totalB;
             },
             sortOrder:
-                sortedInfo.columnKey === "expenseCodeId"
+                sortedInfo.columnKey === "expenseCodes"
                     ? sortedInfo.order
                     : null,
             ellipsis: true,
@@ -443,29 +427,30 @@ const Expenses = () => {
                 expandable={{
                     expandedRowRender: (record) => (
                         <div className="flex">
-                            {record.expenseCodeId.map((code, index) => (
-                                <div key={index}>
-                                    <p className="font-bold">Gastos:</p>
-                                    <p>
-                                        Hospedajes:{" "}
-                                        {code.Hospedajes > 0
-                                            ? code.Hospedajes
-                                            : 0}{" "}
-                                        €
-                                    </p>
-                                    <p>
-                                        Dietas:{" "}
-                                        {code.Dietas > 0 ? code.Dietas : 0} €
-                                    </p>
-                                    <p>
-                                        Traslados:{" "}
-                                        {code.Traslados > 0
-                                            ? code.Traslados
-                                            : 0}{" "}
-                                        €
-                                    </p>
-                                </div>
-                            ))}
+                            <div>
+                                <p className="font-bold">Gastos:</p>
+                                <p>
+                                    Hospedajes: {""}
+                                    {record.expenseLodging
+                                        ? record.expenseLodging
+                                        : 0}
+                                    €
+                                </p>
+                                <p>
+                                    Dietas: {""}
+                                    {record.expenseFood
+                                        ? record.expenseFood
+                                        : 0}
+                                    €
+                                </p>
+                                <p>
+                                    Traslados:{" "}
+                                    {record.expenseTravel > 0
+                                        ? record.expenseTravel
+                                        : 0}
+                                    €
+                                </p>
+                            </div>
                             <div className="ml-32">
                                 <p className="font-bold">País:</p>
                                 {record.absenceId.country}
@@ -515,18 +500,15 @@ const Expenses = () => {
                 onChange={handleChange}
                 rowKey="_id"
                 summary={(pageData) => {
-                    let totalExpenseCodeId = 0;
-                    pageData.forEach(({ expenseCodeId }) => {
-                        totalExpenseCodeId +=
-                            (expenseCodeId[0].Traslados
-                                ? expenseCodeId[0].Traslados
+                    let totalExpense = 0;
+                    pageData.forEach((record) => {
+                        const recordTotal =
+                            (record.expenseFood ? record.expenseFood : 0) +
+                            (record.expenseLodging
+                                ? record.expenseLodging
                                 : 0) +
-                            (expenseCodeId[0].Dietas
-                                ? expenseCodeId[0].Dietas
-                                : 0) +
-                            (expenseCodeId[0].Hospedajes
-                                ? expenseCodeId[0].Hospedajes
-                                : 0);
+                            (record.expenseTravel ? record.expenseTravel : 0);
+                        totalExpense += recordTotal;
                     });
                     return (
                         <>
@@ -540,7 +522,7 @@ const Expenses = () => {
                                 </Table.Summary.Cell>
                                 <Table.Summary.Cell>
                                     <Text className="font-bold">
-                                        {totalExpenseCodeId} €
+                                        {totalExpense} €
                                     </Text>
                                 </Table.Summary.Cell>
                             </Table.Summary.Row>
@@ -549,7 +531,12 @@ const Expenses = () => {
                 }}
             />
             {error && <p>Ha habido un error: {error}</p>}
-            <ExpenseModal visible={open} onCancel={() => setOpen(false)} />
+            <ExpenseModal
+                visible={open}
+                onCancel={() => setOpen(false)}
+                allAbsences={allAbsences}
+                refresh={refresh}
+            />
         </>
     );
 };
