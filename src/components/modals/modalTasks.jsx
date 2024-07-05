@@ -1,15 +1,24 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form, Input, DatePicker, message, Select } from 'antd';
+import React, { useEffect } from 'react';
+import { Modal, Button, Form, Input, message, Select } from 'antd';
 
 const { Option } = Select;
 
-const NewTaskModal = ({ visible, onCancel, onCreate, goalId }) => {
+const NewTaskModal = ({ visible, onCancel, onCreate, goalId, task }) => {
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (task) {
+      console.log('task', task);
+      form.setFieldsValue(task);
+    } else {
+      form.resetFields();
+    }
+  }, [task, form]);
 
   const handleCreate = async () => {
     try {
       const values = await form.validateFields();
-      onCreate({ ...values, goalId });
+      onCreate({ ...values, goalId, id: task ? task.id : undefined });
       form.resetFields();
       onCancel();
     } catch (error) {
@@ -19,7 +28,7 @@ const NewTaskModal = ({ visible, onCancel, onCreate, goalId }) => {
 
   return (
     <Modal
-      title="Crear nueva tarea"
+      title={task ? "Editar tarea" : "Crear nueva tarea"}
       visible={visible}
       onCancel={onCancel}
       footer={[
@@ -27,7 +36,7 @@ const NewTaskModal = ({ visible, onCancel, onCreate, goalId }) => {
           Cancelar
         </Button>,
         <Button key="submit" type="primary" onClick={handleCreate}>
-          Crear
+          {task ? "Guardar cambios" : "Crear"}
         </Button>,
       ]}
     >
@@ -37,20 +46,20 @@ const NewTaskModal = ({ visible, onCancel, onCreate, goalId }) => {
         name="new_task_form"
       >
         <Form.Item
-          name="taskName"
+          name="name"
           label="Nombre de la tarea"
           rules={[{ required: true, message: 'Por favor, introduce el nombre de la tarea' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name="taskDescription"
+          name="description"
           label="Descripción de la tarea"
         >
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item
-          name="taskStatus"
+          name="status"
           label="Estado de la tarea"
           rules={[{ required: true, message: 'Por favor, indica el estado de la tarea' }]}
         >
