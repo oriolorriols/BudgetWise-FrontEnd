@@ -32,7 +32,8 @@ ul.ant-menu li:hover, .ant-menu-item-selected{
 }
 
 ul.ant-menu{
-  //  margin-left: 8px;
+  margin-left: 8px;
+  height: calc(100vh - 150px);
 }
 
 ul.ant-menu li{
@@ -44,6 +45,9 @@ ul.ant-menu li{
 ul.ant-menu li:last-child{
     font-weight: 500;
     background-color: #1A2C3E;
+    position: absolute !important;
+    bottom: 25px;
+    width: 195px;
 }
 
 ul.ant-menu li:last-child:hover{
