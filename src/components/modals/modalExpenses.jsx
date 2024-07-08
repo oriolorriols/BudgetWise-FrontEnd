@@ -31,11 +31,10 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
     const onCreate = async (values) => {
         console.log(values);
         try {
-            const sanitizedValues = JSON.parse(JSON.stringify(values));
-            const response = await addExpenses(sanitizedValues, files);
+            //const sanitizedValues = JSON.parse(JSON.stringify(values));
+            const response = await addExpenses(values);
             refresh((prev) => !prev);
             onCancel();
-            console.log(sanitizedValues);
         } catch (error) {
             message.error(error);
         }
@@ -164,7 +163,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                 >
                     <Input placeholder="123" suffix="€" />
                 </Form.Item>
-                <Form.Item
+                {/* <Form.Item
                     label="Justificantes: "
                     name="expenseProof"
                     rules={[
@@ -180,7 +179,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                             Selecciona el/los justificante/s
                         </Button>
                     </Upload>
-                </Form.Item>
+                </Form.Item> */}
             </Modal>
         </>
     );
