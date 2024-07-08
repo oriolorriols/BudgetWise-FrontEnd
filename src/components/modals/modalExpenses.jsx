@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { addExpenses } from "../../apiService/expensesApi";
-import { Modal, Form, Input, Select, Space, Radio, message } from "antd";
+import {
+    Modal,
+    Form,
+    Input,
+    Select,
+    Space,
+    Radio,
+    message,
+    Upload,
+    Button,
+} from "antd";
 import { useAuth } from "../../contexts/authContext";
-import { getAbsences } from "../../apiService/absencesApi";
+import { UploadOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 const formItemLayout = {
@@ -22,7 +32,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
         console.log(values);
         try {
             const sanitizedValues = JSON.parse(JSON.stringify(values));
-            const response = await addExpenses(sanitizedValues);
+            const response = await addExpenses(sanitizedValues, files);
             refresh((prev) => !prev);
             onCancel();
             console.log(sanitizedValues);
@@ -33,6 +43,22 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
 
     const handleAbsenceName = (value) => {
         form.setFieldsValue({ absenceId: value });
+    };
+
+    const [fileList, setFileList] = useState([]);
+
+    const props = {
+        action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+        onChange({ file, fileList }) {
+            if (file.status !== "uploading") {
+                console.log(file, fileList);
+            }
+        },
+        beforeUpload: (file) => {
+            setFileList([file]);
+            return false;
+        },
+        fileList,
     };
 
     return (
@@ -65,7 +91,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
             >
                 <Form.Item
                     name="absenceId"
-                    label="Ausencia"
+                    label="Viaje"
                     rules={[
                         { required: true, message: "Selecciona una ausencia" },
                     ]}
@@ -137,6 +163,23 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                     label="Dietas:"
                 >
                     <Input placeholder="123" suffix="€" />
+                </Form.Item>
+                <Form.Item
+                    label="Justificantes: "
+                    name="expenseProof"
+                    rules={[
+                        {
+                            required: true,
+                            message:
+                                "Es necesario que selecciones al menos 1 archivo",
+                        },
+                    ]}
+                >
+                    <Upload {...props}>
+                        <Button icon={<UploadOutlined />}>
+                            Selecciona el/los justificante/s
+                        </Button>
+                    </Upload>
                 </Form.Item>
             </Modal>
         </>
