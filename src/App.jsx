@@ -19,10 +19,8 @@ import CompanyProfile from "./pages/companyProfile/companyProfile"
 
 import { useAuth } from "./contexts/authContext"
 
-
 import './App.scss'
 import { Register } from "./pages/register/register"
-
 
 
 function App() {
@@ -39,11 +37,13 @@ function App() {
           <Route element={<PrivateRoutes/>}>
               <Route path='/' element={<Home/>}>
                   <Route path='/' element={<DashBoard/>}/>
-                  {/*isHR === 'HR' ? <Route path="/usuarios" element={<Users />} /> : null*/}
+                  {isHR === 'HR' ? <Route path="/usuarios" element={<Users />} /> : null}
                   <Route path="/usuarios" element={<Users />} />
                   <Route path='/calendario' element={<Calendario/>}/>
-                  <Route path='/objetivos' element={<Objetivos/>}/>
-                  <Route path='/objetivosHR' element={<ObjetivosHR/>}/>
+                  {isHR === 'HR' ? 
+                      <Route path='/objetivos' element={<ObjetivosHR/>}/>
+                      : <Route path='/objetivos' element={<Objetivos/>}/> 
+                  }
                   <Route path='/perfil' element={<Profile/>}/>
                   <Route path='/ausencias' element={<Absences/>}/>
                   <Route path='/solicitudes' element={<Requests/>}/>

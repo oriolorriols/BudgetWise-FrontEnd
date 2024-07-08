@@ -1,153 +1,185 @@
-import { useState, useEffect } from "react"
-import './users.scss'
+import { useState, useEffect } from "react";
+import './users.scss';
+import { getUsers } from '../../apiService/userApi';
+import { getDepartments } from '../../apiService/departmentApi';
+import { useSocket } from "../../contexts/socketContext";
 
-import { getUsers } from '../../apiService/userApi'
-import { getDepartments } from '../../apiService/departmentApi'
-import { Form, Table, Typography, Button, Space, Input } from 'antd'
-import TokenModal from '../../components/modals/modalToken'
-import UserFormModal from '../../components/modals/modalUserForm'
-import DepartmentModal from '../../components/modals/modalDepartments'
+import { Form, Table, Typography, Button, Space, Input, Tooltip } from 'antd';
+import TokenModal from '../../components/modals/modalToken';
+import UserFormModal from '../../components/modals/modalUserForm';
+import DepartmentModal from '../../components/modals/modalDepartments';
 
 const Users = () => {
-  const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
-  const [isModalUserVisible, setIsModalUserVisible] = useState(false)
-  const [isModalDeparmentVisible, setIsModalDepartmentVisible] = useState(false)
+  const [isModalTokenVisible, setIsModalTokenVisible] = useState(false);
+  const [isModalUserVisible, setIsModalUserVisible] = useState(false);
+  const [isModalDeparmentVisible, setIsModalDepartmentVisible] = useState(false);
 
-  const [allUsers, setAllUsers] = useState([])
-  const [company, setCompany] = useState()
-  const [departments, setDepartments] = useState([])
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [allUsers, setAllUsers] = useState([]);
+  const [company, setCompany] = useState();
+  const [departments, setDepartments] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const [filtering, setFiltering] = useState([])
-  const [searchValue, setSearchValue] = useState('')
+  const [dummy, refresh] = useState(false);
 
-  const [loading, setLoading] = useState(true)
+  const [filtering, setFiltering] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+
+  const [loading, setLoading] = useState(true);
+
+  const { connectedUsers } = useSocket();
 
   const checkTokenValidity = () => {
-    const token = localStorage.getItem("access_token")
+    const token = localStorage.getItem("access_token");
     if (!token) {
-      setIsModalTokenVisible(true)
-      return false
+      setIsModalTokenVisible(true);
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const getDepartmentsData = async () => {
     try {
-      const data = await getDepartments()
+      const data = await getDepartments();
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
-        setIsModalTokenVisible(true)
+        setIsModalTokenVisible(true);
       } else {
-        setDepartments(data)
-        console.log(data)
+        setDepartments(data);
       }
     } catch (error) {
-      console.error("Failed to fetch departments data", error)
+      console.error("Failed to fetch departments data", error);
     }
-  }
+  };
 
   const getAllUsers = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const data = await getUsers()
+      const data = await getUsers();
       if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
-        setIsModalTokenVisible(true)
+        setIsModalTokenVisible(true);
       } else {
         const usersWithDefaultPic = data.map(user => ({
           ...user,
           profilePic: user.profilePic || "/noProfilePic.jpg",
           key: user._id,
-        }))
-        setAllUsers(usersWithDefaultPic)
-        const companyName = data[0]?.companyId?._id || null
-        setCompany(companyName)
-        setLoading(false)
+        }));
+        const updatedUsers = usersWithDefaultPic.map(user => ({
+          ...user, 
+          isOnline: connectedUsers.includes(user._id),
+        }));
+        setAllUsers(updatedUsers);
+        const companyName = data[0]?.companyId?._id || null;
+        setCompany(companyName);
+        setLoading(false);
       }
     } catch (error) {
-      console.error("Failed to fetch company data", error)
+      console.error("Failed to fetch company data", error);
     }
-  }
+  };
 
   useEffect(() => {
-    if (!isModalUserVisible || !isModalDeparmentVisible) {
-      getAllUsers()
-    }
-  }, [isModalUserVisible, isModalDeparmentVisible])
+    const updateUsersOnlineStatus = () => {
+      const updatedUsers = allUsers.map(user => ({
+        ...user, 
+        isOnline: connectedUsers.includes(user._id),
+      }));
+      setAllUsers(updatedUsers);
+    };
 
+    updateUsersOnlineStatus();
+  }, [connectedUsers]);
 
   useEffect(() => {
-    if(filtering) {
-      onSearch(searchValue)
-    }
-  }, [allUsers])
+    getAllUsers();
+    getDepartmentsData();
+  }, [dummy]);
 
   useEffect(() => {
-    getDepartmentsData()
-  }, [isModalDeparmentVisible])
+    if (filtering.length) {
+      onSearch(searchValue);
+    }
+  }, [allUsers]);
 
-  const [form] = Form.useForm()
+  const [form] = Form.useForm();
 
   const handleEdit = (record) => {
     if (checkTokenValidity()) {
-      setSelectedUser(record)
-      setIsModalUserVisible(true)
+      setSelectedUser(record);
+      setIsModalUserVisible(true);
     }
-  }
+  };
 
   const handleAddUser = () => {
     if (checkTokenValidity()) {
-      setSelectedUser(null)
-      setIsModalUserVisible(true)
+      setSelectedUser(null);
+      setIsModalUserVisible(true);
     }
-  }
+  };
 
   const handleCancelUser = () => {
-    setIsModalUserVisible(false)
-    setSelectedUser(null)
-  }
+    setIsModalUserVisible(false);
+    setSelectedUser(null);
+  };
 
-  const { Search } = Input
+  const { Search } = Input;
 
   const onSearch = (value) => {
-    setSearchValue(value)
+    setSearchValue(value);
     const filteredData = allUsers.filter(user => {
-      const nameMatch = user.name?.toLowerCase().includes(value.toLowerCase())
-      const positionMatch = user.position?.toLowerCase().includes(value.toLowerCase())
-      const phoneExtMatch = user.phoneExt?.toLowerCase().includes(value.toLowerCase())
-      const departmentMatch = user.departmentId?.departmentName?.toLowerCase().includes(value.toLowerCase())
-      const statusMatch = user.status?.toLowerCase().includes(value.toLowerCase())
-      const dniMatch = user.dni?.toLowerCase().includes(value.toLowerCase())
-      return nameMatch || positionMatch || phoneExtMatch || departmentMatch || statusMatch || dniMatch
-    })
-    setFiltering(filteredData)
-  }
+      const nameMatch = user.name?.toLowerCase().includes(value.toLowerCase());
+      const positionMatch = user.position?.toLowerCase().includes(value.toLowerCase());
+      const phoneExtMatch = user.phoneExt?.toLowerCase().includes(value.toLowerCase());
+      const departmentMatch = user.departmentId?.departmentName?.toLowerCase().includes(value.toLowerCase());
+      const statusMatch = user.status?.toLowerCase().includes(value.toLowerCase());
+      const dniMatch = user.dni?.toLowerCase().includes(value.toLowerCase());
+      return nameMatch || positionMatch || phoneExtMatch || departmentMatch || statusMatch || dniMatch;
+    });
+    setFiltering(filteredData);
+  };
 
   const columns = [
     {
       title: 'Nombre',
       dataIndex: 'name',
-      width: '15%',
+      width: '18%',
       sorter: (a, b) => (a.name || "").localeCompare(b.name || ""),
       render: (text, record) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img 
-            src={record.profilePic} 
-            alt="profile" 
-            draggable="false"
-            style={{ 
-              aspectRatio: '1/1', 
-              objectFit: 'cover', 
-              borderRadius: 100,
-              width: 40,
-              marginRight: 8 
-            }} 
-          />
-          {record.name} {record.surname}
-          {!record.confirmed && (
-              <span style={{ color: 'red', fontStyle: 'italic', marginLeft: 10 }}>
-                (Pendiente)
-              </span>
-            )}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img 
+              src={record.profilePic} 
+              alt="profile" 
+              draggable="false"
+              style={{ 
+                aspectRatio: '1/1', 
+                objectFit: 'cover', 
+                borderRadius: '50%',
+                width: 40,
+                marginRight: 12 
+              }} 
+            />
+            <Tooltip title={record.isOnline ? "Online" : "Offline"}>
+            {record.confirmed ? (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: -4,
+                  right: 5,
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  backgroundColor: record.isOnline ? '#5fb75f' : '#cf1d1d',
+                }}
+              ></span>
+            ) : null}
+            </Tooltip>
+          </div>
+          <p>{record.name} {record.surname} {!record.confirmed && (
+            <Tooltip title="Falta por confirmar el email">
+            <span style={{ color: 'red', fontStyle: 'italic', marginLeft: 0 }}>
+              (Pendiente)
+            </span>
+            </Tooltip>
+          )}</p>
         </div>
       ),
     },
@@ -157,7 +189,6 @@ const Users = () => {
       width: '12%',
       sorter: (a, b) => (a.departmentId?.departmentName || "").localeCompare(b.departmentId?.departmentName || ""),
     },
-
     {
       title: 'Email',
       dataIndex: 'email',
@@ -197,7 +228,7 @@ const Users = () => {
         </Typography.Link>
       ),
     },
-  ]
+  ];
 
   return (
     <>
@@ -210,7 +241,7 @@ const Users = () => {
           <Button className="mr-5" type="primary" onClick={handleAddUser}>
               Añadir Usuario
           </Button>
-          <Button className="" type="primary" onClick={() => setIsModalDepartmentVisible('true')}>
+          <Button className="" type="primary" onClick={() => setIsModalDepartmentVisible(true)}>
               Editar Departamentos
           </Button>
         </div>
@@ -232,6 +263,7 @@ const Users = () => {
         onCancel={handleCancelUser}
         departments={departments}
         companyId={company}
+        refresh={refresh}
       />
       <DepartmentModal
         visible={isModalDeparmentVisible}
@@ -239,6 +271,7 @@ const Users = () => {
         departments={departments}
         allUsers={allUsers}
         companyId={company}
+        refresh={refresh}
       />
       <Form form={form} component={false}>
       <Table
@@ -252,4 +285,4 @@ const Users = () => {
   )
 }
 
-export default Users
+export default Users;
