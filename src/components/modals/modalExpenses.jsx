@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { addExpenses } from "../../apiService/expensesApi";
-import { Modal, Form, Input, Select, Space, Radio, message } from "antd";
+import {
+    Modal,
+    Form,
+    Input,
+    Select,
+    Space,
+    Radio,
+    message,
+    Upload,
+    Button,
+} from "antd";
 import { useAuth } from "../../contexts/authContext";
-import { getAbsences } from "../../apiService/absencesApi";
+import { UploadOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 const formItemLayout = {
@@ -14,34 +24,41 @@ const formItemLayout = {
     },
 };
 
-const ExpenseModal = ({ user, visible, onCancel }) => {
+const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
     const [form] = Form.useForm();
     const { userId, isHR } = useAuth();
 
     const onCreate = async (values) => {
         console.log(values);
-        //const response = await addExpenses(values)
+        try {
+            //const sanitizedValues = JSON.parse(JSON.stringify(values));
+            const response = await addExpenses(values);
+            refresh((prev) => !prev);
+            onCancel();
+        } catch (error) {
+            message.error(error);
+        }
     };
 
-    const [error, setError] = useState("");
-    const [allAbsences, setAllAbsences] = useState([]);
-    const [title, setTitle] = useState("");
-    const [dummy, refresh] = useState(false);
-
-    const handleTitle = () => {
-        setTitle();
+    const handleAbsenceName = (value) => {
+        form.setFieldsValue({ absenceId: value });
     };
 
-    const getAllAbsences = async () => {
-        const absences = await getAbsences();
-        const notRemoved = absences.filter((absence) => !absence.removeAt);
-        if (absences.length) setAllAbsences(notRemoved);
-        else setError(absences.message);
-    };
+    const [fileList, setFileList] = useState([]);
 
-    useEffect(() => {
-        getAllAbsences();
-    }, [dummy]);
+    const props = {
+        action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+        onChange({ file, fileList }) {
+            if (file.status !== "uploading") {
+                console.log(file, fileList);
+            }
+        },
+        beforeUpload: (file) => {
+            setFileList([file]);
+            return false;
+        },
+        fileList,
+    };
 
     return (
         <>
@@ -71,24 +88,32 @@ const ExpenseModal = ({ user, visible, onCancel }) => {
                     </Form>
                 )}
             >
-                <Form.Item name="absenceName" label="Ausencia">
+                <Form.Item
+                    name="absenceId"
+                    label="Viaje"
+                    rules={[
+                        { required: true, message: "Selecciona una ausencia" },
+                    ]}
+                >
                     <Space wrap>
                         <Select
-                            defaultValue="Seleccionar..."
+                            placeholder="Seleccionar..."
                             style={{
                                 width: 400,
                             }}
-                            onChange={handleTitle}
-                            options={allAbsences.map((ausencia) => ({
-                                label: ausencia.absenceCodeId.absenceName,
-                                value: ausencia.absenceCodeId.absenceName,
-                            }))}
-                        />
+                            onChange={handleAbsenceName}
+                        >
+                            {allAbsences?.map((ausencia) => (
+                                <Option key={ausencia._id} value={ausencia._id}>
+                                    {ausencia.absenceCodeId.absenceName}
+                                </Option>
+                            ))}
+                        </Select>
                     </Space>
                 </Form.Item>
                 <Form.Item
                     label="Método de pago"
-                    name="modifier"
+                    name="paymentMethod"
                     className="collection-create-form_last-form-item"
                     rules={[
                         {
@@ -98,22 +123,63 @@ const ExpenseModal = ({ user, visible, onCancel }) => {
                         },
                     ]}
                 >
-                    <Radio.Group name="Prueba">
+                    <Radio.Group>
                         <Radio value="Personal">Personal</Radio>
                         <Radio value="Business Card">Business Card</Radio>
                     </Radio.Group>
                 </Form.Item>
+
                 <Form.Item
-                    name="TDC"
-                    label="Últimos 4 dígitos de la tarjeta de empresa (si aplica)"
+                    name="creditCardEnd"
+                    label="Últimos 4 dígitos de la tarjeta de empresa (si aplica):"
                 >
-                    <Input placeholder="1010" addonBefore="*" />
+                    <Input
+                        placeholder="1010"
+                        addonBefore="*"
+                        style={{
+                            width: 200,
+                        }}
+                    />
                 </Form.Item>
-                <Form.Item className="flex inline-row" name="Desglose">
-                    <p>Traslados</p> <Input placeholder="123" suffix="€" />
-                    <p>Hospedajes</p> <Input placeholder="123" suffix="€" />
-                    <p>Dietas</p> <Input placeholder="123" suffix="€" />
+
+                <Form.Item
+                    className="flex inline-row"
+                    name="expenseTravel"
+                    label="Traslados:"
+                >
+                    <Input placeholder="123" suffix="€" />
                 </Form.Item>
+                <Form.Item
+                    className="flex inline-row"
+                    name="expenseLodging"
+                    label="Hospedajes:"
+                >
+                    <Input placeholder="123" suffix="€" />
+                </Form.Item>
+                <Form.Item
+                    className="flex inline-row"
+                    name="expenseFood"
+                    label="Dietas:"
+                >
+                    <Input placeholder="123" suffix="€" />
+                </Form.Item>
+                {/* <Form.Item
+                    label="Justificantes: "
+                    name="expenseProof"
+                    rules={[
+                        {
+                            required: true,
+                            message:
+                                "Es necesario que selecciones al menos 1 archivo",
+                        },
+                    ]}
+                >
+                    <Upload {...props}>
+                        <Button icon={<UploadOutlined />}>
+                            Selecciona el/los justificante/s
+                        </Button>
+                    </Upload>
+                </Form.Item> */}
             </Modal>
         </>
     );
