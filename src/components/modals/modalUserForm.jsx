@@ -13,7 +13,7 @@ const formItemLayout = {
   },
 }
 
-const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
+const UserFormModal = ({ user, visible, onCancel, departments, companyId, refresh }) => {
   const [form] = Form.useForm()
   const [initialValues, setInitialValues] = useState({})
 
@@ -74,6 +74,7 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId }) => {
           message.error(error)
         }
       }
+      refresh((prev) => !prev)
       onCancel()
     } catch (error) {
       message.error('Failed to update user data')
