@@ -530,13 +530,13 @@ const Expenses = () => {
                     );
                 }}
             />
-            {error && <p>Ha habido un error: {error}</p>}
             <ExpenseModal
                 visible={open}
                 onCancel={() => setOpen(false)}
                 allAbsences={allAbsences}
                 refresh={refresh}
             />
+            {error && <p>Ha habido un error: {error}</p>}
         </>
     );
 };

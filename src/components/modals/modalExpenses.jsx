@@ -29,9 +29,8 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
     const { userId, isHR } = useAuth();
 
     const onCreate = async (values) => {
-        console.log(values);
+        console.log("values", values);
         try {
-            //const sanitizedValues = JSON.parse(JSON.stringify(values));
             const response = await addExpenses(values);
             refresh((prev) => !prev);
             onCancel();
@@ -50,7 +49,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
         action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
         onChange({ file, fileList }) {
             if (file.status !== "uploading") {
-                console.log(file, fileList);
+                console.log("file: ", file, "fileList: ", fileList);
             }
         },
         beforeUpload: (file) => {
