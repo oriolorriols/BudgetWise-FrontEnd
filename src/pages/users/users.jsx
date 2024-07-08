@@ -19,6 +19,8 @@ const Users = () => {
   const [departments, setDepartments] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  const [dummy, refresh] = useState(false);
+
   const [filtering, setFiltering] = useState([]);
   const [searchValue, setSearchValue] = useState('');
 
@@ -89,7 +91,7 @@ const Users = () => {
   useEffect(() => {
     getAllUsers();
     getDepartmentsData();
-  }, [isModalUserVisible, isModalDeparmentVisible]);
+  }, [dummy]);
 
   useEffect(() => {
     if (filtering.length) {
@@ -261,6 +263,7 @@ const Users = () => {
         onCancel={handleCancelUser}
         departments={departments}
         companyId={company}
+        refresh={refresh}
       />
       <DepartmentModal
         visible={isModalDeparmentVisible}
@@ -268,6 +271,7 @@ const Users = () => {
         departments={departments}
         allUsers={allUsers}
         companyId={company}
+        refresh={refresh}
       />
       <Form form={form} component={false}>
       <Table

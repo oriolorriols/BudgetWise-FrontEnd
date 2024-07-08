@@ -10,7 +10,7 @@ const formItemLayoutWithOutLabel = {
   },
 }
 
-const DepartmentModal = ({ visible, onCancel, departments, allUsers }) => {
+const DepartmentModal = ({ visible, onCancel, departments, allUsers, refresh }) => {
   const [form] = Form.useForm()
   const [deptsToDelete, setDeptsToDelete] = useState([])
 
@@ -43,6 +43,7 @@ const DepartmentModal = ({ visible, onCancel, departments, allUsers }) => {
       ))
 
       message.success("¡Departamentos actualizados!")
+      refresh((prev) => !prev)
       onCancel()
     } catch (error) {
       message.error("Failed to update departments")

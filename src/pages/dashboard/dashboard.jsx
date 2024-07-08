@@ -1,151 +1,246 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from "../../contexts/authContext";
 import { getOneUser } from '../../apiService/userApi';
-import TokenModal from '../../components/modals/modalToken';
-import { Progress, Card, Col, Row, Statistic } from 'antd';
-import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import { Line } from '@ant-design/plots';
+import { getExpenses } from '../../apiService/expensesApi';
+import { Row, Col, DatePicker, Select, Card } from 'antd';
+import ReactEcharts from 'echarts-for-react';
+import moment from 'moment';
+
+const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 const Dashboard = () => {
   const { userId } = useAuth();
-  const [isModalTokenVisible, setIsModalTokenVisible] = useState(false);
   const [user, setUser] = useState(null);
   const [expenses, setExpenses] = useState([]);
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [expenseType, setExpenseType] = useState(null);
 
   const getUserData = async () => {
     try {
       const data = await getOneUser(userId);
       setUser(data);
-      if ((data.error && data.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
-        setIsModalTokenVisible(true);
-      } 
+      const expensesData = await getExpenses(userId); 
+      setExpenses(expensesData);
+      setFilteredExpenses(expensesData);
     } catch (error) {
       console.error("Failed to fetch user data", error);
     }
   };
 
-  const getExpensesData = async () => {
-    // Aquí deberías hacer una llamada al API para obtener los datos de los gastos
-    const data = [
-      { month: 'Enero', expense: 400 },
-      { month: 'Febrero', expense: 300 },
-      { month: 'Marzo', expense: 200 },
-      { month: 'Abril', expense: 278 },
-      { month: 'Mayo', expense: 189 },
-      { month: 'Junio', expense: 239 },
-      { month: 'Julio', expense: 349 },
-      { month: 'Agosto', expense: 450 },
-      { month: 'Septiembre', expense: 320 },
-      { month: 'Octubre', expense: 210 },
-      { month: 'Noviembre', expense: 310 },
-      { month: 'Diciembre', expense: 200 }
-    ];
-    setExpenses(data);
-  };
-
   useEffect(() => {
     getUserData();
-    getExpensesData();
   }, [userId]);
+
+  const handleDateChange = (dates) => {
+    setDateRange(dates);
+    filterExpenses(dates, expenseType);
+  };
+
+  const handleTypeChange = (value) => {
+    setExpenseType(value);
+    filterExpenses(dateRange, value);
+  };
+
+  const filterExpenses = (dates, type) => {
+    let filtered = expenses;
+    if (dates && dates[0] && dates[1]) {
+      filtered = filtered.filter(expense => 
+        moment(expense.createdAt).isBetween(dates[0], dates[1])
+      );
+    }
+    if (type) {
+      filtered = filtered.filter(expense => expense.paymentMethod === type);
+    }
+    setFilteredExpenses(filtered);
+  };
+
+  const getPieChartOptions = () => {
+    const categories = [...new Set(filteredExpenses.map(expense => expense.paymentMethod))];
+    const seriesData = categories.map(category => {
+      const total = filteredExpenses
+        .filter(expense => expense.paymentMethod === category)
+        .reduce((acc, expense) => acc + (expense.amount || 0), 0);
+      return {
+        name: category,
+        value: total
+      };
+    });
+
+    return {
+      title: {
+        text: 'General',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        top: 'bottom'
+      },
+      series: [
+        {
+          name: 'Gastos',
+          type: 'pie',
+          radius: '50%',
+          data: seriesData,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }
+      ]
+    };
+  };
+
+  const getLineChartOptions = () => {
+    const dates = filteredExpenses.map(expense => moment(expense.createdAt).format('YYYY-MM-DD'));
+    const uniqueDates = [...new Set(dates)];
+    const totalExpensesByDate = uniqueDates.map(date => {
+      return {
+        date,
+        total: filteredExpenses
+          .filter(expense => moment(expense.createdAt).format('YYYY-MM-DD') === date)
+          .reduce((acc, expense) => acc + (expense.amount || 0), 0)
+      };
+    });
+
+    return {
+      title: {
+        text: 'Gastos en el tiempo',
+        left: 'center'
+      },
+      xAxis: {
+        type: 'category',
+        data: totalExpensesByDate.map(data => data.date)
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          data: totalExpensesByDate.map(data => data.total),
+          type: 'line',
+          smooth: true
+        }
+      ]
+    };
+  };
+
+  const getBarChartOptions = () => {
+    const categories = ['Food', 'Travel', 'Lodging'];
+    const seriesData = categories.map(category => {
+      return {
+        name: category,
+        type: 'bar',
+        stack: 'total',
+        data: filteredExpenses.map(expense => expense[`expense${category}`] || 0)
+      };
+    });
+
+    return {
+      title: {
+        text: 'Gastos por categoría',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' }
+      },
+      legend: {
+        top: 'bottom'
+      },
+      xAxis: {
+        type: 'category',
+        data: filteredExpenses.map(expense => moment(expense.createdAt).format('YYYY-MM-DD'))
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: seriesData
+    };
+  };
 
   const twoColors = {
     '0%': '#108ee9',
     '100%': '#87d068',
   };
 
-  const config = {
-    data: expenses,
-    xField: 'month',
-    yField: 'expense',
-    point: {
-      size: 5,
-      shape: 'diamond',
-    },
-  };
-
   return (
     <>
-      <TokenModal visible={isModalTokenVisible} />
       <div>
         <h2 className='font-medium text-2xl'>Hola, {user?.name}!</h2>
       </div>
 
-      <div className='flex'>
-        <div className="flex bg-cyan-950 text-white w-fit rounded-lg px-5 py-4 m-3"> 
-          <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="" />
-          <div className='ml-3'>
-            <h3>Gastos</h3>
-            <p className='font-bold'>1.388,25€</p>
-          </div>
-        </div>
+      <Row gutter={16}>
+        <Col span={8}>
+          <Card>
+            <div className="flex">
+              <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Expenses Icon" />
+              <div className='ml-3'>
+                <h3>Gastos</h3>
+                <p className='font-bold'>1.388,25€</p>
+              </div>
+            </div>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            <div className="flex">
+              <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Accumulated Icon" />
+              <div className='ml-3'>
+                <h3>Acumulado año</h3>
+                <p className='font-bold'>3.388,25€</p>
+              </div>
+            </div>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            <div className="flex">
+              <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Average Monthly Icon" />
+              <div className='ml-3'>
+                <h3>Gasto medio mes</h3>
+                <p className='font-bold'>503€</p>
+              </div>
+            </div>
+          </Card>
+        </Col>
+      </Row>
 
-        <div className="flex bg-cyan-950 text-white w-fit rounded-lg px-5 py-4 m-3"> 
-          <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="" />
-          <div className='ml-3'>
-            <h3>Acumulado año</h3>
-            <p className='font-bold'>3.388,25€</p>
-          </div>
-        </div>
 
-        <div className="flex bg-cyan-950 text-white w-fit rounded-lg px-5 py-4 m-3"> 
-          <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="" />
-          <div className='ml-3'>
-            <h3>Gasto medio mes</h3>
-            <p className='font-bold'>503€</p>
-          </div>
-        </div>
+      <div style={{ margin: '20px 0' }}>
+        <RangePicker onChange={handleDateChange} />
+        <Select style={{ width: 120, marginLeft: '10px' }} onChange={handleTypeChange} placeholder="Tipo de gasto">
+          <Option value="Personal">Personal</Option>
+          <Option value="Business Card">Business Card</Option>
+        </Select>
       </div>
 
       <Row gutter={16}>
         <Col span={12}>
-          <Card bordered={false}>
-            <Statistic
-              title="Active"
-              value={11.28}
-              precision={2}
-              valueStyle={{
-                color: '#3f8600',
-              }}
-              prefix={<ArrowUpOutlined />}
-              suffix="%"
-            />
+          <Card title="General">
+            <ReactEcharts option={getPieChartOptions()} />
           </Card>
         </Col>
         <Col span={12}>
-          <Card bordered={false}>
-            <Statistic
-              title="Idle"
-              value={9.3}
-              precision={2}
-              valueStyle={{
-                color: '#cf1322',
-              }}
-              prefix={<ArrowDownOutlined />}
-              suffix="%"
-            />
+          <Card title="Gastos en el tiempo">
+            <ReactEcharts option={getLineChartOptions()} />
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={16} style={{ marginTop: '20px' }}>
+      <Row gutter={16}>
         <Col span={24}>
-          <Card bordered={false}>
-            <h3>Gastos Mensuales</h3>
-            <Line {...config} />
+          <Card title="Gastos por categoría">
+            <ReactEcharts option={getBarChartOptions()} />
           </Card>
         </Col>
       </Row>
-
-      <div style={{ marginTop: '20px' }}>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Progress type="dashboard" percent={90} strokeColor={twoColors} />
-          </Col>
-          <Col span={12}>
-            <Progress type="dashboard" percent={100} strokeColor={twoColors} />
-          </Col>
-        </Row>
-      </div>
     </>
   );
 };
