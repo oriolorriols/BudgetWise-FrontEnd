@@ -94,7 +94,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                     >
                         {allAbsences?.map((ausencia) => (
                             <Option key={ausencia._id} value={ausencia._id}>
-                                {ausencia.absenceCodeId.absenceName}
+                                {ausencia.absenceCodeId?.absenceName}
                             </Option>
                         ))}
                     </Select>
