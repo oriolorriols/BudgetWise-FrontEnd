@@ -17,25 +17,49 @@ import {
     Form,
     Modal,
 } from "antd";
+import TokenModal from '../../components/modals/modalToken';
 import ExpenseModal from "../../components/modals/modalExpenses";
 import { getAbsences } from "../../apiService/absencesApi";
+
 const { Text } = Typography;
-
 const { RangePicker } = DatePicker;
-
 const { Search } = Input;
 
 const Expenses = () => {
+    const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
+    const checkTokenValidity = () => {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          setIsModalTokenVisible(true);
+          return false;
+        }
+        return true;
+      };
+    
+
     const [allExpenses, setAllExpenses] = useState([]);
     const [allAbsences, setAllAbsences] = useState([]);
+
+    const [loading, setLoading] = useState(true);
+
     const [error, setError] = useState("");
     const [dummy, refresh] = useState(false);
+
     const [filtering, setFiltering] = useState([]);
 
+
     const getAllExpenses = async () => {
-        const expenses = await getExpenses();
+        setLoading(true)
+        const expenses = await getExpenses()
+        if ((expenses.error && expenses.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
+            setIsModalTokenVisible(true);
+          } 
         const notRemoved = expenses.filter((user) => !user.removedAt);
-        if (expenses.length) setAllExpenses(notRemoved);
+        if (expenses.length) {
+            setAllExpenses(notRemoved) 
+            setLoading(false)
+        }
+
         else setError(expenses.message);
     };
 
@@ -423,6 +447,7 @@ const Expenses = () => {
                 </div>
             </div>
             <Table
+                loading={loading}
                 columns={columns}
                 expandable={{
                     expandedRowRender: (record) => (
@@ -531,6 +556,7 @@ const Expenses = () => {
                 }}
             />
             {error && <p>Ha habido un error: {error}</p>}
+            <TokenModal visible={isModalTokenVisible} />
             <ExpenseModal
                 visible={open}
                 onCancel={() => setOpen(false)}
