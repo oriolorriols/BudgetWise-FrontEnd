@@ -20,21 +20,44 @@ export const getOneExpense = async (id) => {
 
 export const addExpenses = async (data) => {
     const token = localStorage.getItem("access_token");
-    // const formData = new FormData();
-    // for (let i = 0; i < expenseProof.length; i++) {
-    //     formData.append("files", expenseProof[i]);
-    // }
-    // formData.append("data", JSON.stringify(data));
-    const response = await fetch(`${baseUrl}/expenses`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-            "Content-Type": "application/json",
-            "authorization": `Bearer ${token}`,
-        },
-    });
-    const newExpenses = await response.json();
-    return newExpenses;
+
+    const formData = new FormData();
+    for (let i = 0; i < data.expenseProof.length; i++) {
+        formData.append("files", data.expenseProof[i]);
+    }
+
+    try {
+
+        if(data.expenseProof) {
+            data.expenseProof = null
+            const response = await fetch(`${baseUrl}/expenses`, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": `Bearer ${token}`,
+                },
+            });
+            const newExpenses = await response.json();
+            console.log(newExpenses)
+
+            const expenseId = newExpenses.newExpense._id
+            const responseExpenseProof = await fetch(`${baseUrl}/upload/expenses/${expenseId}`, {
+            method: 'POST', 
+            body: formData, 
+            headers: {"authorization": `Bearer ${token}`}
+        })
+        const expenseProof = await response.json()
+        console.log(expenseProof)
+        return responseExpenseProof
+
+        }
+        
+        
+    } catch (error) {
+        console.error('Error uploading expenseProof:', error);
+        throw error;
+    }
 };
 
 export const deleteExpenses = async (id) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { addExpenses } from "../../apiService/expensesApi";
 import {
     Modal,
@@ -14,48 +14,43 @@ import {
 import { useAuth } from "../../contexts/authContext";
 import { UploadOutlined } from "@ant-design/icons";
 
+const baseUrl = import.meta.env.VITE_BACKEND;
+
 const { Option } = Select;
-const formItemLayout = {
-    labelCol: {
-        span: 6,
-    },
-    wrapperCol: {
-        span: 14,
-    },
-};
 
 const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
     const [form] = Form.useForm();
     const { userId, isHR } = useAuth();
+    const [fileList, setFileList] = useState([]);
 
     const onCreate = async (values) => {
-        console.log(values);
+        const data = {...values, expenseProof: fileList}
+        console.log(data)
         try {
-            //const sanitizedValues = JSON.parse(JSON.stringify(values));
             const response = await addExpenses(values);
             refresh((prev) => !prev);
+            setFileList([])
             onCancel();
         } catch (error) {
             message.error(error);
         }
-    };
+    }
 
     const handleAbsenceName = (value) => {
         form.setFieldsValue({ absenceId: value });
     };
 
-    const [fileList, setFileList] = useState([]);
-
     const props = {
-        action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+        multiple: true,
         onChange({ file, fileList }) {
             if (file.status !== "uploading") {
                 console.log(file, fileList);
             }
+            setFileList(fileList);
         },
         beforeUpload: (file) => {
-            setFileList([file]);
-            return false;
+            setFileList((prevFileList) => [...prevFileList, file]);
+            return false
         },
         fileList,
     };
@@ -82,7 +77,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                             modifier: "public",
                         }}
                         clearOnDestroy
-                        onFinish={(values) => onCreate(values)}
+                        onFinish={onCreate}
                     >
                         {dom}
                     </Form>
@@ -146,40 +141,42 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                     className="flex inline-row"
                     name="expenseTravel"
                     label="Traslados:"
+                    
                 >
-                    <Input placeholder="123" suffix="€" />
+                    <Input placeholder="123" suffix="€" type="number"/>
                 </Form.Item>
                 <Form.Item
                     className="flex inline-row"
                     name="expenseLodging"
                     label="Hospedajes:"
                 >
-                    <Input placeholder="123" suffix="€" />
+                    <Input placeholder="123" suffix="€" type="number"/>
                 </Form.Item>
                 <Form.Item
                     className="flex inline-row"
                     name="expenseFood"
                     label="Dietas:"
                 >
-                    <Input placeholder="123" suffix="€" />
+                    <Input placeholder="123" suffix="€" type="number"/>
                 </Form.Item>
-                {/* <Form.Item
+                 <Form.Item
                     label="Justificantes: "
                     name="expenseProof"
-                    rules={[
+                    /* rules={[
                         {
-                            required: true,
+                             required: true,
                             message:
                                 "Es necesario que selecciones al menos 1 archivo",
                         },
                     ]}
+                    */
                 >
                     <Upload {...props}>
                         <Button icon={<UploadOutlined />}>
                             Selecciona el/los justificante/s
                         </Button>
                     </Upload>
-                </Form.Item> */}
+                </Form.Item>
             </Modal>
         </>
     );
