@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { getAbsences } from "../../apiService/absencesApi";
-import { Button, Card, Carousel, Collapse, Empty, Space } from 'antd';
+import { Button, Card, Modal, Space } from 'antd';
+import AbsencesCard from "./absenceCards";
+import AbsenceModal from "../../components/modals/modalAbsences";
+import { getUsers } from "../../apiService/userApi";
 
 const Absences = () => {
     const [allAbsences, setAllAbsences] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
     const [dummy, refresh] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
 
     const getAllAbsences = async () => {
         const absences = await getAbsences();
@@ -13,37 +18,42 @@ const Absences = () => {
         else setError(absences.message);
     };
 
-    useEffect(() => {
-        getAllAbsences();
-    }, [dummy]);
-
-    const contentStyle = {
-        height: "40px",
-        lineHeight: "14px",
-        margin: 0,
-        color: '#000000',
-        textAlign: 'start',
-        padding: 0,
+    const getAllUsers = async () => {
+        const users = await getUsers();
+        const notRemoved = users.filter((user) => !user.removeAt);
+        if (users.length) setAllUsers(notRemoved);
+        else setError(users.message);
     };
 
-    const cardStyle = {
-        padding: 0,
-        height: "110px",
-        marginBottom: 8,
-        background: "rgba(0, 0, 0, 0.1)",
-    }
 
-    const addAbsence = () => {
-        console.log("Creando")
+    useEffect(() => {
+        getAllAbsences();
+        getAllUsers();
+    }, [dummy]);
+
+    const openCreateAbsence = () => {
+        setOpenEdit(true);
+        console.log("Abre modal")
     }
 
     return (
         <>
+            <div>
+                <h2 className="text-xl font-bold">Lista de Viajes</h2>
+            </div>
             <div className="flex justify-start my-5">
-                <Button type="primary" onClick={addAbsence}>
+                <Button type="primary" onClick={openCreateAbsence}>
                     Crear viaje
                 </Button>
             </div>
+            <Space>
+                <AbsenceModal
+                    visible={openEdit}
+                    onCancel={() => setOpenEdit(false)}
+                    allUsers={allUsers}
+                    refresh={refresh}
+                />
+            </Space>
             <Space wrap size={16} align="start">
                 <Card
                     title="América"
@@ -51,22 +61,22 @@ const Absences = () => {
                         width: 400,
                     }}
                 >
-                    {allAbsences.map((ausencia, index) => (ausencia.continent === "America" ?
+                    {allAbsences.map((ausencia, index) => (ausencia.continent === "America" &&
                         <div key={index}>
-                            <Card hoverable style={cardStyle}>
-                                <Carousel arrows >
-                                    <div className="mb-0">
-                                        <h1 style={contentStyle}><strong>Nombre: </strong>{ausencia.employeeId.name} {ausencia.employeeId.surname}</h1>
-                                        <h1 style={contentStyle}><strong>Título: </strong>{ausencia.absenceCodeId.absenceName}</h1>
-                                    </div>
-                                    <div>
-                                        <h3 style={contentStyle}>Prueba</h3>
-                                        <h3 style={contentStyle}>de Carrusel</h3>
-                                    </div>
-                                </Carousel>
-                            </Card>
+                            <AbsencesCard
+                                name={ausencia.employeeId.name}
+                                surname={ausencia.employeeId.surname}
+                                absenceName={ausencia.absenceName}
+                                startDate={ausencia.startDate}
+                                endDate={ausencia.endDate}
+                                country={ausencia.country}
+                                city={ausencia.city}
+                                absenceService={ausencia.absenceService}
+                                absenceCode={ausencia.absenceCode}
+                                id={ausencia._id}
+                                refresh={refresh} />
                         </div>
-                        : null))}
+                    ))}
                 </Card>
                 <Card
                     title="Europa"
@@ -74,22 +84,22 @@ const Absences = () => {
                         width: 400,
                     }}
                 >
-                    {allAbsences.map((ausencia, index) => (ausencia.continent === "Europa" ?
+                    {allAbsences.map((ausencia, index) => (ausencia.continent === "Europa" &&
                         <div key={index}>
-                            <Card hoverable style={cardStyle}>
-                                <Carousel arrows >
-                                    <div>
-                                        <h1 style={contentStyle}><strong>Nombre: </strong> {ausencia.employeeId.name} {ausencia.employeeId.surname}</h1>
-                                        <h1 style={contentStyle}><strong>Título: </strong> {ausencia.absenceCodeId.absenceName}</h1>
-                                    </div>
-                                    <div >
-                                        <h3 style={contentStyle}>Prueba</h3>
-                                        <h3 style={contentStyle}>de Carrusel</h3>
-                                    </div>
-                                </Carousel>
-                            </Card>
+                            <AbsencesCard
+                                name={ausencia.employeeId.name}
+                                surname={ausencia.employeeId.surname}
+                                absenceName={ausencia.absenceName}
+                                startDate={ausencia.startDate}
+                                endDate={ausencia.endDate}
+                                country={ausencia.country}
+                                city={ausencia.city}
+                                absenceService={ausencia.absenceService}
+                                absenceCode={ausencia.absenceCode}
+                                id={ausencia._id}
+                                refresh={refresh} />
                         </div>
-                        : null))}
+                    ))}
                 </Card>
                 <Card
                     title="Africa"
@@ -97,22 +107,22 @@ const Absences = () => {
                         width: 400,
                     }}
                 >
-                    {allAbsences.map((ausencia, index) => (ausencia.continent === "Africa" ?
+                    {allAbsences.map((ausencia, index) => (ausencia.continent === "Africa" &&
                         <div key={index}>
-                            <Card hoverable style={cardStyle}>
-                                <Carousel arrows >
-                                    <div>
-                                        <h1 style={contentStyle}><strong>Nombre: </strong>{ausencia.employeeId.name} {ausencia.employeeId.surname}</h1>
-                                        <h1 style={contentStyle}><strong>Título: </strong>{ausencia.absenceCodeId.absenceName}</h1>
-                                    </div>
-                                    <div >
-                                        <h3 style={contentStyle}>Prueba</h3>
-                                        <h3 style={contentStyle}>de Carrusel</h3>
-                                    </div>
-                                </Carousel>
-                            </Card>
+                            <AbsencesCard
+                                name={ausencia.employeeId.name}
+                                surname={ausencia.employeeId.surname}
+                                absenceName={ausencia.absenceName}
+                                startDate={ausencia.startDate}
+                                endDate={ausencia.endDate}
+                                country={ausencia.country}
+                                city={ausencia.city}
+                                absenceService={ausencia.absenceService}
+                                absenceCode={ausencia.absenceCode}
+                                id={ausencia._id}
+                                refresh={refresh} />
                         </div>
-                        : null))}
+                    ))}
                 </Card>
                 <Card
                     title="Asia"
@@ -120,22 +130,22 @@ const Absences = () => {
                         width: 400,
                     }}
                 >
-                    {allAbsences.map((ausencia, index) => (ausencia.continent === "Asia" ?
+                    {allAbsences.map((ausencia, index) => (ausencia.continent === "Asia" &&
                         <div key={index}>
-                            <Card hoverable style={cardStyle}>
-                                <Carousel arrows >
-                                    <div>
-                                        <h1 style={contentStyle}><strong>Nombre: </strong>{ausencia.employeeId.name} {ausencia.employeeId.surname}</h1>
-                                        <h1 style={contentStyle}><strong>Título: </strong>{ausencia.absenceCodeId.absenceName}</h1>
-                                    </div>
-                                    <div >
-                                        <h3 style={contentStyle}>Prueba</h3>
-                                        <h3 style={contentStyle}>de Carrusel</h3>
-                                    </div>
-                                </Carousel>
-                            </Card>
+                            <AbsencesCard
+                                name={ausencia.employeeId.name}
+                                surname={ausencia.employeeId.surname}
+                                absenceName={ausencia.absenceName}
+                                startDate={ausencia.startDate}
+                                endDate={ausencia.endDate}
+                                country={ausencia.country}
+                                city={ausencia.city}
+                                absenceService={ausencia.absenceService}
+                                absenceCode={ausencia.absenceCode}
+                                id={ausencia._id}
+                                refresh={refresh} />
                         </div>
-                        : null))}
+                    ))}
                 </Card>
                 <Card
                     title="Oceania"
@@ -143,22 +153,22 @@ const Absences = () => {
                         width: 400,
                     }}
                 >
-                    {allAbsences.map((ausencia, index) => (ausencia.continent === "Oceania" ?
+                    {allAbsences.map((ausencia, index) => (ausencia.continent === "Oceania" &&
                         <div key={index}>
-                            <Card hoverable style={cardStyle}>
-                                <Carousel arrows >
-                                    <div>
-                                        <h1 style={contentStyle}><strong>Nombre: </strong>{ausencia.employeeId.name} {ausencia.employeeId.surname}</h1>
-                                        <h1 style={contentStyle}><strong>Título: </strong>{ausencia.absenceCodeId.absenceName}</h1>
-                                    </div>
-                                    <div >
-                                        <h3 style={contentStyle}>Prueba</h3>
-                                        <h3 style={contentStyle}>de Carrusel</h3>
-                                    </div>
-                                </Carousel>
-                            </Card>
+                            <AbsencesCard
+                                name={ausencia.employeeId.name}
+                                surname={ausencia.employeeId.surname}
+                                absenceName={ausencia.absenceName}
+                                startDate={ausencia.startDate}
+                                endDate={ausencia.endDate}
+                                country={ausencia.country}
+                                city={ausencia.city}
+                                absenceService={ausencia.absenceService}
+                                absenceCode={ausencia.absenceCode}
+                                id={ausencia._id}
+                                refresh={refresh} />
                         </div>
-                        : null))}
+                        && ausencia.length === 0 && "vacio"))}
                 </Card>
             </Space >
         </>

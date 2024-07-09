@@ -71,7 +71,6 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                     htmlType: "submit",
                 }}
                 onCancel={onCancel}
-                destroyOnClose
                 modalRender={(dom) => (
                     <Form
                         layout="vertical"
@@ -80,7 +79,6 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                         initialValues={{
                             modifier: "public",
                         }}
-                        clearOnDestroy
                         onFinish={(values) => onCreate(values)}
                     >
                         {dom}
