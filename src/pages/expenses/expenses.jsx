@@ -484,10 +484,10 @@ const Expenses = () => {
                             </div>
                             <div className="ml-32">
                                 <p className="font-bold">Motivo:</p>
-                                {record.absenceId.absenceCodeId.absenceService}
+                                {record.absenceId.absenceCodeId?.absenceService}
                                 <p className="font-bold">Código:</p>
-                                {record.absenceId.absenceCodeId.absenceCode
-                                    ? record.absenceId.absenceCodeId.absenceCode
+                                {record.absenceId.absenceCodeId?.absenceCode
+                                    ? record.absenceId.absenceCodeId?.absenceCode
                                     : "-"}
                             </div>
                             <div className="ml-32">
