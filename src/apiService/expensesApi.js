@@ -23,42 +23,41 @@ export const addExpenses = async (data) => {
 
     const formData = new FormData();
     for (let i = 0; i < data.expenseProof.length; i++) {
-        formData.append("files", data.expenseProof[i]);
+        formData.append("files", data.expenseProof[i].originFileObj);
     }
 
     try {
+        delete data.expenseProof;
+        const response = await fetch(`${baseUrl}/expenses`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": `Bearer ${token}`,
+            },
+        });
 
-        if(data.expenseProof) {
-            data.expenseProof = null
-            const response = await fetch(`${baseUrl}/expenses`, {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json",
-                    "authorization": `Bearer ${token}`,
-                },
-            });
-            const newExpenses = await response.json();
-            console.log(newExpenses)
+        const newExpense = await response.json();
 
-            const expenseId = newExpenses.newExpense._id
-            const responseExpenseProof = await fetch(`${baseUrl}/upload/expenses/${expenseId}`, {
+        const expenseId = newExpense.newExpense._id;
+        const responseExpenseProof = await fetch(`${baseUrl}/upload/expenses/${expenseId}`, {
             method: 'POST', 
             body: formData, 
             headers: {"authorization": `Bearer ${token}`}
-        })
-        const expenseProof = await response.json()
-        console.log(expenseProof)
-        return responseExpenseProof
+        });
 
-        }
-        
-        
+        const expenseProof = await responseExpenseProof.json();
+        console.log(expenseProof);
+
+        return newExpense
+
     } catch (error) {
         console.error('Error uploading expenseProof:', error);
         throw error;
     }
 };
+
+
 
 export const deleteExpenses = async (id) => {
     const token = localStorage.getItem("access_token");
