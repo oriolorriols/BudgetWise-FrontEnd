@@ -25,7 +25,7 @@ export const addAbsences = async (data) => {
         body: JSON.stringify(data),
         headers: {
             "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
+            "authorization": `Bearer ${token}`,
         },
     });
     const newAbsences = await response.json();

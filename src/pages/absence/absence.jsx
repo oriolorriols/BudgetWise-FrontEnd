@@ -25,7 +25,6 @@ const Absences = () => {
         else setError(users.message);
     };
 
-
     useEffect(() => {
         getAllAbsences();
         getAllUsers();

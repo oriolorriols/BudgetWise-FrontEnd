@@ -34,8 +34,8 @@ const AbsenceModal = ({ user, visible, onCancel, allUsers, refresh }) => {
     const createAbsence = async (values) => {
         console.log("Crea viaje, cierra modal", values)
         try {
-            // const response = await addAbsences(values);
-            // refresh((prev) => !prev);
+            const response = await addAbsences(values);
+            refresh((prev) => !prev);
             onCancel();
         } catch (error) {
             console.log("error", error)
