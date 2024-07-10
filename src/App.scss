@@ -3,3 +3,48 @@
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
+
+#root {
+  background-color: #071829;
+
+  .main-content {
+    width: calc(100vw - 200px);
+    background-color: #F9F9F9;
+    border-radius: 20px;
+    padding: 30px 40px;
+    margin: 20px;
+    min-height: calc(100vh - 40px);
+  }
+}
+
+button {  
+  &.ant-btn-primary {
+    background-color: #2CB990 !important;
+    font-weight: 600 !important;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+    &:hover {
+      background-color: #1677FF !important
+    } 
+  }
+  &.ant-btn-default {
+    border: 2px solid #000;
+    font-weight: 600 !important;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+    &:hover {
+      background-color: #000 !important;
+      color: #fff !important;
+      border-color: #000 !important;
+    }
+  }
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+}
+.subtitle {
+  font-size: 18px;
+  font-weight: 300;
+  color: #888;
+  margin-bottom: 30px;
+}

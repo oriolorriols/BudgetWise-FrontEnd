@@ -41,7 +41,7 @@ const Home = () => {
     <>
       <div className="flex">
         <SideBar />
-        <div className="p-8 h-full" style={{ width: 'calc(100vw - 200px)' }}>
+        <div className="main-content p-8 h-full">
           <Button
             id='chatIcon'
             type="primary"
