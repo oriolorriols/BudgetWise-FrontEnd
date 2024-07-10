@@ -38,9 +38,6 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
         } finally {
             setLoading(false)
         }
-        finally {
-            setLoading(false)
-        }
     };
 
     const handleAbsenceName = (value) => {
