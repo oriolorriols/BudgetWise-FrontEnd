@@ -20,12 +20,10 @@ export const getOneExpense = async (id) => {
 
 export const addExpenses = async (data) => {
     const token = localStorage.getItem("access_token");
-
     const formData = new FormData();
     for (let i = 0; i < data.expenseProof.length; i++) {
         formData.append("files", data.expenseProof[i].originFileObj);
     }
-
     try {
         delete data.expenseProof;
         const response = await fetch(`${baseUrl}/expenses`, {
@@ -36,7 +34,6 @@ export const addExpenses = async (data) => {
                 "authorization": `Bearer ${token}`,
             },
         });
-
         const newExpense = await response.json();
 
         const expenseId = newExpense.newExpense._id;
@@ -45,12 +42,10 @@ export const addExpenses = async (data) => {
             body: formData, 
             headers: {"authorization": `Bearer ${token}`}
         });
-
         const expenseProof = await responseExpenseProof.json();
         console.log(expenseProof);
-
+        
         return newExpense
-
     } catch (error) {
         console.error('Error uploading expenseProof:', error);
         throw error;
