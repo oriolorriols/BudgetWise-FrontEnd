@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {useNavigate} from 'react-router-dom'
 import { useAuth } from "../../contexts/authContext"
 import { getOneUser } from '../../apiService/userApi'
@@ -65,7 +65,7 @@ const ProfileBar = () => {
       <div className='profile-bar'>
         <Flex gap={15} wrap justify="flex-end" align="center">
           <Button type="primary">Añadir gasto</Button>
-          <p><b>{user.name} {user.surname}</b></p>
+          <p><b>{user?.name} {user?.surname}</b></p>
           <Dropdown 
             menu={{
               onClick: handleDropdownItemClick,
@@ -73,7 +73,7 @@ const ProfileBar = () => {
             }}
             trigger={['click']}
           >
-            <Avatar size={40} src={user.profilePic} /> 
+            <Avatar size={40} src={user?.profilePic} /> 
           </Dropdown>           
         </Flex> 
       </div>

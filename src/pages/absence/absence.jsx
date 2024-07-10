@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAbsences } from "../../apiService/absencesApi";
-import { Button, Card, Modal, Space } from 'antd';
+import { Button, Card, Modal, Space, Flex} from 'antd';
 import AbsencesCard from "./absenceCards";
 import AbsenceModal from "../../components/modals/modalAbsences";
 import { getUsers } from "../../apiService/userApi";
@@ -37,10 +37,13 @@ const Absences = () => {
     }
 
     return (
-        <>
-            <div>
-                <h2 className="text-xl font-bold">Lista de Viajes</h2>
-            </div>
+        <>            
+            <Flex wrap justify="space-between" align="flex-start">
+                <div className="title-box">
+                <h1 className='title'>Lista de viajes</h1>
+                <h2 className='subtitle'>Listado de todos los viajes por cada continente</h2>
+                </div>
+            </Flex>
             <div className="flex justify-start my-5">
                 <Button type="primary" onClick={openCreateAbsence}>
                     Crear viaje
