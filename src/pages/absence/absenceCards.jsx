@@ -16,7 +16,7 @@ const AbsencesCard = ({ name, surname, absenceName, startDate, endDate, country,
     }
 
     return (
-        < Card hoverable className="cardStyle pl-10" >
+        < Card hoverable className="cardStyle" >
             <Carousel arrows >
                 <div className="mb-0">
                     <h1 className="contentStyle"><strong>Empleado: </strong>{name} {surname}</h1>
