@@ -59,11 +59,6 @@ const items = [
     label: 'Gastos',
   },
   {
-    key: '/solicitudes',
-    icon: <CarryOutOutlined />,
-    label: 'Solicitudes',
-  },
-  {
     key: '/empresa',
     icon: <DeploymentUnitOutlined />,
     label: 'Empresa',
@@ -106,7 +101,7 @@ const SideBar = () => {
             }
           }}
         />
-{/*
+        {/*
       <Button 
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/> : <MenuFoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/>}
