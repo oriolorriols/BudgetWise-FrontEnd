@@ -3,6 +3,7 @@ import { getOneUser, updateUser, updateUserPic } from '../../apiService/userApi'
 import { useAuth } from "../../contexts/authContext"
 import TokenModal from '../../components/modals/modalToken'
 import { UploadOutlined } from '@ant-design/icons'
+import ProfileBar from '../../components/profileBar/profileBar'
 import dayjs from 'dayjs'
 import {
   Button,
@@ -151,6 +152,7 @@ const Profile = () => {
           <h1 className='title'>¡Bienvenido de nuevo, {user.name}!</h1>
           <h2 className='subtitle'>Aquí puedes ver y modificar los datos de tu perfil</h2>
         </div>
+        <ProfileBar />
       </Flex>
       <div className='flex'>
         <div className='bg-green-200 rounded-lg max-w-72 h-fit p-5 mr-10'>
