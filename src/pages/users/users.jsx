@@ -232,12 +232,12 @@ const Users = () => {
 
   return (
     <>
-          <Flex wrap justify="space-between" align="flex-start">
-                <div className="title-box">
-                <h1 className='title'>Lista de empleados</h1>
-                <h2 className='subtitle'>Busca los detalles de todos los empleados de la empresa</h2>
-                </div>
-            </Flex>
+      <Flex wrap justify="space-between" align="flex-start">
+        <div className="title-box">
+          <h1 className='title'>Lista de empleados</h1>
+          <h2 className='subtitle'>Listado de información de todos los empleados</h2>
+        </div>
+      </Flex>
       
       <div className="flex justify-between my-5">  
         <div>

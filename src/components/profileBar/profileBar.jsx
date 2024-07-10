@@ -1,17 +1,16 @@
+import React, { useEffect, useState } from 'react'
 import {useNavigate} from 'react-router-dom'
 import { useAuth } from "../../contexts/authContext"
+import { getOneUser } from '../../apiService/userApi'
+import TokenModal from '../../components/modals/modalToken'
 
-import {
-  UserOutlined,
-} from '@ant-design/icons';
 
 import { 
   Avatar, 
   Button, 
   Flex,
-  Dropdown
+  Dropdown,
 } from 'antd';
-
 import './profileBar.scss'
 
 
@@ -34,6 +33,9 @@ const items = [
 const ProfileBar = () => {
   const navigate = useNavigate()
   const { setLogOut } = useAuth()
+  const { userId } = useAuth()
+  const [user, setUser] = useState(null);
+  const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
 
   const handleDropdownItemClick = (key) => {    
     if (key === '/logout') {
@@ -42,22 +44,40 @@ const ProfileBar = () => {
       else navigate(key)
   };
 
+  const getUserData = async () => {
+    try {
+      const data = await getOneUser(userId);
+      setUser(data);
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, [userId]);
+
   return (  
-    <div className='profile-bar'>
-      <Flex gap={15} wrap justify="flex-end" align="center">
-        <Button type="primary">Añadir gasto</Button>
-        <p><b>Nombrer Apellidos</b></p>
-        <Dropdown 
-          menu={{
-            onClick: handleDropdownItemClick,
-            items: items,
-          }}
-          trigger={['click']}
-        >
-          <Avatar size={30} icon={<UserOutlined />} /> 
-        </Dropdown>           
-      </Flex> 
-    </div>
+    <>
+      <TokenModal
+        visible={isModalTokenVisible}
+      />
+      <div className='profile-bar'>
+        <Flex gap={15} wrap justify="flex-end" align="center">
+          <Button type="primary">Añadir gasto</Button>
+          <p><b>{user.name} {user.surname}</b></p>
+          <Dropdown 
+            menu={{
+              onClick: handleDropdownItemClick,
+              items: items,
+            }}
+            trigger={['click']}
+          >
+            <Avatar size={40} src={user.profilePic} /> 
+          </Dropdown>           
+        </Flex> 
+      </div>
+    </>
   );
 };
 export default ProfileBar;

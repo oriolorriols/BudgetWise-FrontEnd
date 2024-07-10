@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from "../../contexts/authContext";
 import { getOneUser } from '../../apiService/userApi';
 import { getExpenses } from '../../apiService/expensesApi';
-import { Row, Col, DatePicker, Select, Card } from 'antd';
+import { Row, Col, DatePicker, Select, Card, Flex } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
+import './dashboard.scss';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -171,17 +172,20 @@ const Dashboard = () => {
   };
 
   return (
-    <>
-      <div>
-        <h2 className='font-medium text-2xl'>Hola, {user?.name}!</h2>
-      </div>
+    <>      
+      <Flex wrap justify="space-between" align="flex-start">
+        <div className="title-box">
+          <h1 className='title'>¡Bienvenido de nuevo, {user?.name}!</h1>
+          <h2 className='subtitle'>Aquí puedes ver el resumen y toda la información sobre tus gastos</h2>
+        </div>
+      </Flex>
 
       <Row gutter={16}>
         <Col span={8}>
-          <Card>
+          <Card className={"card-expenses total-expenses"}>
             <div className="flex">
               <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Expenses Icon" />
-              <div className='ml-3'>
+              <div className='ml-5'>
                 <h3>Gastos</h3>
                 <p className='font-bold'>1.388,25€</p>
               </div>
@@ -189,10 +193,10 @@ const Dashboard = () => {
           </Card>
         </Col>
         <Col span={8}>
-          <Card>
+          <Card className={"card-expenses accumulated-expense"}>
             <div className="flex">
               <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Accumulated Icon" />
-              <div className='ml-3'>
+              <div className='ml-5'>
                 <h3>Acumulado año</h3>
                 <p className='font-bold'>3.388,25€</p>
               </div>
@@ -200,10 +204,10 @@ const Dashboard = () => {
           </Card>
         </Col>
         <Col span={8}>
-          <Card>
+          <Card className={"card-expenses average-expenses"}>
             <div className="flex">
               <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Average Monthly Icon" />
-              <div className='ml-3'>
+              <div className='ml-5'>
                 <h3>Gasto medio mes</h3>
                 <p className='font-bold'>503€</p>
               </div>

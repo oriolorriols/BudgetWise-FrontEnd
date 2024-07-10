@@ -3,6 +3,7 @@ import { Table, Button, Modal, Form, Input, Select, notification, Progress, Popc
 import { getDepartments } from '../../apiService/departmentApi';
 import { getUsers } from '../../apiService/userApi';
 import { getGoals, addGoalForDepartment, deleteGoal, updateGoal } from '../../apiService/goalApi';
+import './objetivosHR.scss';
 const { Option } = Select;
 
 const ObjetivosHR = () => {
@@ -181,8 +182,8 @@ const ObjetivosHR = () => {
         <>        
             <Flex wrap justify="space-between" align="flex-start">
                 <div className="title-box">
-                    <h1 className='title'>Objetivos Recursos Humanos</h1>
-                    <h2 className='subtitle'>Estos son lso objetivos marcados para este trimestre</h2>
+                    <h1 className='title'>Objetivos</h1>
+                    <h2 className='subtitle'>Consulta todos los objetivos marcados de cada departamente para este trimestre</h2>
                 </div>
                 <div className="flex justify-end my-5">                    
                     <Button type="primary" onClick={showModal}>
@@ -190,20 +191,21 @@ const ObjetivosHR = () => {
                     </Button>
                 </div>
             </Flex>
-            <Table
-                columns={columns}
-                dataSource={departments}
-                rowKey="_id"
-                expandable={{
-                    expandedRowRender: record => (
-                        <>
-                            {getDepartmentGoals(record._id)}
-                            {expandedRowRender(record)}
-                        </>
-                    ),
-                }}
-            />
-
+            <div className="tabla-objetivos">
+                <Table
+                    columns={columns}
+                    dataSource={departments}
+                    rowKey="_id"
+                    expandable={{
+                        expandedRowRender: record => (
+                            <>
+                                {getDepartmentGoals(record._id)}
+                                {expandedRowRender(record)}
+                            </>
+                        ),
+                    }}
+                />
+            </div>
             <Modal
                 title={isEditMode ? "Editar Objetivo" : "Añadir Objetivo para Departamento"}
                 visible={isModalVisible}
