@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getOneUser, updateUser, updateUserPic } from '../../apiService/userApi'
 import { useAuth } from "../../contexts/authContext"
 import TokenModal from '../../components/modals/modalToken'
+import ProfileBar from '../../components/profileBar/profileBar'
 import { UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import {
@@ -13,7 +14,8 @@ import {
   Space,
   DatePicker,
   message,
-  Spin
+  Spin,
+  Flex
 } from 'antd'
 
 const { Option } = Select
@@ -145,9 +147,13 @@ const Profile = () => {
       <TokenModal
         visible={isModalTokenVisible}
       />
-      <div className='mb-5'>
-        <h2 className='font-medium text-2xl'>Hola, {user.name}!</h2>
-      </div>
+      <Flex wrap justify="space-between" align="flex-start">
+        <div className="title-box">
+          <h1 className='title'>Bienvenido de nuevo, {user.name}!</h1>
+          <h2 className='subtitle'>Aquí puedes ver y modificar los datos de tu perfil</h2>
+        </div>
+        <ProfileBar />
+      </Flex>
       <div className='flex'>
         <div className='bg-green-200 rounded-lg max-w-72 h-fit p-5 mr-10'>
           <div className="mt-2 mb-5">
