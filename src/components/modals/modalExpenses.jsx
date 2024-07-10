@@ -55,7 +55,6 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
 
     const props = {
         multiple: true,
-        //action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
         onChange({ file, fileList }) {
             if (file.status !== "uploading") {
                 console.log("file: ", file, "fileList: ", fileList);

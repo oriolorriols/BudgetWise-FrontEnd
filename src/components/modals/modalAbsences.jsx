@@ -11,6 +11,10 @@ import {
 import { useAuth } from "../../contexts/authContext";
 import FormItem from "antd/es/form/FormItem";
 import TextArea from "antd/es/input/TextArea";
+import { addAbsences } from "../../apiService/absencesApi";
+import dayjs from "dayjs";
+
+dayjs().format()
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -26,18 +30,18 @@ const formItemLayout = {
 const AbsenceModal = ({ user, visible, onCancel, allUsers, refresh }) => {
     const [form] = Form.useForm();
     const { userId, isHR } = useAuth();
-    const [dates, setDates] = useState([]);
 
-    const createAbsence = (values) => {
+    const createAbsence = async (values) => {
         console.log("Crea viaje, cierra modal", values)
-        onCancel();
+        try {
+            // const response = await addAbsences(values);
+            // refresh((prev) => !prev);
+            onCancel();
+        } catch (error) {
+            console.log("error", error)
+            //message.error(error);
+        }
     }
-    //         const response = await addExpenses(values);
-    //         refresh((prev) => !prev);
-    //         onCancel();
-    //     } catch (error) {
-    //         message.error(error);
-    //     }
 
     const handleAbsenceEmployee = (value) => {
         form.setFieldsValue({ employeeId: value });
@@ -54,15 +58,15 @@ const AbsenceModal = ({ user, visible, onCancel, allUsers, refresh }) => {
         console.log("55 servicio", value)
     };
 
-    const onDateChangeAbsence = (dates, dateStrings) => {
-        setDates(dateStrings);
-        filterDataByDate(dateStrings);
+    const onDateChangeAbsenceStart = (date, dateStrings) => {
+        const newDate = new Date(dateStrings)
+        form.setFieldsValue({ startDate: dateStrings });
+        console.log(dateStrings)
     };
-
-    const filterDataByDate = (dateStrings) => {
-        const [start, end] = dateStrings;
-        form.setFieldsValue({ startDate: start, endDate: end });
-        console.log("67 fechas", "inicio", start, "final", end)
+    const onDateChangeAbsenceEnd = (date, dateStrings) => {
+        const newDate = new Date(dateStrings)
+        form.setFieldsValue({ endDate: dateStrings });
+        console.log(dateStrings)
     };
 
     return (
@@ -131,103 +135,104 @@ const AbsenceModal = ({ user, visible, onCancel, allUsers, refresh }) => {
                         </Select>
                     </Space>
                 </Form.Item>
-                <Form.Item
-                    //name="RangePicker"
-                    label="Fecha de inicio y fin del viaje"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Selecciona un rango",
-                        },
-                    ]}>
-                    <RangePicker onChange={onDateChangeAbsence} />
-                </Form.Item>
-                <Form.Item
-                    name="country"
-                    label="País de visita:"
-                    rules={[
-                        { required: true, message: "Escribe un país" },
-                    ]}
-                >
-                    <Input
-                        placeholder="España"
-                        style={{
-                            width: 150,
-                        }}
-                    />
-                </Form.Item>
-                <Form.Item
-                    name="city"
-                    label="Ciudad de visita:"
-                    rules={[
-                        { required: true, message: "Escribe una ciudad" },
-                    ]}
-                >
-                    <Input
-                        placeholder="Madrid"
-                        style={{
-                            width: 150,
-                        }}
-                    />
-                </Form.Item>
-                <Form.Item
-                    name="continent"
-                    label="Continente"
-                    rules={[
-                        { required: true, message: "Selecciona un continente" },
-                    ]}
-                >
-                    <Space wrap>
-                        <Select
-                            placeholder="Seleccionar..."
+                <Space>
+                    <Form.Item name="startDate" label="Fecha de inicio y fin" getValueProps={(value) => ({ value: value ? dayjs(value) : "", })}>
+                        <DatePicker onChange={onDateChangeAbsenceStart} />
+                    </Form.Item>
+                    <Form.Item name="endDate" label="Fecha de fin" getValueProps={(value) => ({ value: value ? dayjs(value) : "", })}>
+                        <DatePicker onChange={onDateChangeAbsenceEnd} />
+                    </Form.Item>
+                </Space>
+                <Space>
+                    <Form.Item
+                        name="country"
+                        label="País de visita:"
+                        rules={[
+                            { required: true, message: "Escribe un país" },
+                        ]}
+                    >
+                        <Input
+                            placeholder="España"
                             style={{
-                                width: 200,
+                                width: 150,
                             }}
-                            onChange={handleAbsenceContinent}
-                            options={[
-                                { value: 'America', label: 'America' },
-                                { value: 'Europa', label: 'Europa' },
-                                { value: 'Africa', label: 'Africa' },
-                                { value: 'Asia', label: 'Asia' },
-                                { value: 'Oceania', label: 'Oceania' },
-                            ]}
                         />
-                    </Space>
-                </Form.Item>
-                <Form.Item
-                    name="absenceService"
-                    label="Servicio"
-                    rules={[
-                        { required: true, message: "Selecciona un servicio" },
-                    ]}
-                >
-                    <Space wrap>
-                        <Select
-                            placeholder="Seleccionar..."
+                    </Form.Item>
+                    <Form.Item
+                        name="city"
+                        label="Ciudad de visita:"
+                        rules={[
+                            { required: true, message: "Escribe una ciudad" },
+                        ]}
+                    >
+                        <Input
+                            placeholder="Madrid"
                             style={{
-                                width: 200,
+                                width: 150,
                             }}
-                            onChange={handleAbsenceService}
-                            options={[
-                                { value: 'Demo', label: 'Demo' },
-                                { value: 'Venta', label: 'Venta' },
-                                { value: 'Post-Venta', label: 'Post-Venta' },
-                                { value: 'Soporte', label: 'Soporte' },
-                                { value: 'Formacion', label: 'Formacion' },
-                                { value: 'Feria', label: 'Feria' },
-                                { value: 'Otros', label: 'Otros' },
-                            ]}
                         />
-                    </Space>
-                </Form.Item>
-                <Form.Item
-                    className="flex inline-row"
-                    name="absenceCode"
-                    label="Código de venta (si aplica):"
-                >
-                    <Input placeholder="PV-0080" />
-                </Form.Item>
-            </Modal>
+                    </Form.Item>
+                    <Form.Item
+                        name="continent"
+                        label="Continente"
+                        rules={[
+                            { required: true, message: "Selecciona un continente" },
+                        ]}
+                    >
+                        <Space wrap>
+                            <Select
+                                placeholder="Seleccionar..."
+                                style={{
+                                    width: 150,
+                                }}
+                                onChange={handleAbsenceContinent}
+                                options={[
+                                    { value: 'America', label: 'America' },
+                                    { value: 'Europa', label: 'Europa' },
+                                    { value: 'Africa', label: 'Africa' },
+                                    { value: 'Asia', label: 'Asia' },
+                                    { value: 'Oceania', label: 'Oceania' },
+                                ]}
+                            />
+                        </Space>
+                    </Form.Item>
+                </Space>
+                <Space>
+                    <Form.Item
+                        name="absenceService"
+                        label="Servicio"
+                        rules={[
+                            { required: true, message: "Selecciona un servicio" },
+                        ]}
+                    >
+                        <Space wrap>
+                            <Select
+                                placeholder="Seleccionar..."
+                                style={{
+                                    width: 200,
+                                }}
+                                onChange={handleAbsenceService}
+                                options={[
+                                    { value: 'Demo', label: 'Demo' },
+                                    { value: 'Venta', label: 'Venta' },
+                                    { value: 'Post-Venta', label: 'Post-Venta' },
+                                    { value: 'Soporte', label: 'Soporte' },
+                                    { value: 'Formacion', label: 'Formacion' },
+                                    { value: 'Feria', label: 'Feria' },
+                                    { value: 'Otros', label: 'Otros' },
+                                ]}
+                            />
+                        </Space>
+                    </Form.Item>
+                    <Form.Item
+                        className="flex inline-row"
+                        name="absenceCode"
+                        label="Código de venta (si aplica):"
+                    >
+                        <Input placeholder="PV-0080" />
+                    </Form.Item>
+                </Space>
+            </Modal >
         </>
     );
 };
