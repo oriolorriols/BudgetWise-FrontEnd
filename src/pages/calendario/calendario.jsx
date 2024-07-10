@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, Calendar } from 'antd';
+import { Badge, Calendar, Flex } from 'antd';
 const getListData = (value) => {
   let listData;
   switch (value.date()) {
@@ -95,6 +95,19 @@ const Calendario = () => {
     if (info.type === 'month') return monthCellRender(current);
     return info.originNode;
   };
-  return <Calendar cellRender={cellRender} />;
+
+  return (
+    <>
+      <Flex wrap justify="space-between" align="flex-start">
+        <div className="title-box">
+          <h1 className='title'>Calendario</h1>
+          <h2 className='subtitle'>Todos los eventos del mes</h2>
+        </div>
+      </Flex>
+    
+      <Calendar cellRender={cellRender} />;
+    </>
+  )
 };
+
 export default Calendario;
