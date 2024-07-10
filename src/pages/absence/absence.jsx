@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAbsences } from "../../apiService/absencesApi";
-import { Button, Card, Modal, Space, Flex} from 'antd';
+import { Button, Card, Modal, Space, Flex } from 'antd';
 import AbsencesCard from "./absenceCards";
 import AbsenceModal from "../../components/modals/modalAbsences";
 import { getUsers } from "../../apiService/userApi";
@@ -37,11 +37,11 @@ const Absences = () => {
     }
 
     return (
-        <>            
+        <>
             <Flex wrap justify="space-between" align="flex-start">
                 <div className="title-box">
-                <h1 className='title'>Lista de viajes</h1>
-                <h2 className='subtitle'>Listado de todos los viajes por cada continente</h2>
+                    <h1 className='title'>Lista de viajes</h1>
+                    <h2 className='subtitle'>Listado de todos los viajes por cada continente</h2>
                 </div>
             </Flex>
             <div className="flex justify-start my-5">
@@ -61,7 +61,7 @@ const Absences = () => {
                 <Card
                     title="América"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "America" &&
@@ -84,7 +84,7 @@ const Absences = () => {
                 <Card
                     title="Europa"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Europa" &&
@@ -107,7 +107,7 @@ const Absences = () => {
                 <Card
                     title="Africa"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Africa" &&
@@ -130,7 +130,7 @@ const Absences = () => {
                 <Card
                     title="Asia"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Asia" &&
@@ -153,7 +153,7 @@ const Absences = () => {
                 <Card
                     title="Oceania"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Oceania" &&
