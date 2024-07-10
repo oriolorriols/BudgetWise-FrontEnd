@@ -27,23 +27,31 @@ const formItemLayout = {
 const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
     const [form] = Form.useForm();
     const { userId, isHR } = useAuth();
+    const [fileList, setFileList] = useState([]);
+    const [loading, setLoading] = useState(false)
 
     const onCreate = async (values) => {
-        console.log("values", values);
+        const data = { ...values, expenseProof: fileList };
+        console.log("data", data);
         try {
-            const response = await addExpenses(values);
+            setLoading(true)
+            const response = await addExpenses(data);
             refresh((prev) => !prev);
+            form.resetFields()
+            setFileList([])
             onCancel();
+            message.success('Se ha creado el gasto correctamente!')
         } catch (error) {
             message.error(error);
+        }
+        finally {
+            setLoading(false)
         }
     };
 
     const handleAbsenceName = (value) => {
         form.setFieldsValue({ absenceId: value });
     };
-
-    const [fileList, setFileList] = useState([]);
 
     const props = {
         action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
@@ -52,10 +60,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                 console.log("file: ", file, "fileList: ", fileList);
             }
         },
-        beforeUpload: (file) => {
-            setFileList([file]);
-            return false;
-        },
+        beforeUpload: () => false,
         fileList,
     };
 
@@ -67,8 +72,10 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                 okText="Ok"
                 cancelText="Cancel"
                 okButtonProps={{
+                    loading,
                     autoFocus: true,
                     htmlType: "submit",
+                    disabled: loading
                 }}
                 onCancel={onCancel}
                 modalRender={(dom) => (
@@ -79,7 +86,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                         initialValues={{
                             modifier: "public",
                         }}
-                        onFinish={(values) => onCreate(values)}
+                        onFinish={onCreate}
                     >
                         {dom}
                     </Form>
@@ -102,7 +109,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                         >
                             {allAbsences?.map((ausencia) => (
                                 <Option key={ausencia._id} value={ausencia._id}>
-                                    {ausencia.absenceCodeId.absenceName}
+                                    {ausencia.absenceName}
                                 </Option>
                             ))}
                         </Select>
@@ -144,23 +151,23 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                     name="expenseTravel"
                     label="Traslados:"
                 >
-                    <Input placeholder="123" suffix="€" />
+                    <Input placeholder="123" suffix="€" type="number" />
                 </Form.Item>
                 <Form.Item
                     className="flex inline-row"
                     name="expenseLodging"
                     label="Hospedajes:"
                 >
-                    <Input placeholder="123" suffix="€" />
+                    <Input placeholder="123" suffix="€" type="number" />
                 </Form.Item>
                 <Form.Item
                     className="flex inline-row"
                     name="expenseFood"
                     label="Dietas:"
                 >
-                    <Input placeholder="123" suffix="€" />
+                    <Input placeholder="123" suffix="€" type="number" />
                 </Form.Item>
-                {/* <Form.Item
+                <Form.Item
                     label="Justificantes: "
                     name="expenseProof"
                     rules={[
@@ -176,7 +183,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                             Selecciona el/los justificante/s
                         </Button>
                     </Upload>
-                </Form.Item> */}
+                </Form.Item>
             </Modal>
         </>
     );
