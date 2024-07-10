@@ -4,12 +4,14 @@ import { useAuth } from "../../contexts/authContext"
 import {
   UserOutlined,
 } from '@ant-design/icons';
+
 import { 
   Avatar, 
   Button, 
   Flex,
   Dropdown
 } from 'antd';
+
 import './profileBar.scss'
 
 
