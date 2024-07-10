@@ -64,7 +64,7 @@ const ProfileBar = () => {
       />
       <div className='profile-bar'>
         <Flex gap={15} wrap justify="flex-end" align="center">
-          <Button type="primary">Añadir gasto</Button>
+          {/* <Button type="primary">Añadir gasto</Button> */}
           <p><b>{user?.name} {user?.surname}</b></p>
           <Dropdown 
             menu={{

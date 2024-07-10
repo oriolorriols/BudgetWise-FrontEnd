@@ -49,3 +49,77 @@ button {
   color: #666;
   margin-bottom: 30px;
 }
+
+.ant-table-wrapper  table {
+     margin-bottom: 20px;
+
+  .ant-table-thead  {
+      > tr {
+        background-color: #001529;
+
+          > th {
+              background-color: #001529;
+              color: #34B990;
+              font-weight: 700;
+              font-size: 16px;
+
+              &::before {
+                display: none;
+              }
+          }
+      }
+  }
+
+  .ant-table-tbody  {
+      > tr {
+          > td {
+              font-size: 14px;
+              font-weight: 600;
+
+              &:first-child {
+                  border-end-start-radius: 10px;
+              }
+              &:last-child {
+                  border-end-end-radius: 10px;
+              }
+          }
+      }
+  }
+
+  .ant-table-row-expand-icon {
+      width: 20px;
+      height: 20px;
+      background-color: #34B990;
+      color: #fff;
+
+      &::before{
+          top: 9px;
+          inset-inline-end: 4px;
+          inset-inline-start: 4px;
+      }
+
+      &::after{
+          inset-inline-start: 8.5px;
+      }
+
+      &:hover,
+      &:focus {
+          background-color: #22664E;
+          color: #fff;
+      }
+
+  }
+
+  .ant-table-expanded-row {
+      background-color: #eee;
+      .ant-table-thead  {
+          > tr {
+              > th {
+                  background-color: #34B990;
+                  color: #000;
+              }
+          }
+      } 
+  }
+
+}

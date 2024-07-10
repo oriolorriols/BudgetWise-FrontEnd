@@ -7,11 +7,17 @@
         padding: 20px;
     }
 
-    img {
-        padding: 15px;
+    .icon-expenses {
+        padding: 12px;
         border-radius: 12px;
         width: 55px;
         height: auto;
+
+        svg {
+            fill: #fff;
+            width: 30px;
+            height: auto;
+        }
     }
 
     h3 {
@@ -29,20 +35,24 @@
     }
 
     &.total-expenses {
-        img {
-            background-color: #6359E9;
+        .icon-expenses {
+            background-color: #34B990;
         }
     }
 
     &.accumulated-expense {
-        img {
+        .icon-expenses {
             background-color: #1677FF;
         }
     }
 
     &.average-expenses {
-        img {
+        .icon-expenses {
             background-color: #64CFF6;
+
+            svg {
+                fill: #000000;
+            }
         }
     }
 }
