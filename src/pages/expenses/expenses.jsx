@@ -122,7 +122,8 @@ const Expenses = () => {
     const filterDataByDateC = (dateStringsC) => {
         const [start, end] = dateStringsC;
         const filtered = allExpenses.filter(
-            (item) => item.createdAt >= start && item.createdAt <= end
+            (item) => 
+                new Date(item.createdAt).getTime() >= new Date(start).getTime() && new Date(item.createdAt).getTime() <= new Date(end).getTime() 
         );
         setFiltering(filtered);
     };
@@ -134,8 +135,10 @@ const Expenses = () => {
 
     const filterDataByDateE = (dateStringsE) => {
         const [start, end] = dateStringsE;
+        console.log(start, end);
         const filtered = allExpenses.filter(
-            (item) => item.absenceId.startDate >= start && item.absenceId.startDate <= end
+            (item) => 
+                new Date(item.expenseDate).getTime() >= new Date(start).getTime() && new Date(item.expenseDate).getTime() <= new Date(end).getTime()
         );
         setFiltering(filtered);
     };
@@ -148,7 +151,8 @@ const Expenses = () => {
     const filterDataByDateP = (dateStringsP) => {
         const [start, end] = dateStringsP;
         const filtered = allExpenses.filter(
-            (item) => item.expensePayment >= start && item.expensePayment <= end,
+            (item) => 
+                new Date(item.expensePayment).getTime() >= new Date(start).getTime() && new Date(item.expensePayment).getTime() <= new Date(end).getTime()
         );
         setFiltering(filtered);
     };
