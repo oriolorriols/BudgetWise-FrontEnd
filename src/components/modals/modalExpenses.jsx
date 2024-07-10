@@ -47,7 +47,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
         multiple: true,
         onChange({ file, fileList }) {
             if (file.status !== "uploading") {
-                console.log(file, fileList);
+                console.log("file: ", file, "fileList: ", fileList);
             }
             setFileList(fileList);
         },
@@ -152,7 +152,7 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                 className="flex inline-row"
                 name="expenseFood"
                 label="Dietas:"
-            >
+            > 
                 <Input placeholder="123" suffix="€" type="number" />
             </Form.Item>
 

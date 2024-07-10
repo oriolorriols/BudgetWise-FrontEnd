@@ -84,7 +84,7 @@ const Expenses = () => {
         if (info) {
             const filteredData = newList.filter(
                 (info) =>
-                    info.absenceId.absenceCodeId.absenceName
+                    info.absenceId.absenceName
                         .toLowerCase()
                         .includes(value.toLowerCase()) ||
                     info.absenceId.employeeId.name
@@ -99,10 +99,10 @@ const Expenses = () => {
                     info.absenceId.city
                         .toLowerCase()
                         .includes(value.toLowerCase()) ||
-                    info.absenceId.absenceCodeId.absenceService
+                    info.absenceId.absenceService
                         .toLowerCase()
                         .includes(value.toLowerCase()) ||
-                    info.absenceId.absenceCodeId.absenceCode
+                    info.absenceId.absenceCode
                         ?.toLowerCase()
                         .includes(value.toLowerCase())
             );
@@ -236,7 +236,7 @@ const Expenses = () => {
         },
         {
             title: "Título",
-            dataIndex: ["absenceId", "absenceCodeId", "absenceName"],
+            dataIndex: ["absenceId", "absenceName"],
             key: "absenceName",
         },
         {
@@ -408,6 +408,9 @@ const Expenses = () => {
 
     return (
         <>
+            <div>
+                <h2 className="text-xl font-bold">Lista de Gastos</h2>
+            </div>
             <div className="flex justify-end my-5">
                 <Button type="primary" onClick={addExpense}>
                     Crear gasto
@@ -563,6 +566,7 @@ const Expenses = () => {
                 allAbsences={allAbsences}
                 refresh={refresh}
             />
+            {error && <p>Ha habido un error: {error}</p>}
         </>
     );
 };
