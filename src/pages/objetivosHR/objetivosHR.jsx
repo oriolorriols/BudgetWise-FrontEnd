@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Select, notification, Progress, Popconfirm } from 'antd';
+import { Table, Button, Modal, Form, Input, Select, notification, Progress, Popconfirm, Flex } from 'antd';
 import { getDepartments } from '../../apiService/departmentApi';
 import { getUsers } from '../../apiService/userApi';
 import { getGoals, addGoalForDepartment, deleteGoal, updateGoal } from '../../apiService/goalApi';
@@ -178,10 +178,18 @@ const ObjetivosHR = () => {
     ];
 
     return (
-        <>
-            <Button type="primary" onClick={showModal}>
-                Añadir Objetivo para Departamento
-            </Button>
+        <>        
+            <Flex wrap justify="space-between" align="flex-start">
+                <div className="title-box">
+                    <h1 className='title'>Objetivos Recursos Humanos</h1>
+                    <h2 className='subtitle'>Estos son lso objetivos marcados para este trimestre</h2>
+                </div>
+                <div className="flex justify-end my-5">                    
+                    <Button type="primary" onClick={showModal}>
+                        Añadir Objetivo para Departamento
+                    </Button>
+                </div>
+            </Flex>
             <Table
                 columns={columns}
                 dataSource={departments}

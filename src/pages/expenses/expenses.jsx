@@ -16,6 +16,7 @@ import {
     Button,
     Form,
     Modal,
+    Flex,
 } from "antd";
 import TokenModal from '../../components/modals/modalToken';
 import ExpenseModal from "../../components/modals/modalExpenses";
@@ -407,15 +408,18 @@ const Expenses = () => {
     ];
 
     return (
-        <>
-            <div>
-                <h2 className="text-xl font-bold">Lista de Gastos</h2>
-            </div>
-            <div className="flex justify-end my-5">
-                <Button type="primary" onClick={addExpense}>
-                    Crear gasto
-                </Button>
-            </div>
+        <>                 
+            <Flex wrap justify="space-between" align="flex-start">
+                <div className="title-box">
+                    <h1 className='title'>Listado de gastos</h1>
+                    <h2 className='subtitle'>Detalle de todos tus gastos</h2>
+                </div>
+                <div className="flex justify-end my-5">
+                    <Button type="primary" onClick={addExpense}>
+                        Crear gasto
+                    </Button>
+                </div>
+            </Flex>
             <div className="flex flex-row-reverse justify-between items-center my-5">
                 <div className="flex justify-end my-5">
                     <Space direction="vertical">

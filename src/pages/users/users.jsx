@@ -4,7 +4,7 @@ import { getUsers } from '../../apiService/userApi';
 import { getDepartments } from '../../apiService/departmentApi';
 import { useSocket } from "../../contexts/socketContext";
 
-import { Form, Table, Typography, Button, Space, Input, Tooltip } from 'antd';
+import { Form, Table, Typography, Button, Space, Input, Tooltip, Flex } from 'antd';
 import TokenModal from '../../components/modals/modalToken';
 import UserFormModal from '../../components/modals/modalUserForm';
 import DepartmentModal from '../../components/modals/modalDepartments';
@@ -232,9 +232,12 @@ const Users = () => {
 
   return (
     <>
-      <div>
-        <h2 className="text-xl font-bold">Lista de Empleados</h2>
-      </div>
+          <Flex wrap justify="space-between" align="flex-start">
+                <div className="title-box">
+                <h1 className='title'>Lista de empleados</h1>
+                <h2 className='subtitle'>Busca los detalles de todos los empleados de la empresa</h2>
+                </div>
+            </Flex>
       
       <div className="flex justify-between my-5">  
         <div>
