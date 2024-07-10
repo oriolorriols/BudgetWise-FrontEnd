@@ -51,7 +51,7 @@ const items = [
   {
     key: '/ausencias',
     icon: <SolutionOutlined />,
-    label: 'Ausencias',
+    label: 'Viajes',
   },
   {
     key: '/gastos',
