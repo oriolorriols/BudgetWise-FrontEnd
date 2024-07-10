@@ -182,7 +182,7 @@ const ObjetivosHR = () => {
             <Flex wrap justify="space-between" align="flex-start">
                 <div className="title-box">
                     <h1 className='title'>Objetivos Recursos Humanos</h1>
-                    <h2 className='subtitle'>Estos son lso objetivos marcados para este trimestre</h2>
+                    <h2 className='subtitle'>Estos son los objetivos marcados para este trimestre</h2>
                 </div>
                 <div className="flex justify-end my-5">                    
                     <Button type="primary" onClick={showModal}>
