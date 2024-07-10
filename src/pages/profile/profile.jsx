@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getOneUser, updateUser, updateUserPic } from '../../apiService/userApi'
 import { useAuth } from "../../contexts/authContext"
 import TokenModal from '../../components/modals/modalToken'
-import ProfileBar from '../../components/profileBar/profileBar'
+import ProfileBar from  "../../components/profileBar/profileBar"
 import { UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import {
@@ -149,7 +149,7 @@ const Profile = () => {
       />
       <Flex wrap justify="space-between" align="flex-start">
         <div className="title-box">
-          <h1 className='title'>Bienvenido de nuevo, {user.name}!</h1>
+          <h1 className='title'>¡Bienvenido de nuevo, {user.name}!</h1>
           <h2 className='subtitle'>Aquí puedes ver y modificar los datos de tu perfil</h2>
         </div>
         <ProfileBar />

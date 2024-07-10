@@ -2,16 +2,13 @@ import {useNavigate} from 'react-router-dom'
 import { useAuth } from "../../contexts/authContext"
 
 import {
-  BellOutlined,
-  SearchOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { 
   Avatar, 
   Button, 
   Flex,
-  Dropdown,
-  Badge,
+  Dropdown
 } from 'antd';
 import './profileBar.scss'
 
@@ -47,10 +44,6 @@ const ProfileBar = () => {
     <div className='profile-bar'>
       <Flex gap={15} wrap justify="flex-end" align="center">
         <Button type="primary">Añadir gasto</Button>
-        <Button icon={<SearchOutlined />}/>
-        <Badge count={2}>          
-          <Button icon={<BellOutlined />} />
-        </Badge>
         <p><b>Nombrer Apellidos</b></p>
         <Dropdown 
           menu={{
