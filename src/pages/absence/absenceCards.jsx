@@ -1,18 +1,19 @@
-import { Button, Card, Carousel, Empty, Modal, Popconfirm, Space } from 'antd';
+import { Button, Card, Carousel, Popconfirm, Space } from 'antd';
 // import { useEffect, useState } from "react";
 import './absence.scss';
 import { deleteAbsences } from '../../apiService/absencesApi';
 
-const AbsencesCard = ({ name, surname, absenceName, startDate, endDate, country, city, absenceService, absenceCode, id, refresh }) => {
+const AbsencesCard = ({ name, surname, absenceName, startDate, endDate, country, city, absenceService, absenceCode, id, refresh, visible }) => {
 
     const handleDelete = async (id) => {
-        console.log("Elimino id: ", id)
         await deleteAbsences(id);
         refresh((prev) => !prev);
     };
 
     const editExpense = (id) => {
         console.log("Edito id: ", id)
+        refresh((prev) => !prev);
+        visible((prev) => !prev);
     }
 
     return (
