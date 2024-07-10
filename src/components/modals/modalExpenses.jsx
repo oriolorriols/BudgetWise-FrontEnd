@@ -124,17 +124,23 @@ const ExpenseModal = ({ user, visible, onCancel, allAbsences, refresh }) => {
                         <Radio value="Business Card">Business Card</Radio>
                     </Radio.Group>
                 </Form.Item>
+
                 <Form.Item
-                    name="creditCardEnd"
-                    label="Últimos 4 dígitos de la tarjeta de empresa (si aplica):"
+                    label="Método de pago"
+                    name="paymentMethod"
+                    className="collection-create-form_last-form-item"
+                    rules={[
+                        {
+                            required: true,
+                            message:
+                                "Es necesario que selecciones un método de pago",
+                        },
+                    ]}
                 >
-                    <Input
-                        placeholder="1010"
-                        addonBefore="*"
-                        style={{
-                            width: 200,
-                        }}
-                    />
+                    <Radio.Group>
+                        <Radio value="Personal">Personal</Radio>
+                        <Radio value="Business Card">Business Card</Radio>
+                    </Radio.Group>
                 </Form.Item>
                 <Form.Item
                     className="flex inline-row"
