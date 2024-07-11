@@ -124,7 +124,7 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
                                         {user.name} {user.surname}
                                     </Option>
                                 )) :
-                                <Option key={allUsers?._id} value={allUsers?._id}>
+                                <Option key={allUsers?._id} value={allUsers?._id} defaultValue={allUsers?._id}>
                                     {allUsers?.name} {allUsers?.surname}
                                 </Option>
 

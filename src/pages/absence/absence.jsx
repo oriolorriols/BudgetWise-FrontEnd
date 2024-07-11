@@ -98,7 +98,6 @@ const Absences = () => {
                                 refresh={refresh}
                                 visible={setOpenEdit}
                             />
-
                         </div>
                     ))}
                 </Card>
