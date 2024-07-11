@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from "../../contexts/authContext";
 import { getOneUser } from '../../apiService/userApi';
 import { getExpenses } from '../../apiService/expensesApi';
-import { Row, Col, DatePicker, Select, Card } from 'antd';
+import { getDepartments } from '../../apiService/departmentApi';
+import { Row, Col, DatePicker, Select, Card, Button } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 
@@ -13,47 +14,61 @@ const Dashboard = () => {
   const { userId } = useAuth();
   const [user, setUser] = useState(null);
   const [expenses, setExpenses] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [dateRange, setDateRange] = useState([null, null]);
   const [expenseType, setExpenseType] = useState(null);
-
-  const getUserData = async () => {
-    try {
-      const data = await getOneUser(userId);
-      setUser(data);
-      const expensesData = await getExpenses(userId); 
-      setExpenses(expensesData);
-      setFilteredExpenses(expensesData);
-    } catch (error) {
-      console.error("Failed to fetch user data", error);
-    }
-  };
+  const [departmentFilter, setDepartmentFilter] = useState(null);
 
   useEffect(() => {
-    getUserData();
+    const fetchData = async () => {
+      const userData = await getOneUser(userId);
+      const expensesData = await getExpenses();
+      const departmentsData = await getDepartments();
+      setUser(userData);
+      setExpenses(expensesData);
+      setFilteredExpenses(expensesData);
+      setDepartments(departmentsData);
+    };
+
+    fetchData();
   }, [userId]);
+
+  useEffect(() => {
+    filterExpenses();
+  }, [expenses, dateRange, expenseType, departmentFilter]); 
 
   const handleDateChange = (dates) => {
     setDateRange(dates);
-    filterExpenses(dates, expenseType);
   };
 
   const handleTypeChange = (value) => {
     setExpenseType(value);
-    filterExpenses(dateRange, value);
   };
 
-  const filterExpenses = (dates, type) => {
+  const handleDepartmentChange = (value) => {
+    setDepartmentFilter(value);
+  };
+
+  const filterExpenses = () => {
     let filtered = expenses;
-    if (dates && dates[0] && dates[1]) {
-      filtered = filtered.filter(expense => 
-        moment(expense.createdAt).isBetween(dates[0], dates[1])
-      );
+    if (dateRange && dateRange[0] && dateRange[1]) {
+      filtered = filtered.filter(expense => moment(expense.createdAt).isBetween(dateRange[0], dateRange[1]));
     }
-    if (type) {
-      filtered = filtered.filter(expense => expense.paymentMethod === type);
+    if (expenseType) {
+      filtered = filtered.filter(expense => expense.paymentMethod === expenseType);
+    }
+    if (departmentFilter) {
+      filtered = filtered.filter(expense => expense.departmentId === departmentFilter);
     }
     setFilteredExpenses(filtered);
+  };
+
+  const resetFilters = () => {
+    setDateRange([null, null]);  
+    setExpenseType(null);        
+    setDepartmentFilter(null);  
+    setFilteredExpenses(expenses);  
   };
 
   const getPieChartOptions = () => {
@@ -61,7 +76,7 @@ const Dashboard = () => {
     const seriesData = categories.map(category => {
       const total = filteredExpenses
         .filter(expense => expense.paymentMethod === category)
-        .reduce((acc, expense) => acc + (expense.amount || 0), 0);
+        .reduce((acc, expense) => acc + (expense.expenseFood || 0 + expense.expenseTravel || 0 + expense.expenseLodging || 0), 0);
       return {
         name: category,
         value: total
@@ -105,13 +120,13 @@ const Dashboard = () => {
         date,
         total: filteredExpenses
           .filter(expense => moment(expense.createdAt).format('YYYY-MM-DD') === date)
-          .reduce((acc, expense) => acc + (expense.amount || 0), 0)
+          .reduce((acc, expense) => acc + (expense.expenseFood || 0 + expense.expenseTravel || 0 + expense.expenseLodging || 0), 0)
       };
     });
 
     return {
       title: {
-        text: 'Gastos en el tiempo',
+        text: 'Gastos en el Tiempo',
         left: 'center'
       },
       xAxis: {
@@ -144,7 +159,7 @@ const Dashboard = () => {
 
     return {
       title: {
-        text: 'Gastos por categoría',
+        text: 'Gastos por Categoría',
         left: 'center'
       },
       tooltip: {
@@ -165,11 +180,6 @@ const Dashboard = () => {
     };
   };
 
-  const twoColors = {
-    '0%': '#108ee9',
-    '100%': '#87d068',
-  };
-
   return (
     <>
       <div>
@@ -177,49 +187,22 @@ const Dashboard = () => {
       </div>
 
       <Row gutter={16}>
-        <Col span={8}>
+        <Col span={24}>
           <Card>
             <div className="flex">
-              <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Expenses Icon" />
-              <div className='ml-3'>
-                <h3>Gastos</h3>
-                <p className='font-bold'>1.388,25€</p>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <div className="flex">
-              <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Accumulated Icon" />
-              <div className='ml-3'>
-                <h3>Acumulado año</h3>
-                <p className='font-bold'>3.388,25€</p>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <div className="flex">
-              <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Average Monthly Icon" />
-              <div className='ml-3'>
-                <h3>Gasto medio mes</h3>
-                <p className='font-bold'>503€</p>
-              </div>
+              <RangePicker onChange={handleDateChange} />
+              <Select style={{ width: 120, marginLeft: '10px' }} onChange={handleTypeChange} placeholder="Tipo de gasto">
+                <Option value="Personal">Personal</Option>
+                <Option value="Business Card">Business Card</Option>
+              </Select>
+              <Select style={{ width: 120, marginLeft: '10px' }} onChange={handleDepartmentChange} placeholder="Departamento">
+                {departments.map(dept => <Option key={dept._id} value={dept._id}>{dept.departmentName}</Option>)}
+              </Select>
+              <Button style={{ marginLeft: '10px' }} onClick={resetFilters}>Resetear Filtros</Button>
             </div>
           </Card>
         </Col>
       </Row>
-
-
-      <div style={{ margin: '20px 0' }}>
-        <RangePicker onChange={handleDateChange} />
-        <Select style={{ width: 120, marginLeft: '10px' }} onChange={handleTypeChange} placeholder="Tipo de gasto">
-          <Option value="Personal">Personal</Option>
-          <Option value="Business Card">Business Card</Option>
-        </Select>
-      </div>
 
       <Row gutter={16}>
         <Col span={12}>
@@ -228,7 +211,7 @@ const Dashboard = () => {
           </Card>
         </Col>
         <Col span={12}>
-          <Card title="Gastos en el tiempo">
+          <Card title="Gastos en el Tiempo">
             <ReactEcharts option={getLineChartOptions()} />
           </Card>
         </Col>
@@ -236,7 +219,7 @@ const Dashboard = () => {
 
       <Row gutter={16}>
         <Col span={24}>
-          <Card title="Gastos por categoría">
+          <Card title="Gastos por Categoría">
             <ReactEcharts option={getBarChartOptions()} />
           </Card>
         </Col>
