@@ -12,14 +12,21 @@ const Absences = () => {
     const [dummy, refresh] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const { userId, isHR } = useAuth()
-    const { userLoged, setUserLoged } = useState({})
+    const { userLogged, setUserLogged } = useState({})
 
     const getAllAbsences = async () => {
-        console.log()
-        const absences = await getAbsences();
-        const notRemoved = absences.filter((absence) => !absence.removeAt);
-        if (absences.length) setAllAbsences(notRemoved);
-        else setError(absences.message);
+        try {
+            const absences = await getAbsences();
+            const notRemoved = absences.filter((absence) => !absence.removeAt);
+            if (isHR !== "HR") {
+                const userAbsences = notRemoved.filter((absence) => absence.employeeId._id === userId)
+                setAllAbsences(userAbsences)
+            } else {
+                setAllAbsences(notRemoved)
+            }
+        } catch (error) {
+            setError(error.message);
+        }
     };
 
     const getAllUsers = async () => {
@@ -29,20 +36,26 @@ const Absences = () => {
         else setError(users.message);
     };
 
-    const getLogedUser = async () => {
+    const getLoggedUser = async () => {
         const data = await getOneUser(userId)
-        setUserLoged(data)
-        console.log("cargando usuario en get loged user")
+        try {
+            setUserLogged(data)
+            console.log("cargando usuario en get logged user")
+        } catch (error) {
+            console.error("Error fetching logged user: ", error)
+        }
     }
 
     useEffect(() => {
-        if (userId && isHR !== "HR") {
-            getLogedUser();
-            console.log("funciona get loged user en sue effect si no eres HR")
+        if (userId) {
+            if (isHR !== "HR") {
+                getLoggedUser();
+                console.log("funciona get logged user en sue effect si no eres HR")
+            }
+            getAllAbsences();
+            getAllUsers();
+            console.log(userLogged)
         }
-        getAllAbsences();
-        getAllUsers();
-        console.log(userLoged)
     }, [dummy, userId]);
 
     const openCreateAbsence = () => {
@@ -69,7 +82,7 @@ const Absences = () => {
                     onCancel={() => setOpenEdit(false)}
                     allUsers={allUsers}
                     refresh={refresh}
-                    idUser={userLoged}
+                    idUser={userLogged}
                 />
             </Space>
             <Space wrap size={16} align="start">
