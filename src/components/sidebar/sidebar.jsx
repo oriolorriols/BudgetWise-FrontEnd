@@ -49,7 +49,7 @@ const items = [
     label: 'Perfil',
   },
   {
-    key: '/ausencias',
+    key: '/viajes',
     icon: <SolutionOutlined />,
     label: 'Viajes',
   },
