@@ -6,6 +6,7 @@ import { Row, Col, DatePicker, Select, Card, Flex } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import './dashboard.scss';
+import ProfileBar from '../../components/profileBar/profileBar';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -177,14 +178,19 @@ const Dashboard = () => {
         <div className="title-box">
           <h1 className='title'>¡Bienvenido de nuevo, {user?.name}!</h1>
           <h2 className='subtitle'>Aquí puedes ver el resumen y toda la información sobre tus gastos</h2>
-        </div>
+        </div>        
+        <ProfileBar />
       </Flex>
 
       <Row gutter={16}>
         <Col span={8}>
           <Card className={"card-expenses total-expenses"}>
             <div className="flex">
-              <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Expenses Icon" />
+              <div className="icon-expenses">
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M6 20q-1.65 0-2.825-1.175T2 16V8q0-1.65 1.175-2.825T6 4h12q1.65 0 2.825 1.175T22 8v8q0 1.65-1.175 2.825T18 20zM6 8h12q.55 0 1.05.125t.95.4V8q0-.825-.587-1.412T18 6H6q-.825 0-1.412.588T4 8v.525q.45-.275.95-.4T6 8m-1.85 3.25l11.125 2.7q.225.05.45 0t.425-.2l3.475-2.9q-.275-.375-.7-.612T18 10H6q-.65 0-1.137.338t-.713.912"></path>
+                </svg>
+              </div>
               <div className='ml-5'>
                 <h3>Gastos</h3>
                 <p className='font-bold'>1.388,25€</p>
@@ -195,7 +201,11 @@ const Dashboard = () => {
         <Col span={8}>
           <Card className={"card-expenses accumulated-expense"}>
             <div className="flex">
-              <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Accumulated Icon" />
+              <div className="icon-expenses">
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M17 7v2h-2V7zm-4 0v2H7V7zm0 4H7v2h6zm2 0v2h2v-2zm6 11l-3-2l-3 2l-3-2l-3 2l-3-2l-3 2V3h18zm-2-3.74V5H5v13.26l1-.66l3 2l3-2l3 2l3-2z"></path>
+                </svg>
+              </div>
               <div className='ml-5'>
                 <h3>Acumulado año</h3>
                 <p className='font-bold'>3.388,25€</p>
@@ -206,7 +216,11 @@ const Dashboard = () => {
         <Col span={8}>
           <Card className={"card-expenses average-expenses"}>
             <div className="flex">
-              <img src="https://cdn-icons-png.flaticon.com/512/482/482541.png" width="50px" alt="Average Monthly Icon" />
+              <div className="icon-expenses">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
+                  <path fillRule="evenodd" d="M9.808 4.057a.75.75 0 0 1 .92-.527l3.116.849a.75.75 0 0 1 .528.915l-.823 3.121a.75.75 0 0 1-1.45-.382l.337-1.281a23.5 23.5 0 0 0-3.609 3.056a.75.75 0 0 1-1.07.01L6 8.06l-3.72 3.72a.75.75 0 1 1-1.06-1.061l4.25-4.25a.75.75 0 0 1 1.06 0l1.756 1.755a25 25 0 0 1 3.508-2.85l-1.46-.398a.75.75 0 0 1-.526-.92" clipRule="evenodd"/>
+                </svg>
+              </div>
               <div className='ml-5'>
                 <h3>Gasto medio mes</h3>
                 <p className='font-bold'>503€</p>
