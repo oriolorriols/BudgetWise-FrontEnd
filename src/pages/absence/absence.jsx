@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import { getAbsences } from "../../apiService/absencesApi";
-import { Button, Card, Modal, Space, Flex } from 'antd';
+import { Button, Card, Space, Flex } from 'antd';
 import AbsencesCard from "./absenceCards";
 import AbsenceModal from "../../components/modals/modalAbsences";
-import { getUsers } from "../../apiService/userApi";
+import { getOneUser, getUsers } from "../../apiService/userApi";
+import { useAuth } from "../../contexts/authContext"
 
 const Absences = () => {
     const [allAbsences, setAllAbsences] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
     const [dummy, refresh] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
+    const { userId, isHR } = useAuth()
+    const { userLoged, setUserLoged } = useState({})
 
     const getAllAbsences = async () => {
+        console.log()
         const absences = await getAbsences();
         const notRemoved = absences.filter((absence) => !absence.removeAt);
         if (absences.length) setAllAbsences(notRemoved);
@@ -25,11 +29,21 @@ const Absences = () => {
         else setError(users.message);
     };
 
+    const getLogedUser = async () => {
+        const data = await getOneUser(userId)
+        setUserLoged(data)
+        console.log("cargando usuario en get loged user")
+    }
 
     useEffect(() => {
+        if (userId && isHR !== "HR") {
+            getLogedUser();
+            console.log("funciona get loged user en sue effect si no eres HR")
+        }
         getAllAbsences();
         getAllUsers();
-    }, [dummy]);
+        console.log(userLoged)
+    }, [dummy, userId]);
 
     const openCreateAbsence = () => {
         setOpenEdit(true);
@@ -55,6 +69,7 @@ const Absences = () => {
                     onCancel={() => setOpenEdit(false)}
                     allUsers={allUsers}
                     refresh={refresh}
+                    idUser={userLoged}
                 />
             </Space>
             <Space wrap size={16} align="start">
@@ -77,7 +92,10 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit}
+                            />
+
                         </div>
                     ))}
                 </Card>
@@ -100,7 +118,8 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit} />
                         </div>
                     ))}
                 </Card>
@@ -123,7 +142,8 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit} />
                         </div>
                     ))}
                 </Card>
@@ -146,7 +166,8 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit} />
                         </div>
                     ))}
                 </Card>
@@ -169,9 +190,10 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit} />
                         </div>
-                        && ausencia.length === 0 && "vacio"))}
+                    ))}
                 </Card>
             </Space >
         </>

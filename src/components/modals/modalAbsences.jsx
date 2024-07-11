@@ -9,38 +9,29 @@ import {
     DatePicker
 } from "antd";
 import { useAuth } from "../../contexts/authContext";
-import FormItem from "antd/es/form/FormItem";
 import TextArea from "antd/es/input/TextArea";
 import { addAbsences } from "../../apiService/absencesApi";
 import dayjs from "dayjs";
 
 dayjs().format()
 
-const { RangePicker } = DatePicker;
 const { Option } = Select;
-const formItemLayout = {
-    labelCol: {
-        span: 6,
-    },
-    wrapperCol: {
-        span: 14,
-    },
-};
 
-const AbsenceModal = ({ user, visible, onCancel, allUsers, refresh }) => {
+const AbsenceModal = ({ idUser, visible, onCancel, allUsers, refresh }) => {
     const [form] = Form.useForm();
     const { userId, isHR } = useAuth();
 
     const createAbsence = async (values) => {
+        //if () {} else {
         console.log("Crea viaje, cierra modal", values)
         try {
-            // const response = await addAbsences(values);
-            // refresh((prev) => !prev);
+            const response = await addAbsences(values);
+            refresh((prev) => !prev);
             onCancel();
         } catch (error) {
             console.log("error", error)
-            //message.error(error);
         }
+        //}
     }
 
     const handleAbsenceEmployee = (value) => {
@@ -127,19 +118,39 @@ const AbsenceModal = ({ user, visible, onCancel, allUsers, refresh }) => {
                             }}
                             onChange={handleAbsenceEmployee}
                         >
-                            {allUsers?.map((user) => (
-                                <Option key={user._id} value={user._id}>
-                                    {user.name} {user.surname}
+                            {isHR === "HR" ?
+                                allUsers?.map((user) => (
+                                    <Option key={user._id} value={user._id}>
+                                        {user.name} {user.surname}
+                                    </Option>
+                                )) :
+                                <Option key={idUser} value={idUser}>
+                                    {idUser} {idUser}
                                 </Option>
-                            ))}
+
+                            }
                         </Select>
                     </Space>
                 </Form.Item>
                 <Space>
-                    <Form.Item name="startDate" label="Fecha de inicio y fin" getValueProps={(value) => ({ value: value ? dayjs(value) : "", })}>
+                    <Form.Item
+                        name="startDate"
+                        label="Fecha de inicio"
+                        getValueProps={(value) => ({ value: value ? dayjs(value) : "", })}
+                        rules={[
+                            { required: true, message: "Selecciona una fecha" },
+                        ]}
+                    >
                         <DatePicker onChange={onDateChangeAbsenceStart} />
                     </Form.Item>
-                    <Form.Item name="endDate" label="Fecha de fin" getValueProps={(value) => ({ value: value ? dayjs(value) : "", })}>
+                    <Form.Item
+                        name="endDate"
+                        label="Fecha de fin"
+                        getValueProps={(value) => ({ value: value ? dayjs(value) : "", })}
+                        rules={[
+                            { required: true, message: "Selecciona una fecha" },
+                        ]}
+                    >
                         <DatePicker onChange={onDateChangeAbsenceEnd} />
                     </Form.Item>
                 </Space>
