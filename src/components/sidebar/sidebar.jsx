@@ -34,19 +34,9 @@ const items = [
     label: 'Lista de empleados',
   },
   {
-    key: '/calendario',
-    icon: <CalendarOutlined />,
-    label: 'Calendario',
-  },
-  {
-    key: '/objetivos',
-    icon: <RiseOutlined />,
-    label: 'Objetivos',
-  },
-  {
-    key: '/perfil',
-    icon: <UserOutlined />,
-    label: 'Perfil',
+    key: '/gastos',
+    icon: <BankOutlined />,
+    label: 'Gastos',
   },
   {
     key: '/viajes',
@@ -54,9 +44,19 @@ const items = [
     label: 'Viajes',
   },
   {
-    key: '/gastos',
-    icon: <BankOutlined />,
-    label: 'Gastos',
+    key: '/objetivos',
+    icon: <RiseOutlined />,
+    label: 'Objetivos',
+  },
+  {
+    key: '/calendario',
+    icon: <CalendarOutlined />,
+    label: 'Calendario',
+  },
+  {
+    key: '/perfil',
+    icon: <UserOutlined />,
+    label: 'Perfil',
   },
   {
     key: '/empresa',

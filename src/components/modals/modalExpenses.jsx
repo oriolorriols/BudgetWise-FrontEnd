@@ -178,7 +178,7 @@ const ExpenseModal = ({ expense, visible, onCancel, allAbsences, refresh }) => {
                     <Input placeholder="123" suffix="€" type="number" />
                 </Form.Item>
                 <Form.Item
-                    label="Justificantes: "
+                    label="Justificantes:"
                     name="expenseProof"
                     rules={[{ required: !expense, message: "Es necesario que selecciones al menos 1 archivo" }]}
                 >
@@ -187,41 +187,8 @@ const ExpenseModal = ({ expense, visible, onCancel, allAbsences, refresh }) => {
                             Selecciona el/los justificante/s
                         </Button>
                     </Upload>
-                    {expense ? 
-                        <List
-                        style={{ marginTop: 10 }}
-                        size="small"
-                        bordered
-                        dataSource={fileList}
-                        renderItem={file => (
-                            <List.Item
-                                actions={[
-                                    <Button
-                                        type="link"
-                                        icon={<LinkOutlined />}
-                                        target="_blank"
-                                        href={file.url}
-                                    >
-                                        Ver enlace
-                                    </Button>,
-                                    <Button
-                                        type="link"
-                                        danger
-                                        icon={<CloseOutlined />}
-                                        onClick={() => handleRemoveFile(file)}
-                                    >
-                                        Eliminar
-                                    </Button>,
-                                ]}
-                            >
-                                {file.name}
-                            </List.Item>
-                        )}
-                    /> : null
-                
-                
-                }
                 </Form.Item>
+
                 <Form.Item>
                     <Space>
                         <Button onClick={onCancel}>Cancelar</Button>
