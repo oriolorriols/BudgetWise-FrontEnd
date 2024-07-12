@@ -45,7 +45,7 @@ function App() {
                       : <Route path='/objetivos' element={<Objetivos/>}/> 
                   }
                   <Route path='/perfil' element={<Profile/>}/>
-                  <Route path='/ausencias' element={<Absences/>}/>
+                  <Route path='/viajes' element={<Absences/>}/>
                   <Route path='/solicitudes' element={<Requests/>}/>
                   <Route path='/gastos' element={<Expenses/>}/>
                   <Route path="/empresa" element={<CompanyProfile/>}/>        

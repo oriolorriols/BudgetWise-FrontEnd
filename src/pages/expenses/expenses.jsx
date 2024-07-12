@@ -19,6 +19,7 @@ import {
     Flex,
 } from "antd";
 import TokenModal from '../../components/modals/modalToken';
+import ExpenseProofModal from '../../components/modals/modalExpenseProof';
 import ExpenseModal from "../../components/modals/modalExpenses";
 import { getAbsences } from "../../apiService/absencesApi";
 
@@ -28,6 +29,22 @@ const { Search } = Input;
 
 const Expenses = () => {
     const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
+
+    const [isExpenseProofModalVisible, setIsExpenseProofModalVisible] = useState(false)
+    const [currentExpenseProof, setCurrentExpenseProof] = useState('')
+
+    const [selectedExpense, setSelectedExpense] = useState(null)
+
+    const showExpenseProof = (url) => {
+        setCurrentExpenseProof(url)
+        setIsExpenseProofModalVisible(true)
+    }
+
+    const hideExpenseProof = () => {
+        setCurrentExpenseProof('')
+        setIsExpenseProofModalVisible(false)
+    }
+
     const checkTokenValidity = () => {
         const token = localStorage.getItem("access_token");
         if (!token) {
@@ -138,6 +155,7 @@ const Expenses = () => {
 
     const filterDataByDateE = (dateStringsE) => {
         const [start, end] = dateStringsE;
+        console.log(start, end);
         const filtered = allExpenses.filter(
             new Date(item.absenceId.startDate).getTime() >=
             new Date(start).getTime() &&
@@ -169,6 +187,18 @@ const Expenses = () => {
         setFilteredInfo(filters);
         setSortedInfo(sorter);
     };
+
+    const handleEdit = (expense) => {
+        if (checkTokenValidity()) {
+            setSelectedExpense(expense)
+            setOpen(true)
+        }
+    }
+
+    const handleExpenseCancel = () => {
+        setOpen(false)
+        setSelectedExpense(null)
+    }
 
     const handleDelete = async (id) => {
         await deleteExpenses(id);
@@ -232,6 +262,7 @@ const Expenses = () => {
     const [open, setOpen] = useState(false);
 
     const addExpense = () => {
+        setSelectedExpense(null)
         setOpen(true);
     };
 
@@ -253,6 +284,7 @@ const Expenses = () => {
         },
         {
             title: "Nombre",
+            width: "7%",
             dataIndex: ["absenceId", "employeeId", "name"],
             key: "name",
         },
@@ -294,6 +326,7 @@ const Expenses = () => {
         },
         {
             title: "Estado",
+            width: "7%",
             dataIndex: "expenseStatus",
             key: "expenseStatus",
             filters: [
@@ -311,8 +344,8 @@ const Expenses = () => {
         },
         {
             title: "Monto (€)",
-            width: "8%",
             dataIndex: "expenseCodes",
+            width: "9%",
             key: "expenseCodes",
             render: (_, record) =>
                 (record.expenseFood ? record.expenseFood : 0) +
@@ -339,7 +372,7 @@ const Expenses = () => {
         {
             title: "",
             key: "action",
-            width: "10%",
+            width: "7%",
             render: (_, record) =>
                 record.paymentMethod === "Personal" ? (
                     <Space size="middle">
@@ -403,7 +436,18 @@ const Expenses = () => {
         {
             title: "",
             key: "action",
-            width: "6%",
+            width: '5%',
+            render: (_, record) =>
+                allExpenses.length >= 1 ? (
+                    <Space>
+                        <Typography.Link onClick={() => handleEdit(record)}>Editar</Typography.Link>
+                    </Space>
+                ) : null,
+        },
+        {
+            title: "",
+            key: "action",
+            width: '6%',
             render: (_, record) =>
                 allExpenses.length >= 1 ? (
                     <Space>
@@ -411,7 +455,7 @@ const Expenses = () => {
                             title="Sure to delete?"
                             onConfirm={() => handleDelete(record._id)}
                         >
-                            <a>Eliminar</a>
+                            <Typography.Link>Eliminar</Typography.Link>
                         </Popconfirm>
                     </Space>
                 ) : null,
@@ -536,6 +580,25 @@ const Expenses = () => {
                                     </Button>
                                 ) : null}
                             </div>
+                            <div className="ml-32">
+                                <p className="font-bold">Tickets:</p>
+                                {record.expenseProof && record.expenseProof.length > 0
+                                    ? record.expenseProof.map((url, index) => (
+                                        <Button type="link"
+                                            key={index}
+                                            onClick={() => showExpenseProof(url)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ padding: '0', display: "block", height: "22px" }}
+                                        >
+                                            Ticket {index + 1}
+                                        </Button>
+                                    ))
+                                    : "-"
+                                }
+                            </div>
+
+
                         </div>
                     ),
                 }}
@@ -575,9 +638,15 @@ const Expenses = () => {
             />
             {error && <p>Ha habido un error: {error}</p>}
             <TokenModal visible={isModalTokenVisible} />
+            <ExpenseProofModal
+                visible={isExpenseProofModalVisible}
+                onCancel={hideExpenseProof}
+                expenseUrl={currentExpenseProof}
+            />
             <ExpenseModal
                 visible={open}
-                onCancel={() => setOpen(false)}
+                onCancel={handleExpenseCancel}
+                expense={selectedExpense}
                 allAbsences={allAbsences}
                 refresh={refresh}
             />

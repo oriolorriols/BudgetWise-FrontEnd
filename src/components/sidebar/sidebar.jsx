@@ -34,9 +34,14 @@ const items = [
     label: 'Lista de empleados',
   },
   {
-    key: '/calendario',
-    icon: <CalendarOutlined />,
-    label: 'Calendario',
+    key: '/gastos',
+    icon: <BankOutlined />,
+    label: 'Gastos',
+  },
+  {
+    key: '/viajes',
+    icon: <SolutionOutlined />,
+    label: 'Viajes',
   },
   {
     key: '/objetivos',
@@ -44,19 +49,14 @@ const items = [
     label: 'Objetivos',
   },
   {
+    key: '/calendario',
+    icon: <CalendarOutlined />,
+    label: 'Calendario',
+  },
+  {
     key: '/perfil',
     icon: <UserOutlined />,
     label: 'Perfil',
-  },
-  {
-    key: '/ausencias',
-    icon: <SolutionOutlined />,
-    label: 'Viajes',
-  },
-  {
-    key: '/gastos',
-    icon: <BankOutlined />,
-    label: 'Gastos',
   },
   {
     key: '/empresa',
