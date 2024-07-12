@@ -19,6 +19,7 @@ import {
     Flex,
 } from "antd";
 import TokenModal from '../../components/modals/modalToken';
+import ExpenseProofModal from '../../components/modals/modalExpenseProof';
 import ExpenseModal from "../../components/modals/modalExpenses";
 import { getAbsences } from "../../apiService/absencesApi";
 
@@ -28,6 +29,20 @@ const { Search } = Input;
 
 const Expenses = () => {
     const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
+
+    const [isExpenseProofModalVisible, setIsExpenseProofModalVisible] = useState(false)
+    const [currentExpenseProof, setCurrentExpenseProof] = useState('')
+
+    const showExpenseProof = (url) => {
+        setCurrentExpenseProof(url)
+        setIsExpenseProofModalVisible(true)
+    }
+
+    const hideExpenseProof = () => {
+        setCurrentExpenseProof('')
+        setIsExpenseProofModalVisible(false)
+    }
+
     const checkTokenValidity = () => {
         const token = localStorage.getItem("access_token");
         if (!token) {
@@ -537,6 +552,25 @@ const Expenses = () => {
                                     </Button>
                                 ) : null}
                             </div>
+                            <div className="ml-32">
+                                <p className="font-bold">Tickets:</p>
+                                {record.expenseProof && record.expenseProof.length > 0
+                                    ? record.expenseProof.map((url, index) => (
+                                        <Button type="link"
+                                            key={index}
+                                            onClick={() => showExpenseProof(url)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ padding: '0' }}
+                                        >
+                                            Ticket {index + 1}
+                                        </Button>
+                                    ))
+                                    : "-"
+                                }
+                            </div>
+
+
                         </div>
                     ),
                 }}
@@ -576,6 +610,11 @@ const Expenses = () => {
             />
             {error && <p>Ha habido un error: {error}</p>}
             <TokenModal visible={isModalTokenVisible} />
+            <ExpenseProofModal
+                visible={isExpenseProofModalVisible}
+                onCancel={hideExpenseProof}
+                expenseUrl={currentExpenseProof}
+            />
             <ExpenseModal
                 visible={open}
                 onCancel={() => setOpen(false)}
