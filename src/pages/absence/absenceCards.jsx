@@ -1,9 +1,9 @@
 import { Button, Card, Carousel, Popconfirm, Space } from 'antd';
-// import { useEffect, useState } from "react";
+import { useState } from "react";
 import './absence.scss';
 import { deleteAbsences } from '../../apiService/absencesApi';
 
-const AbsencesCard = ({ name, surname, absenceName, startDate, endDate, country, city, absenceService, absenceCode, id, refresh, visible }) => {
+const AbsencesCard = ({ name, surname, absenceName, startDate, endDate, country, city, absenceService, absenceCode, id, refresh, visible, absence }) => {
 
     const handleDelete = async (id) => {
         await deleteAbsences(id);
@@ -12,6 +12,7 @@ const AbsencesCard = ({ name, surname, absenceName, startDate, endDate, country,
 
     const editExpense = (id) => {
         console.log("Edito id: ", id)
+        absence((prev) => id)
         refresh((prev) => !prev);
         visible((prev) => !prev);
     }
