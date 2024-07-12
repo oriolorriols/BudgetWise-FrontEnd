@@ -3,7 +3,7 @@ import { getAbsences } from "../../apiService/absencesApi";
 import { Button, Card, Space, Flex } from 'antd';
 import AbsencesCard from "./absenceCards";
 import AbsenceModal from "../../components/modals/modalAbsences";
-import { getOneUser, getUsers } from "../../apiService/userApi";
+import { getUsers } from "../../apiService/userApi";
 import { useAuth } from "../../contexts/authContext"
 
 const Absences = () => {
@@ -12,6 +12,7 @@ const Absences = () => {
     const [dummy, refresh] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const { userId, isHR } = useAuth()
+    const [selectedAbsence, setSelectedAbsence] = useState(null);
 
     const getAllAbsences = async () => {
         try {
@@ -58,7 +59,7 @@ const Absences = () => {
         <>
             <Flex wrap justify="space-between" align="flex-start">
                 <div className="title-box">
-                    <h1 className='title'>Lista de viajes {allUsers?.name}</h1>
+                    <h1 className='title'>Lista de viajes {allUsers?.name} {allUsers?.surname}</h1>
                     <h2 className='subtitle'>Listado de todos los viajes por cada continente</h2>
                 </div>
             </Flex>
@@ -73,6 +74,7 @@ const Absences = () => {
                     onCancel={() => setOpenEdit(false)}
                     allUsers={allUsers}
                     refresh={refresh}
+                    absence={selectedAbsence}
                 />
             </Space>
             <Space wrap size={16} align="start">
@@ -97,6 +99,7 @@ const Absences = () => {
                                 id={ausencia._id}
                                 refresh={refresh}
                                 visible={setOpenEdit}
+                                absence={setSelectedAbsence}
                             />
                         </div>
                     ))}
@@ -121,7 +124,8 @@ const Absences = () => {
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
                                 refresh={refresh}
-                                visible={setOpenEdit} />
+                                visible={setOpenEdit}
+                                absence={setSelectedAbsence} />
                         </div>
                     ))}
                 </Card>
@@ -145,7 +149,8 @@ const Absences = () => {
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
                                 refresh={refresh}
-                                visible={setOpenEdit} />
+                                visible={setOpenEdit}
+                                absence={setSelectedAbsence} />
                         </div>
                     ))}
                 </Card>
@@ -169,7 +174,8 @@ const Absences = () => {
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
                                 refresh={refresh}
-                                visible={setOpenEdit} />
+                                visible={setOpenEdit}
+                                absence={setSelectedAbsence} v />
                         </div>
                     ))}
                 </Card>
@@ -193,7 +199,8 @@ const Absences = () => {
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
                                 refresh={refresh}
-                                visible={setOpenEdit} />
+                                visible={setOpenEdit}
+                                absence={setSelectedAbsence} />
                         </div>
                     ))}
                 </Card>

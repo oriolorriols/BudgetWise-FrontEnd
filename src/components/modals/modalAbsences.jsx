@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
     Modal,
@@ -10,28 +10,63 @@ import {
 } from "antd";
 import { useAuth } from "../../contexts/authContext";
 import TextArea from "antd/es/input/TextArea";
-import { addAbsences } from "../../apiService/absencesApi";
+import { addAbsences, getAbsences, getOneAbsence, updateAbsences } from "../../apiService/absencesApi";
 import dayjs from "dayjs";
+import { filter } from "lodash";
 
 dayjs().format()
 
 const { Option } = Select;
 
-const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
+const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
     const [form] = Form.useForm();
     const { userId, isHR } = useAuth();
+    const [initialValues, setInitialValues] = useState({})
+    const [usuarioAEditar, setUsuarioAEditar] = useState([])
+
+    useEffect(() => {
+        usuario();
+        console.log(absence)
+        if (absence) {
+            getAbsenceData(absence)
+        } else {
+            form.resetFields()
+        }
+    }, [absence, allUsers])
+
+    const getAbsenceData = async (absence) => {
+        const data = await getOneAbsence(absence)
+        const formValues = {
+            employeeId: data.employeeId,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            country: data.country,
+            city: data.city,
+            continent: data.continent,
+            absenceName: data.absenceName,
+            absenceService: data.absenceService,
+            absenceCode: data.absenceCode ? data.absenceCode : null,
+        }
+        setInitialValues(formValues)
+        form.setFieldsValue(formValues)
+        console.log(data)
+    }
 
     const createAbsence = async (values) => {
-        //if () {} else {
         console.log("Crea viaje, cierra modal", values)
         try {
-            const response = await addAbsences(values);
-            refresh((prev) => !prev);
-            onCancel();
+            if (absence) {
+                console.log(values)
+                //await updateAbsences(selectedAbsence._id, { ...selectedAbsence })
+                onCancel();
+            } else {
+                const response = await addAbsences(values);
+                refresh((prev) => !prev);
+                onCancel();
+            }
         } catch (error) {
             console.log("error", error)
         }
-        //}
     }
 
     const handleAbsenceEmployee = (value) => {
@@ -60,6 +95,14 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
         console.log(dateStrings)
     };
 
+    const usuario = () => {
+        if (isHR === "HR") {
+            const usuario = allUsers?.filter(usuario => usuario._id === initialValues?.employeeId)[0]
+            setUsuarioAEditar(usuario)
+        }
+    }
+
+
     return (
         <>
             <Modal
@@ -72,7 +115,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
                     htmlType: "submit",
                 }}
                 onCancel={onCancel}
-                //destroyOnClose
                 modalRender={(dom) => (
                     <Form
                         layout="vertical"
@@ -81,7 +123,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
                         initialValues={{
                             modifier: "public",
                         }}
-                        //clearOnDestroy
                         onFinish={(values) => createAbsence(values)}
                     >
                         {dom}
@@ -112,7 +153,10 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
                 >
                     <Space wrap>
                         <Select
-                            placeholder="Seleccionar..."
+                            placeholder={
+                                (absence && isHR === "HR") ? usuarioAEditar?.name + " " + usuarioAEditar?.surname : "Seleccionar..." &&
+                                    (absence && isHR !== "HR") ? allUsers?.name + " " + allUsers?.surname : "Seleccionar..."
+                            }
                             style={{
                                 width: 300,
                             }}
@@ -127,7 +171,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
                                 <Option key={allUsers?._id} value={allUsers?._id} defaultValue={allUsers?._id}>
                                     {allUsers?.name} {allUsers?.surname}
                                 </Option>
-
                             }
                         </Select>
                     </Space>
@@ -192,7 +235,8 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
                     >
                         <Space wrap>
                             <Select
-                                placeholder="Seleccionar..."
+                                defaultValue={initialValues?.continent}
+                                placeholder={absence ? initialValues.continent : "Seleccionar..."}
                                 style={{
                                     width: 150,
                                 }}
@@ -218,7 +262,8 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
                     >
                         <Space wrap>
                             <Select
-                                placeholder="Seleccionar..."
+                                defaultValue={initialValues?.absenceService}
+                                placeholder={absence ? initialValues.absenceService : "Selecionar..."}
                                 style={{
                                     width: 200,
                                 }}
