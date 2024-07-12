@@ -22,7 +22,7 @@ export const addExpenses = async (data) => {
     const token = localStorage.getItem("access_token");
     const formData = new FormData();
     for (let i = 0; i < data.expenseProof.length; i++) {
-        formData.append("files", data.expenseProof[i].originFileObj);
+        formData.append("files", data.expenseProof[i]);
     }
     try {
         delete data.expenseProof;
