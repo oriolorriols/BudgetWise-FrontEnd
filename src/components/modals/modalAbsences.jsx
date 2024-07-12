@@ -6,13 +6,13 @@ import {
     Input,
     Select,
     Space,
-    DatePicker
+    DatePicker,
+    message
 } from "antd";
 import { useAuth } from "../../contexts/authContext";
 import TextArea from "antd/es/input/TextArea";
-import { addAbsences, getAbsences, getOneAbsence, updateAbsences } from "../../apiService/absencesApi";
+import { addAbsences, getOneAbsence, updateAbsences } from "../../apiService/absencesApi";
 import dayjs from "dayjs";
-import { filter } from "lodash";
 
 dayjs().format()
 
@@ -57,15 +57,16 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
             if (absence) {
                 console.log("Edita viaje, cierra modal, nuevos valores editados: ", values)
                 await updateAbsences(absence, { ...values })
-                refresh((prev) => !prev);
-                onCancel();
+                message.success('Travel updated successfully!')
             } else {
                 console.log("Crea viaje, cierra modal, valores a crear: ", values)
                 const response = await addAbsences(values);
-                refresh((prev) => !prev);
-                onCancel();
+                message.success('Travel created successfully!')
             }
+            refresh((prev) => !prev);
+            onCancel();
         } catch (error) {
+            message.error(error)
             console.log("error", error)
         }
     }
