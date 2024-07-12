@@ -561,7 +561,7 @@ const Expenses = () => {
                                             onClick={() => showExpenseProof(url)}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            style={{ padding: '0' }}
+                                            style={{ padding: '0', display: "block", lineHeight: "20px" }}
                                         >
                                             Ticket {index + 1}
                                         </Button>
