@@ -17,7 +17,7 @@ dayjs().format()
 
 const { Option } = Select;
 
-const AbsenceModal = ({ idUser, visible, onCancel, allUsers, refresh }) => {
+const AbsenceModal = ({ visible, onCancel, allUsers, refresh }) => {
     const [form] = Form.useForm();
     const { userId, isHR } = useAuth();
 
@@ -124,8 +124,8 @@ const AbsenceModal = ({ idUser, visible, onCancel, allUsers, refresh }) => {
                                         {user.name} {user.surname}
                                     </Option>
                                 )) :
-                                <Option key={idUser} value={idUser}>
-                                    {idUser} {idUser}
+                                <Option key={allUsers?._id} value={allUsers?._id} defaultValue={allUsers?._id}>
+                                    {allUsers?.name} {allUsers?.surname}
                                 </Option>
 
                             }
