@@ -27,8 +27,12 @@ const Dashboard = () => {
       const userData = await getOneUser(userId);
       const expensesData = await getExpenses();
       const departmentsData = await getDepartments();
+
+      // Filtro para que no salgan los gastos eliminados
+      const filteredData = expensesData.filter(expense => !expense.removedAt);
+      
       setUser(userData);
-      setExpenses(expensesData);
+      setExpenses(filteredData);
       setFilteredExpenses(expensesData);
       setDepartments(departmentsData);
     };

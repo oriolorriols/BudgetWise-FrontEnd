@@ -66,17 +66,43 @@ export const deleteExpenses = async (id) => {
 
 export const updateExpenses = async (id, data) => {
     const token = localStorage.getItem("access_token");
-    const response = await fetch(`${baseUrl}/expenses/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: {
-            "Content-Type": "application/json",
-            "authorization": `Bearer ${token}`,
-        },
-    });
-    const expensesUpdated = await response.json();
-    return expensesUpdated;
+    const formData = new FormData();
+
+    if (data.expenseProof) {
+        for (let i = 0; i < data.expenseProof.length; i++) {
+            formData.append("files", data.expenseProof[i]);
+        }
+        delete data.expenseProof;
+    }
+
+    try {
+        const response = await fetch(`${baseUrl}/expenses/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": `Bearer ${token}`,
+            },
+        });
+        const expensesUpdated = await response.json();
+
+        if (formData.has("files")) {
+            const responseExpenseProof = await fetch(`${baseUrl}/upload/expenses/${id}`, {
+                method: 'POST',
+                body: formData,
+                headers: { "authorization": `Bearer ${token}` }
+            });
+            const expenseProof = await responseExpenseProof.json();
+            console.log(expenseProof);
+        }
+
+        return expensesUpdated;
+    } catch (error) {
+        console.error('Error updating expenses:', error);
+        throw error;
+    }
 };
+
 
 export const emailExpenses = async (id, data) => {
     const token = localStorage.getItem("access_token");

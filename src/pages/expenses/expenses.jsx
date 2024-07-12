@@ -195,6 +195,11 @@ const Expenses = () => {
         }
     }
 
+    const handleExpenseCancel = () => {
+        setOpen(false)
+        setSelectedExpense(null)
+    }
+
     const handleDelete = async (id) => {
         await deleteExpenses(id);
         refresh(!dummy);
@@ -640,7 +645,7 @@ const Expenses = () => {
             />
             <ExpenseModal
                 visible={open}
-                onCancel={() => setOpen(false)}
+                onCancel={handleExpenseCancel}
                 expense={selectedExpense}
                 allAbsences={allAbsences}
                 refresh={refresh}
