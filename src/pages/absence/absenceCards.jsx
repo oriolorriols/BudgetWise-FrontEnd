@@ -1,4 +1,4 @@
-import { Button, Card, Carousel, Popconfirm, Space } from 'antd';
+import { Button, Card, Carousel, Popconfirm, Space, message } from 'antd';
 import { useState } from "react";
 import './absence.scss';
 import { deleteAbsences } from '../../apiService/absencesApi';
@@ -7,6 +7,7 @@ const AbsencesCard = ({ name, surname, absenceName, startDate, endDate, country,
 
     const handleDelete = async (id) => {
         await deleteAbsences(id);
+        message.success('Travel deleted successfully!')
         refresh((prev) => !prev);
     };
 

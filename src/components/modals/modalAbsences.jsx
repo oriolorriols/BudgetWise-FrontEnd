@@ -6,13 +6,13 @@ import {
     Input,
     Select,
     Space,
-    DatePicker
+    DatePicker,
+    message
 } from "antd";
 import { useAuth } from "../../contexts/authContext";
 import TextArea from "antd/es/input/TextArea";
-import { addAbsences, getAbsences, getOneAbsence, updateAbsences } from "../../apiService/absencesApi";
+import { addAbsences, getOneAbsence, updateAbsences } from "../../apiService/absencesApi";
 import dayjs from "dayjs";
-import { filter } from "lodash";
 
 dayjs().format()
 
@@ -26,7 +26,7 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
 
     useEffect(() => {
         usuario();
-        console.log(absence)
+        console.log("absence useEffect modalAbsence", absence)
         if (absence) {
             getAbsenceData(absence)
         } else {
@@ -49,50 +49,47 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
         }
         setInitialValues(formValues)
         form.setFieldsValue(formValues)
-        console.log(data)
+        console.log("data form values", data)
     }
 
     const createAbsence = async (values) => {
-        console.log("Crea viaje, cierra modal", values)
         try {
             if (absence) {
-                console.log(values)
-                //await updateAbsences(selectedAbsence._id, { ...selectedAbsence })
-                onCancel();
+                console.log("Edita viaje, cierra modal, nuevos valores editados: ", values)
+                await updateAbsences(absence, { ...values })
+                message.success('Travel updated successfully!')
             } else {
+                console.log("Crea viaje, cierra modal, valores a crear: ", values)
                 const response = await addAbsences(values);
-                refresh((prev) => !prev);
-                onCancel();
+                message.success('Travel created successfully!')
             }
+            refresh((prev) => !prev);
+            onCancel();
         } catch (error) {
+            message.error(error)
             console.log("error", error)
         }
     }
 
     const handleAbsenceEmployee = (value) => {
         form.setFieldsValue({ employeeId: value });
-        console.log("44 empleado", value)
     };
 
     const handleAbsenceContinent = (value) => {
         form.setFieldsValue({ continent: value });
-        console.log("49 continente", value)
     };
 
     const handleAbsenceService = (value) => {
         form.setFieldsValue({ absenceService: value });
-        console.log("55 servicio", value)
     };
 
     const onDateChangeAbsenceStart = (date, dateStrings) => {
         const newDate = new Date(dateStrings)
         form.setFieldsValue({ startDate: dateStrings });
-        console.log(dateStrings)
     };
     const onDateChangeAbsenceEnd = (date, dateStrings) => {
         const newDate = new Date(dateStrings)
         form.setFieldsValue({ endDate: dateStrings });
-        console.log(dateStrings)
     };
 
     const usuario = () => {

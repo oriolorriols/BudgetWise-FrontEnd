@@ -47,12 +47,12 @@ const Absences = () => {
     useEffect(() => {
         getAllAbsences();
         getAllUsers();
-        console.log("all users ", allUsers)
+        console.log("all users useEffect Absence.jsx ", allUsers)
     }, [dummy, userId]);
 
     const openCreateAbsence = () => {
         setOpenEdit(true);
-        console.log("Abre modal")
+        console.log("Abre modal de crear")
     }
 
     return (
