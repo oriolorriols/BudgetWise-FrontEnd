@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import {
     Modal,
     Form,
@@ -98,7 +97,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
             setUsuarioAEditar(usuario)
         }
     }
-
 
     return (
         <>

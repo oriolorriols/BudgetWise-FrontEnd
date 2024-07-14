@@ -1,5 +1,4 @@
 import { Button, Card, Carousel, Popconfirm, Space, message } from 'antd';
-import { useState } from "react";
 import './absence.scss';
 import { deleteAbsences } from '../../apiService/absencesApi';
 

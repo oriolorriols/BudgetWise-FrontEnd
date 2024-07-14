@@ -10,10 +10,9 @@ import {
     message,
     Upload,
     Button,
-    List,
 } from "antd";
 import { useAuth } from "../../contexts/authContext";
-import { UploadOutlined, LinkOutlined, CloseOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 
@@ -58,7 +57,7 @@ const ExpenseModal = ({ expense, visible, onCancel, allAbsences, refresh }) => {
         try {
             setLoading(true);
             if (expense) {
-                 if (fileList.length > 0) {
+                if (fileList.length > 0) {
                     data.expenseProof = fileList.map(file => file.url || file.originFileObj);
                 }
                 const response = await updateExpenses(expense._id, data);
@@ -84,7 +83,7 @@ const ExpenseModal = ({ expense, visible, onCancel, allAbsences, refresh }) => {
     };
 
     const props = {
-        if(expense){
+        if(expense) {
             setFileList(null)
         },
         multiple: true,
