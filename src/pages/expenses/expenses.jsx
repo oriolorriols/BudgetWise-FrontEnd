@@ -54,7 +54,7 @@ const Expenses = () => {
     useEffect(() => {
         getAllExpenses();
         getAllAbsences();
-    }, [dummy]);
+    }, [dummy, userId]);
 
     const showExpenseProof = (url) => {
         setCurrentExpenseProof(url)
@@ -77,16 +77,24 @@ const Expenses = () => {
 
     const getAllExpenses = async () => {
         setLoading(true)
-        const expenses = await getExpenses()
-        if ((expenses.error && expenses.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
-            setIsModalTokenVisible(true);
+        try {
+            const expenses = await getExpenses()
+            const notRemoved = expenses.filter((user) => !user.removedAt);
+            if (isHR !== "HR") {
+                const userExpenses = notRemoved.filter((expense) => expense.absenceId.employeeId._id === userId)
+                setAllExpenses(userExpenses)
+                setLoading(false)
+            } else {
+                setAllExpenses(notRemoved)
+                setLoading(false)
+            }
+            if ((expenses.error && expenses.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
+                setIsModalTokenVisible(true);
+            }
+            else setError(expenses.message);
+        } catch (error) {
+            console.log(error)
         }
-        const notRemoved = expenses.filter((user) => !user.removedAt);
-        if (expenses.length) {
-            setAllExpenses(notRemoved)
-            setLoading(false)
-        }
-        else setError(expenses.message);
     };
 
     const getAllAbsences = async () => {
@@ -588,8 +596,6 @@ const Expenses = () => {
                                     : "-"
                                 }
                             </div>
-
-
                         </div>
                     ),
                 }}
