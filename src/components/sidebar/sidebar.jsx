@@ -49,19 +49,14 @@ const items = [
     label: 'Perfil',
   },
   {
-    key: '/ausencias',
+    key: '/viajes',
     icon: <SolutionOutlined />,
-    label: 'Ausencias',
+    label: 'Viajes',
   },
   {
     key: '/gastos',
     icon: <BankOutlined />,
     label: 'Gastos',
-  },
-  {
-    key: '/solicitudes',
-    icon: <CarryOutOutlined />,
-    label: 'Solicitudes',
   },
   {
     key: '/empresa',
@@ -106,7 +101,7 @@ const SideBar = () => {
             }
           }}
         />
-{/*
+        {/*
       <Button 
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/> : <MenuFoldOutlined style={{color: 'rgba(255, 255, 255, 0.65)'}}/>}

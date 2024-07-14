@@ -1,0 +1,58 @@
+.card-expenses {
+
+    .ant-card-body {
+        background-color: #001529;
+        color: #fff;
+        border-radius: 18px;
+        padding: 20px;
+    }
+
+    .icon-expenses {
+        padding: 12px;
+        border-radius: 12px;
+        width: 55px;
+        height: auto;
+
+        svg {
+            fill: #fff;
+            width: 30px;
+            height: auto;
+        }
+    }
+
+    h3 {
+        color: #BBBBBB;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 18px;
+    }
+
+    p {
+        color: #fff;
+        font-weight: 700;
+        font-size: 20px;
+
+    }
+
+    &.total-expenses {
+        .icon-expenses {
+            background-color: #34B990;
+        }
+    }
+
+    &.accumulated-expense {
+        .icon-expenses {
+            background-color: #1677FF;
+        }
+    }
+
+    &.average-expenses {
+        .icon-expenses {
+            background-color: #64CFF6;
+
+            svg {
+                fill: #000000;
+            }
+        }
+    }
+}

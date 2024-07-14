@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import { getAbsences } from "../../apiService/absencesApi";
-import { Button, Card, Modal, Space } from 'antd';
+import { Button, Card, Space, Flex } from 'antd';
 import AbsencesCard from "./absenceCards";
 import AbsenceModal from "../../components/modals/modalAbsences";
-import { getUsers } from "../../apiService/userApi";
+import { getOneUser, getUsers } from "../../apiService/userApi";
+import { useAuth } from "../../contexts/authContext"
 
 const Absences = () => {
     const [allAbsences, setAllAbsences] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
     const [dummy, refresh] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
+    const { userId, isHR } = useAuth()
+    const { userLoged, setUserLoged } = useState({})
 
     const getAllAbsences = async () => {
+        console.log()
         const absences = await getAbsences();
         const notRemoved = absences.filter((absence) => !absence.removeAt);
         if (absences.length) setAllAbsences(notRemoved);
@@ -25,11 +29,21 @@ const Absences = () => {
         else setError(users.message);
     };
 
+    const getLogedUser = async () => {
+        const data = await getOneUser(userId)
+        setUserLoged(data)
+        console.log("cargando usuario en get loged user")
+    }
 
     useEffect(() => {
+        if (userId && isHR !== "HR") {
+            getLogedUser();
+            console.log("funciona get loged user en sue effect si no eres HR")
+        }
         getAllAbsences();
         getAllUsers();
-    }, [dummy]);
+        console.log(userLoged)
+    }, [dummy, userId]);
 
     const openCreateAbsence = () => {
         setOpenEdit(true);
@@ -38,9 +52,12 @@ const Absences = () => {
 
     return (
         <>
-            <div>
-                <h2 className="text-xl font-bold">Lista de Viajes</h2>
-            </div>
+            <Flex wrap justify="space-between" align="flex-start">
+                <div className="title-box">
+                    <h1 className='title'>Lista de viajes</h1>
+                    <h2 className='subtitle'>Listado de todos los viajes por cada continente</h2>
+                </div>
+            </Flex>
             <div className="flex justify-start my-5">
                 <Button type="primary" onClick={openCreateAbsence}>
                     Crear viaje
@@ -52,13 +69,14 @@ const Absences = () => {
                     onCancel={() => setOpenEdit(false)}
                     allUsers={allUsers}
                     refresh={refresh}
+                    idUser={userLoged}
                 />
             </Space>
             <Space wrap size={16} align="start">
                 <Card
                     title="América"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "America" &&
@@ -74,14 +92,17 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit}
+                            />
+
                         </div>
                     ))}
                 </Card>
                 <Card
                     title="Europa"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Europa" &&
@@ -97,14 +118,15 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit} />
                         </div>
                     ))}
                 </Card>
                 <Card
                     title="Africa"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Africa" &&
@@ -120,14 +142,15 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit} />
                         </div>
                     ))}
                 </Card>
                 <Card
                     title="Asia"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Asia" &&
@@ -143,14 +166,15 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit} />
                         </div>
                     ))}
                 </Card>
                 <Card
                     title="Oceania"
                     style={{
-                        width: 400,
+                        width: 430,
                     }}
                 >
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Oceania" &&
@@ -166,9 +190,10 @@ const Absences = () => {
                                 absenceService={ausencia.absenceService}
                                 absenceCode={ausencia.absenceCode}
                                 id={ausencia._id}
-                                refresh={refresh} />
+                                refresh={refresh}
+                                visible={setOpenEdit} />
                         </div>
-                        && ausencia.length === 0 && "vacio"))}
+                    ))}
                 </Card>
             </Space >
         </>

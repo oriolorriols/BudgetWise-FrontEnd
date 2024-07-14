@@ -28,6 +28,12 @@ const ChatModal = ({ listMessages }) => {
     }
   }, [userId]);
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
   const sendMessage = () => {
     if (!messageInput.trim()) return;
 
@@ -82,6 +88,7 @@ const ChatModal = ({ listMessages }) => {
           placeholder="Type message here"
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
+          onKeyUp={handleKeyPress}
         />
         <SendOutlined onClick={sendMessage} />
       </div>

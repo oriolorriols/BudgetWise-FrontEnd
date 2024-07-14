@@ -31,12 +31,12 @@ const Expenses = () => {
     const checkTokenValidity = () => {
         const token = localStorage.getItem("access_token");
         if (!token) {
-          setIsModalTokenVisible(true);
-          return false;
+            setIsModalTokenVisible(true);
+            return false;
         }
         return true;
-      };
-    
+    };
+
 
     const [allExpenses, setAllExpenses] = useState([]);
     const [allAbsences, setAllAbsences] = useState([]);
@@ -54,10 +54,10 @@ const Expenses = () => {
         const expenses = await getExpenses()
         if ((expenses.error && expenses.error.name === "TokenExpiredError") || localStorage.getItem("access_token") === null) {
             setIsModalTokenVisible(true);
-          } 
+        }
         const notRemoved = expenses.filter((user) => !user.removedAt);
         if (expenses.length) {
-            setAllExpenses(notRemoved) 
+            setAllExpenses(notRemoved)
             setLoading(false)
         }
 
@@ -122,7 +122,11 @@ const Expenses = () => {
     const filterDataByDateC = (dateStringsC) => {
         const [start, end] = dateStringsC;
         const filtered = allExpenses.filter(
-            (item) => item.createdAt >= start && item.createdAt <= end
+            (item) =>
+                new Date(item.createdAt).getTime() >=
+                new Date(start).getTime() &&
+                new Date(item.createdAt).getTime() <=
+                new Date(end).getTime()
         );
         setFiltering(filtered);
     };
@@ -134,8 +138,12 @@ const Expenses = () => {
 
     const filterDataByDateE = (dateStringsE) => {
         const [start, end] = dateStringsE;
+        console.log(start, end);
         const filtered = allExpenses.filter(
-            (item) => item.expenseDate >= start && item.expenseDate <= end
+            new Date(item.absenceId.startDate).getTime() >=
+            new Date(start).getTime() &&
+            new Date(item.absenceId.startDate).getTime() <=
+            new Date(end).getTime()
         );
         setFiltering(filtered);
     };
@@ -148,7 +156,11 @@ const Expenses = () => {
     const filterDataByDateP = (dateStringsP) => {
         const [start, end] = dateStringsP;
         const filtered = allExpenses.filter(
-            (item) => item.expensePayment >= start && item.expensePayment <= end
+            (item) =>
+                new Date(item.expensePayment).getTime() >=
+                new Date(start).getTime() &&
+                new Date(item.expensePayment).getTime() <=
+                new Date(end).getTime()
         );
         setFiltering(filtered);
     };
@@ -408,7 +420,7 @@ const Expenses = () => {
     ];
 
     return (
-        <>                 
+        <>
             <Flex wrap justify="space-between" align="flex-start">
                 <div className="title-box">
                     <h1 className='title'>Listado de gastos</h1>
@@ -491,10 +503,10 @@ const Expenses = () => {
                             </div>
                             <div className="ml-32">
                                 <p className="font-bold">Motivo:</p>
-                                {record.absenceId.absenceCodeId?.absenceService}
+                                {record.absenceId.absenceService}
                                 <p className="font-bold">Código:</p>
-                                {record.absenceId.absenceCodeId?.absenceCode
-                                    ? record.absenceId.absenceCodeId?.absenceCode
+                                {record.absenceId.absenceCode
+                                    ? record.absenceId.absenceCode
                                     : "-"}
                             </div>
                             <div className="ml-32">
