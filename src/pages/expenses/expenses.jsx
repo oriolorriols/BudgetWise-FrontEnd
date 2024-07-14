@@ -22,18 +22,39 @@ import TokenModal from '../../components/modals/modalToken';
 import ExpenseProofModal from '../../components/modals/modalExpenseProof';
 import ExpenseModal from "../../components/modals/modalExpenses";
 import { getAbsences } from "../../apiService/absencesApi";
+import { useAuth } from "../../contexts/authContext"
 
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
 const { Search } = Input;
 
 const Expenses = () => {
+    const { userId, isHR } = useAuth();
     const [isModalTokenVisible, setIsModalTokenVisible] = useState(false)
-
     const [isExpenseProofModalVisible, setIsExpenseProofModalVisible] = useState(false)
     const [currentExpenseProof, setCurrentExpenseProof] = useState('')
-
     const [selectedExpense, setSelectedExpense] = useState(null)
+    const [allExpenses, setAllExpenses] = useState([]);
+    const [allAbsences, setAllAbsences] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [dummy, refresh] = useState(false);
+    const [filtering, setFiltering] = useState([]);
+    const [filteredInfo, setFilteredInfo] = useState({});
+    const [sortedInfo, setSortedInfo] = useState({});
+    const [dates, setDates] = useState([]);
+    const [expensePayment, setExpensePayment] = useState("");
+    const [send, setSend] = useState(false);
+    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+    const [approved, setApproved] = useState(false);
+    const [approvedId, setApprovedId] = useState("");
+    const [form] = Form.useForm();
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        getAllExpenses();
+        getAllAbsences();
+    }, [dummy]);
 
     const showExpenseProof = (url) => {
         setCurrentExpenseProof(url)
@@ -54,18 +75,6 @@ const Expenses = () => {
         return true;
     };
 
-
-    const [allExpenses, setAllExpenses] = useState([]);
-    const [allAbsences, setAllAbsences] = useState([]);
-
-    const [loading, setLoading] = useState(true);
-
-    const [error, setError] = useState("");
-    const [dummy, refresh] = useState(false);
-
-    const [filtering, setFiltering] = useState([]);
-
-
     const getAllExpenses = async () => {
         setLoading(true)
         const expenses = await getExpenses()
@@ -77,7 +86,6 @@ const Expenses = () => {
             setAllExpenses(notRemoved)
             setLoading(false)
         }
-
         else setError(expenses.message);
     };
 
@@ -87,14 +95,6 @@ const Expenses = () => {
         if (absences.length) setAllAbsences(notRemoved);
         else setError(absences.message);
     };
-
-    useEffect(() => {
-        getAllExpenses();
-        getAllAbsences();
-    }, [dummy]);
-
-    const [filteredInfo, setFilteredInfo] = useState({});
-    const [sortedInfo, setSortedInfo] = useState({});
 
     const onSearch = (value, _e, info) => {
         console.log(info?.source, value);
@@ -128,8 +128,6 @@ const Expenses = () => {
         }
         if (!info) allExpenses;
     };
-
-    const [dates, setDates] = useState([]);
 
     const onDateChangeCreation = (dates, dateStringsC) => {
         setDates(dateStringsC);
@@ -209,12 +207,6 @@ const Expenses = () => {
         return dateString.split("T")[0];
     }
 
-    const [expensePayment, setExpensePayment] = useState("");
-    const [send, setSend] = useState(false);
-    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-    const [approved, setApproved] = useState(false);
-    const [approvedId, setApprovedId] = useState("");
-
     const onChangeDate = async (date, dateString) => {
         const newDate = new Date(dateString);
         setExpensePayment(newDate);
@@ -257,9 +249,6 @@ const Expenses = () => {
         setApprovedId(id);
         setApproved(true);
     };
-
-    const [form] = Form.useForm();
-    const [open, setOpen] = useState(false);
 
     const addExpense = () => {
         setSelectedExpense(null)
@@ -469,11 +458,13 @@ const Expenses = () => {
                     <h1 className='title'>Listado de gastos</h1>
                     <h2 className='subtitle'>Detalle de todos tus gastos</h2>
                 </div>
-                <div className="flex justify-end my-5">
-                    <Button type="primary" onClick={addExpense}>
-                        Crear gasto
-                    </Button>
-                </div>
+                {isHR !== "HR" ?
+                    <div className="flex justify-end my-5">
+                        <Button type="primary" onClick={addExpense}>
+                            Crear gasto
+                        </Button>
+                    </div>
+                    : null}
             </Flex>
             <div className="flex flex-row-reverse justify-between items-center my-5">
                 <div className="flex justify-end my-5">

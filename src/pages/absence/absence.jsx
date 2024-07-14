@@ -14,6 +14,12 @@ const Absences = () => {
     const { userId, isHR } = useAuth()
     const [selectedAbsence, setSelectedAbsence] = useState(null);
 
+    useEffect(() => {
+        getAllAbsences();
+        getAllUsers();
+        console.log("all users useEffect Absence.jsx ", allUsers)
+    }, [dummy, userId]);
+
     const getAllAbsences = async () => {
         try {
             const absences = await getAbsences();
@@ -43,12 +49,6 @@ const Absences = () => {
             console.log(error);
         }
     };
-
-    useEffect(() => {
-        getAllAbsences();
-        getAllUsers();
-        console.log("all users useEffect Absence.jsx ", allUsers)
-    }, [dummy, userId]);
 
     const openCreateAbsence = () => {
         setOpenEdit(true);
