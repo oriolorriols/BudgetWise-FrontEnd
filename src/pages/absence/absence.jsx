@@ -52,6 +52,7 @@ const Absences = () => {
 
     const openCreateAbsence = () => {
         setOpenEdit(true);
+        setSelectedAbsence(null)
         console.log("Abre modal de crear")
     }
 
@@ -59,7 +60,7 @@ const Absences = () => {
         <>
             <Flex wrap justify="space-between" align="flex-start">
                 <div className="title-box">
-                    <h1 className='title'>Lista de viajes {allUsers?.name} {allUsers?.surname}</h1>
+                    <h1 className='title'>Lista de viajes</h1>
                     <h2 className='subtitle'>Listado de todos los viajes por cada continente</h2>
                 </div>
             </Flex>
@@ -87,15 +88,7 @@ const Absences = () => {
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "America" &&
                         <div key={index}>
                             <AbsencesCard
-                                name={ausencia.employeeId.name}
-                                surname={ausencia.employeeId.surname}
-                                absenceName={ausencia.absenceName}
-                                startDate={ausencia.startDate}
-                                endDate={ausencia.endDate}
-                                country={ausencia.country}
-                                city={ausencia.city}
-                                absenceService={ausencia.absenceService}
-                                absenceCode={ausencia.absenceCode}
+                                ausencia={ausencia}
                                 id={ausencia._id}
                                 refresh={refresh}
                                 visible={setOpenEdit}
@@ -113,15 +106,7 @@ const Absences = () => {
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Europa" &&
                         <div key={index}>
                             <AbsencesCard
-                                name={ausencia.employeeId.name}
-                                surname={ausencia.employeeId.surname}
-                                absenceName={ausencia.absenceName}
-                                startDate={ausencia.startDate}
-                                endDate={ausencia.endDate}
-                                country={ausencia.country}
-                                city={ausencia.city}
-                                absenceService={ausencia.absenceService}
-                                absenceCode={ausencia.absenceCode}
+                                ausencia={ausencia}
                                 id={ausencia._id}
                                 refresh={refresh}
                                 visible={setOpenEdit}
@@ -138,15 +123,7 @@ const Absences = () => {
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Africa" &&
                         <div key={index}>
                             <AbsencesCard
-                                name={ausencia.employeeId.name}
-                                surname={ausencia.employeeId.surname}
-                                absenceName={ausencia.absenceName}
-                                startDate={ausencia.startDate}
-                                endDate={ausencia.endDate}
-                                country={ausencia.country}
-                                city={ausencia.city}
-                                absenceService={ausencia.absenceService}
-                                absenceCode={ausencia.absenceCode}
+                                ausencia={ausencia}
                                 id={ausencia._id}
                                 refresh={refresh}
                                 visible={setOpenEdit}
@@ -163,15 +140,7 @@ const Absences = () => {
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Asia" &&
                         <div key={index}>
                             <AbsencesCard
-                                name={ausencia.employeeId.name}
-                                surname={ausencia.employeeId.surname}
-                                absenceName={ausencia.absenceName}
-                                startDate={ausencia.startDate}
-                                endDate={ausencia.endDate}
-                                country={ausencia.country}
-                                city={ausencia.city}
-                                absenceService={ausencia.absenceService}
-                                absenceCode={ausencia.absenceCode}
+                                ausencia={ausencia}
                                 id={ausencia._id}
                                 refresh={refresh}
                                 visible={setOpenEdit}
@@ -188,15 +157,7 @@ const Absences = () => {
                     {allAbsences.map((ausencia, index) => (ausencia.continent === "Oceania" &&
                         <div key={index}>
                             <AbsencesCard
-                                name={ausencia.employeeId.name}
-                                surname={ausencia.employeeId.surname}
-                                absenceName={ausencia.absenceName}
-                                startDate={ausencia.startDate}
-                                endDate={ausencia.endDate}
-                                country={ausencia.country}
-                                city={ausencia.city}
-                                absenceService={ausencia.absenceService}
-                                absenceCode={ausencia.absenceCode}
+                                ausencia={ausencia}
                                 id={ausencia._id}
                                 refresh={refresh}
                                 visible={setOpenEdit}

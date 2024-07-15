@@ -2,7 +2,7 @@ import { Button, Card, Carousel, Popconfirm, Space, message } from 'antd';
 import './absence.scss';
 import { deleteAbsences } from '../../apiService/absencesApi';
 
-const AbsencesCard = ({ name, surname, absenceName, startDate, endDate, country, city, absenceService, absenceCode, id, refresh, visible, absence }) => {
+const AbsencesCard = ({ ausencia, id, refresh, visible, absence }) => {
 
     const handleDelete = async (id) => {
         await deleteAbsences(id);
@@ -21,20 +21,20 @@ const AbsencesCard = ({ name, surname, absenceName, startDate, endDate, country,
         < Card hoverable className="cardStyle" >
             <Carousel arrows >
                 <div className="mb-0">
-                    <h1 className="contentStyle"><strong>Empleado: </strong>{name} {surname}</h1>
-                    <h1 className="contentStyle"><strong>Título: </strong>{absenceName}</h1>
+                    <h1 className="contentStyle"><strong>Empleado: </strong>{ausencia.employeeId.name} {ausencia.employeeId.surname}</h1>
+                    <h1 className="contentStyle"><strong>Título: </strong>{ausencia.absenceName}</h1>
                 </div>
                 <div>
-                    <h1 className="contentStyle"><strong>Fecha de inicio: </strong>{startDate.split("T")[0]}</h1>
-                    <h1 className="contentStyle"><strong>Fecha de fin: </strong>{endDate.split("T")[0]}</h1>
+                    <h1 className="contentStyle"><strong>Fecha de inicio: </strong>{ausencia.startDate.split("T")[0]}</h1>
+                    <h1 className="contentStyle"><strong>Fecha de fin: </strong>{ausencia.endDate.split("T")[0]}</h1>
                 </div>
                 <div>
-                    <h1 className="contentStyle"><strong>País: </strong>{country}</h1>
-                    <h1 className="contentStyle"><strong>Ciudad: </strong>{city}</h1>
+                    <h1 className="contentStyle"><strong>País: </strong>{ausencia.country}</h1>
+                    <h1 className="contentStyle"><strong>Ciudad: </strong>{ausencia.city}</h1>
                 </div>
                 <div>
-                    <h1 className="contentStyle"><strong>Servicio: </strong>{absenceService}</h1>
-                    <h1 className="contentStyle"><strong>Código de venta: </strong>{absenceCode ? absenceCode : "-"}</h1>
+                    <h1 className="contentStyle"><strong>Servicio: </strong>{ausencia.absenceService}</h1>
+                    <h1 className="contentStyle"><strong>Código de venta: </strong>{ausencia.absenceCode ? ausencia.absenceCode : "-"}</h1>
                 </div>
             </Carousel>
             <Space >
