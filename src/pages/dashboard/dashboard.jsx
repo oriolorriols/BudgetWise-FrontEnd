@@ -389,14 +389,14 @@ const Dashboard = () => {
     <Col span={12}>
       <Card>
         <Row gutter={16}>
-          <ReactEcharts option={getPieChartOptions()} style={{ width: '375px', height: '300px' }} />
-          <ReactEcharts option={getPieChartOptionsByCategory()} style={{ width: '375px', height: '300px' }}/>
+          <ReactEcharts option={getPieChartOptions()} style={{ width: '350px', height: '300px' }} />
+          <ReactEcharts option={getPieChartOptionsByCategory()} style={{ width: '350px', height: '300px' }}/>
         </Row>
       </Card>
     </Col>
     <Col span={12}>
       <Card>
-        <ReactEcharts option={getLineChartOptions()} style={{ width: '750px', height: '300px' }}/>
+        <ReactEcharts option={getLineChartOptions()} style={{ width: '725px', height: '300px' }}/>
       </Card>
     </Col>
   </Row>
@@ -404,7 +404,7 @@ const Dashboard = () => {
   <Row gutter={16}>
     <Col span={24}>
       <Card >
-        <ReactEcharts option={getBarChartOptions()} style={{ width: '1600px', height: '400px' }}/>
+        <ReactEcharts option={getBarChartOptions()} style={{ width: '1450px', height: '400px' }}/>
       </Card>
     </Col>
   </Row>
