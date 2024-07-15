@@ -11,7 +11,7 @@ body {
     width: calc(100vw - 200px);
     background-color: #F9F9F9;
     border-radius: 20px;
-    padding: 40px 90px 30px 50px;
+    padding: 30px 90px 30px 40px;
     margin: 20px;
     min-height: calc(100vh - 40px);
   }
@@ -61,11 +61,11 @@ th {
 
   .ant-table-thead  {
       > tr {
-        background-color: #001529;
+        background: #e1e1e1 !important;
 
           > th {
-              background-color: #001529;
-              color: #34B990;
+              background: #e1e1e1 !important;
+              color: #001529;
               font-weight: 700;
               font-size: 16px;
 
@@ -127,5 +127,14 @@ th {
           }
       } 
   }
+}
 
+.ant-picker-calendar-date {
+  margin: 0px !important;
+  padding: 0px !important;
+  height: 150px !important;
+}
+
+.ant-picker-calendar-date-content {
+  height: 120px !important;
 }

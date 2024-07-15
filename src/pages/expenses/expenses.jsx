@@ -371,64 +371,66 @@ const Expenses = () => {
             key: "action",
             width: "7%",
             render: (_, record) =>
-                record.paymentMethod === "Personal" ? (
-                    <Space size="middle">
-                        <Button
-                            key={record._id}
-                            type="primary"
-                            onClick={() => handleOpenDatePicker(record._id)}
-                        >
-                            Aprobar
-                        </Button>
-                        <Modal
-                            zIndex={approvedId}
-                            title={"Selecciona una Fecha"}
-                            open={isDatePickerVisible}
-                            onOk={handleConfirmSendEmail}
-                            onCancel={() => setIsDatePickerVisible(false)}
-                        >
-                            <DatePicker
-                                onChange={(date, dateString) =>
-                                    onChangeDate(date, dateString)
-                                }
-                                needConfirm
-                            />
-                        </Modal>
-                        <Modal
-                            title="Confirmar envio de correo"
-                            open={send}
-                            onOk={() => sendEmail()}
-                            onCancel={handleOpenDatePicker}
-                        >
-                            <p>
-                                {"Se enviará un correo con la fecha elegida: " +
-                                    expensePayment}
-                            </p>
-                        </Modal>
-                    </Space>
-                ) : (
-                    <Space size="middle">
-                        <Button
-                            key={record._id}
-                            type="primary"
-                            onClick={() => handleOpenApprove(record._id)}
-                        >
-                            Aprobar
-                        </Button>
-                        <Modal
-                            zIndex={approvedId}
-                            title={"Confirmar envio de correo"}
-                            open={approved}
-                            onOk={() => sendApproval()}
-                            onCancel={() => setApproved(false)}
-                        >
-                            <p>
-                                Se enviará un correo con la fecha del recibí:{" "}
-                                <strong>{Date()}</strong>
-                            </p>
-                        </Modal>
-                    </Space>
-                ),
+                isHR === "HR" ?
+                    (record.paymentMethod === "Personal" ? (
+                        <Space size="middle">
+                            <Button
+                                key={record._id}
+                                type="primary"
+                                onClick={() => handleOpenDatePicker(record._id)}
+                            >
+                                Aprobar
+                            </Button>
+                            <Modal
+                                zIndex={approvedId}
+                                title={"Selecciona una Fecha"}
+                                open={isDatePickerVisible}
+                                onOk={handleConfirmSendEmail}
+                                onCancel={() => setIsDatePickerVisible(false)}
+                            >
+                                <DatePicker
+                                    onChange={(date, dateString) =>
+                                        onChangeDate(date, dateString)
+                                    }
+                                    needConfirm
+                                />
+                            </Modal>
+                            <Modal
+                                title="Confirmar envio de correo"
+                                open={send}
+                                onOk={() => sendEmail()}
+                                onCancel={handleOpenDatePicker}
+                            >
+                                <p>
+                                    {"Se enviará un correo con la fecha elegida: " +
+                                        expensePayment}
+                                </p>
+                            </Modal>
+                        </Space>
+                    ) : (
+                        <Space size="middle">
+                            <Button
+                                key={record._id}
+                                type="primary"
+                                onClick={() => handleOpenApprove(record._id)}
+                            >
+                                Aprobar
+                            </Button>
+                            <Modal
+                                zIndex={approvedId}
+                                title={"Confirmar envio de correo"}
+                                open={approved}
+                                onOk={() => sendApproval()}
+                                onCancel={() => setApproved(false)}
+                            >
+                                <p>
+                                    Se enviará un correo con la fecha del recibí:{" "}
+                                    <strong>{Date()}</strong>
+                                </p>
+                            </Modal>
+                        </Space>)
+                    )
+                    : null
         },
         {
             title: "",

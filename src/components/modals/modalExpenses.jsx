@@ -94,6 +94,8 @@ const ExpenseModal = ({ expense, visible, onCancel, allAbsences, refresh }) => {
         fileList,
     };
 
+    const absenceFilteredByUser = allAbsences.filter(ausencia => ausencia.employeeId._id === userId)
+
     return (
         <Modal
             open={visible}
@@ -127,11 +129,18 @@ const ExpenseModal = ({ expense, visible, onCancel, allAbsences, refresh }) => {
                         placeholder="Seleccionar..."
                         style={{ width: 400 }}
                     >
-                        {allAbsences?.map((ausencia) => (
-                            <Option key={ausencia._id} value={ausencia._id}>
-                                {ausencia.absenceName}
-                            </Option>
-                        ))}
+                        {isHR === "HR" ?
+                            allAbsences?.map((ausencia) => (
+                                <Option key={ausencia._id} value={ausencia._id}>
+                                    {ausencia.absenceName}
+                                </Option>
+                            ))
+                            : absenceFilteredByUser?.map((ausencia) => (
+                                <Option key={ausencia._id} value={ausencia._id}>
+                                    {ausencia.absenceName}
+                                </Option>
+                            ))
+                        }
                     </Select>
                 </Form.Item>
                 <Form.Item

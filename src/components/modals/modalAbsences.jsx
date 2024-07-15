@@ -30,6 +30,11 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
             getAbsenceData(absence)
         } else {
             form.resetFields()
+            const formValues = {
+                employeeId: allUsers?._id,
+            }
+            setInitialValues(formValues)
+            form.setFieldsValue(formValues)
         }
     }, [absence, allUsers])
 
@@ -63,6 +68,8 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                 message.success('Travel created successfully!')
             }
             refresh((prev) => !prev);
+            form.resetFields();
+            setInitialValues({});
             onCancel();
         } catch (error) {
             message.error(error)
@@ -102,7 +109,7 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
         <>
             <Modal
                 open={visible}
-                title="Crear nuevo viaje"
+                title={absence ? "Editar viaje:" : "Crear nuevo viaje"}
                 okText="Ok"
                 cancelText="Cancel"
                 okButtonProps={{
@@ -146,29 +153,27 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                         { required: true, message: "Selecciona un empleado" },
                     ]}
                 >
-                    <Space wrap>
-                        <Select
-                            placeholder={
-                                (absence && isHR === "HR") ? usuarioAEditar?.name + " " + usuarioAEditar?.surname : "Seleccionar..." &&
-                                    (absence && isHR !== "HR") ? allUsers?.name + " " + allUsers?.surname : "Seleccionar..."
-                            }
-                            style={{
-                                width: 300,
-                            }}
-                            onChange={handleAbsenceEmployee}
-                        >
-                            {isHR === "HR" ?
-                                allUsers?.map((user) => (
-                                    <Option key={user._id} value={user._id}>
-                                        {user.name} {user.surname}
-                                    </Option>
-                                )) :
-                                <Option key={allUsers?._id} value={allUsers?._id} defaultValue={allUsers?._id}>
-                                    {allUsers?.name} {allUsers?.surname}
+                    <Select
+                        placeholder={
+                            (absence && isHR === "HR") ? usuarioAEditar?.name + " " + usuarioAEditar?.surname : "Seleccionar..." &&
+                                (absence && isHR !== "HR") ? allUsers?.name + " " + allUsers?.surname : "Seleccionar..."
+                        }
+                        style={{
+                            width: 300,
+                        }}
+                        onChange={handleAbsenceEmployee}
+                    >
+                        {isHR === "HR" ?
+                            allUsers?.map((user) => (
+                                <Option key={user._id} value={user._id}>
+                                    {user.name} {user.surname}
                                 </Option>
-                            }
-                        </Select>
-                    </Space>
+                            )) :
+                            <Option key={allUsers?._id} value={allUsers?._id} defaultValue={allUsers?._id}>
+                                {allUsers?.name} {allUsers?.surname}
+                            </Option>
+                        }
+                    </Select>
                 </Form.Item>
                 <Space>
                     <Form.Item
@@ -228,23 +233,21 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                             { required: true, message: "Selecciona un continente" },
                         ]}
                     >
-                        <Space wrap>
-                            <Select
-                                defaultValue={initialValues?.continent}
-                                placeholder={absence ? initialValues.continent : "Seleccionar..."}
-                                style={{
-                                    width: 150,
-                                }}
-                                onChange={handleAbsenceContinent}
-                                options={[
-                                    { value: 'America', label: 'America' },
-                                    { value: 'Europa', label: 'Europa' },
-                                    { value: 'Africa', label: 'Africa' },
-                                    { value: 'Asia', label: 'Asia' },
-                                    { value: 'Oceania', label: 'Oceania' },
-                                ]}
-                            />
-                        </Space>
+                        <Select
+                            defaultValue={initialValues?.continent}
+                            placeholder={absence ? initialValues.continent : "Seleccionar..."}
+                            style={{
+                                width: 150,
+                            }}
+                            onChange={handleAbsenceContinent}
+                            options={[
+                                { value: 'America', label: 'America' },
+                                { value: 'Europa', label: 'Europa' },
+                                { value: 'Africa', label: 'Africa' },
+                                { value: 'Asia', label: 'Asia' },
+                                { value: 'Oceania', label: 'Oceania' },
+                            ]}
+                        />
                     </Form.Item>
                 </Space>
                 <Space>
@@ -255,25 +258,23 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                             { required: true, message: "Selecciona un servicio" },
                         ]}
                     >
-                        <Space wrap>
-                            <Select
-                                defaultValue={initialValues?.absenceService}
-                                placeholder={absence ? initialValues.absenceService : "Selecionar..."}
-                                style={{
-                                    width: 200,
-                                }}
-                                onChange={handleAbsenceService}
-                                options={[
-                                    { value: 'Demo', label: 'Demo' },
-                                    { value: 'Venta', label: 'Venta' },
-                                    { value: 'Post-Venta', label: 'Post-Venta' },
-                                    { value: 'Soporte', label: 'Soporte' },
-                                    { value: 'Formacion', label: 'Formacion' },
-                                    { value: 'Feria', label: 'Feria' },
-                                    { value: 'Otros', label: 'Otros' },
-                                ]}
-                            />
-                        </Space>
+                        <Select
+                            defaultValue={initialValues?.absenceService}
+                            placeholder={absence ? initialValues.absenceService : "Selecionar..."}
+                            style={{
+                                width: 200,
+                            }}
+                            onChange={handleAbsenceService}
+                            options={[
+                                { value: 'Demo', label: 'Demo' },
+                                { value: 'Venta', label: 'Venta' },
+                                { value: 'Post-Venta', label: 'Post-Venta' },
+                                { value: 'Soporte', label: 'Soporte' },
+                                { value: 'Formacion', label: 'Formacion' },
+                                { value: 'Feria', label: 'Feria' },
+                                { value: 'Otros', label: 'Otros' },
+                            ]}
+                        />
                     </Form.Item>
                     <Form.Item
                         className="flex inline-row"
