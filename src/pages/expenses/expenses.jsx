@@ -17,6 +17,7 @@ import {
     Form,
     Modal,
     Flex,
+    message,
 } from "antd";
 import TokenModal from '../../components/modals/modalToken';
 import ExpenseProofModal from '../../components/modals/modalExpenseProof';
@@ -208,6 +209,7 @@ const Expenses = () => {
 
     const handleDelete = async (id) => {
         await deleteExpenses(id);
+        message.success('Gasto eliminado con éxito')
         refresh(!dummy);
     };
 
@@ -219,6 +221,7 @@ const Expenses = () => {
         const newDate = new Date(dateString);
         setExpensePayment(newDate);
         await updateExpenses(approvedId, { expensePayment: newDate });
+        message.success('Fecha de pago cambiada')
         refresh(!dummy);
     };
 
@@ -227,6 +230,7 @@ const Expenses = () => {
             expensePayment: null,
             expenseStatus: "Pendiente",
         });
+        message.success('Fecha de aprobación eliminada')
         refresh(!dummy);
     };
 
@@ -243,12 +247,14 @@ const Expenses = () => {
 
     const sendEmail = async () => {
         await emailExpenses(approvedId);
+        message.success('Email de confirmación enviado')
         refresh(!dummy);
         setSend(false);
     };
 
     const sendApproval = async () => {
         await approvedExpenses(approvedId);
+        message.success('Email de confirmación enviado')
         refresh(!dummy);
         setApproved(false);
     };

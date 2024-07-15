@@ -57,11 +57,11 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
             if (absence) {
                 console.log("Edita viaje, cierra modal, nuevos valores editados: ", values)
                 await updateAbsences(absence, { ...values })
-                message.success('Travel updated successfully!')
+                message.success('Viaje actualizado con éxito')
             } else {
                 console.log("Crea viaje, cierra modal, valores a crear: ", values)
                 const response = await addAbsences(values);
-                message.success('Travel created successfully!')
+                message.success('Viaje creado con éxito')
             }
             refresh((prev) => !prev);
             onCancel();

@@ -6,7 +6,7 @@ const AbsencesCard = ({ ausencia, id, refresh, visible, absence }) => {
 
     const handleDelete = async (id) => {
         await deleteAbsences(id);
-        message.success('Travel deleted successfully!')
+        message.success('Viaje eliminado con éxito')
         refresh((prev) => !prev);
     };
 
