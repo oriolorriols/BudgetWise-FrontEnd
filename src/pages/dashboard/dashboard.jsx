@@ -4,7 +4,7 @@ import { getOneUser } from '../../apiService/userApi';
 import { getExpenses } from '../../apiService/expensesApi';
 import { getDepartments } from '../../apiService/departmentApi';
 import BudgetModal from '../../components/modals/modalDepartmentBudget';
-import { Row, Col, DatePicker, Select, Card, Button, Alert, Checkbox, Progress } from 'antd';
+import { Row, Col, DatePicker, Select, Card, Button, Alert, Checkbox, Progress, Flex } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import './dashboard.scss';
@@ -349,7 +349,13 @@ const Dashboard = () => {
 
   return (
   <>
-  <h1 className='text-xl font-bold'>Hola, {user?.name}!</h1>
+  <Flex wrap justify="space-between" align="flex-start">
+    <div className="title-box">
+      <h1 className='title'>¡Bienvenido de nuevo, {user?.name}!</h1>
+      <h2 className='subtitle'>Aquí puedes ver el resumen y toda la información sobre tus gastos</h2>
+    </div>        
+    <ProfileBar />
+  </Flex>
   <Row gutter={16}>
     <Col span={24}>
         <div className="flex flex-row items-center py-3">
@@ -371,21 +377,21 @@ const Dashboard = () => {
     </Col>
   </Row>
 
-  {alerts.map((alert, index) => (
-    <Alert key={index} message={alert} type="warning" showIcon />
-  ))}
-
-  <Row gutter={16} className='flex flex-row items-center justify-evenly'>
+  <Row gutter={16} className='flex flex-row items-center justify-evenly progress-circle'>
     {calculateDepartmentExpenses().map(department => (
         <div className='flex flex-col items-center mx-6'>
           <h3 className='font-bold my-2'>{department.departmentName}</h3>
           <Progress type="dashboard" percent={department.percentageSpent} strokeColor={conicColors} size="small" format={(percent) => percent} status={department.percentageSpent >= 95 ? "exception" : "normal"}/>
-          <p>{`Gastado: ${department.totalSpent}`}</p>
+          <p><span>Gastado: </span>{`${department.totalSpent}€`}</p>
         </div>
     ))}
   </Row>
 
-  <Row gutter={16}>
+  {alerts.map((alert, index) => (
+    <Alert key={index} message={alert} type="warning" showIcon />
+  ))}
+
+  <Row gutter={16} className='row-graphs'>
     <Col span={12}>
       <Card>
         <Row gutter={16}>
