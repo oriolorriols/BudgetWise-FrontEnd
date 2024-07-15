@@ -30,7 +30,11 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
             getAbsenceData(absence)
         } else {
             form.resetFields()
-            setInitialValues({})
+            const formValues = {
+                employeeId: allUsers?._id,
+            }
+            setInitialValues(formValues)
+            form.setFieldsValue(formValues)
         }
     }, [absence, allUsers])
 
@@ -64,6 +68,8 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                 message.success('Viaje creado con éxito')
             }
             refresh((prev) => !prev);
+            form.resetFields();
+            setInitialValues({});
             onCancel();
         } catch (error) {
             message.error(error)

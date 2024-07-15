@@ -53,7 +53,6 @@ const Absences = () => {
     const openCreateAbsence = () => {
         setOpenEdit(true);
         setSelectedAbsence(null)
-        console.log("Abre modal de crear")
     }
 
     const onSearch = (value, _e, info) => {
