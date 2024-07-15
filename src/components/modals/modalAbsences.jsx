@@ -30,6 +30,7 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
             getAbsenceData(absence)
         } else {
             form.resetFields()
+            setInitialValues({})
         }
     }, [absence, allUsers])
 
@@ -146,7 +147,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                         { required: true, message: "Selecciona un empleado" },
                     ]}
                 >
-                    <Space wrap>
                         <Select
                             placeholder={
                                 (absence && isHR === "HR") ? usuarioAEditar?.name + " " + usuarioAEditar?.surname : "Seleccionar..." &&
@@ -168,7 +168,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                                 </Option>
                             }
                         </Select>
-                    </Space>
                 </Form.Item>
                 <Space>
                     <Form.Item
@@ -228,7 +227,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                             { required: true, message: "Selecciona un continente" },
                         ]}
                     >
-                        <Space wrap>
                             <Select
                                 defaultValue={initialValues?.continent}
                                 placeholder={absence ? initialValues.continent : "Seleccionar..."}
@@ -244,7 +242,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                                     { value: 'Oceania', label: 'Oceania' },
                                 ]}
                             />
-                        </Space>
                     </Form.Item>
                 </Space>
                 <Space>
@@ -255,7 +252,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                             { required: true, message: "Selecciona un servicio" },
                         ]}
                     >
-                        <Space wrap>
                             <Select
                                 defaultValue={initialValues?.absenceService}
                                 placeholder={absence ? initialValues.absenceService : "Selecionar..."}
@@ -273,7 +269,6 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                                     { value: 'Otros', label: 'Otros' },
                                 ]}
                             />
-                        </Space>
                     </Form.Item>
                     <Form.Item
                         className="flex inline-row"
