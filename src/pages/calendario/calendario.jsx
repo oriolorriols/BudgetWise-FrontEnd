@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, Calendar, Tooltip } from 'antd';
+import { Badge, Calendar } from 'antd';
 import { getAbsences } from '../../apiService/absencesApi';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
-dayjs.locale('es');
-
-// Función para generar un color de fondo único
-const getRandomColor = () => {
-  const getRandomValue = () => Math.floor(Math.random() * 56) + 200; // valores entre 200 y 255
-  const r = getRandomValue();
-  const g = getRandomValue();
-  const b = getRandomValue();
-  return `rgb(${r}, ${g}, ${b})`;
-};
+dayjs.locale('es')
 
 const getListData = (value, absences) => {
   const date = new Date(value);
@@ -24,9 +15,8 @@ const getListData = (value, absences) => {
       return date >= startDate && date <= endDate;
     })
     .map(absence => ({
-      title: date.toDateString() === new Date(absence.startDate).toDateString() ? `${absence.city}, ${absence.country}` : '',
-      content: date.toDateString() === new Date(absence.startDate).toDateString() ? `${absence.absenceName}` : '',
-      backgroundColor: absence.backgroundColor || getRandomColor() // Asigna un color de fondo único si no existe
+      type: 'success', // Puedes ajustar el tipo según tu necesidad
+      content: `${absence.absenceName} - ${absence.city}, ${absence.country}`
     }));
 };
 
@@ -36,12 +26,7 @@ const Calendario = () => {
   useEffect(() => {
     const fetchAbsences = async () => {
       const fetchedAbsences = await getAbsences();
-      // Asigna un color de fondo único a cada ausencia
-      const absencesWithColor = fetchedAbsences.map(absence => ({
-        ...absence,
-        backgroundColor: getRandomColor()
-      }));
-      setAbsences(absencesWithColor);
+      setAbsences(fetchedAbsences);
     };
 
     fetchAbsences();
@@ -52,11 +37,9 @@ const Calendario = () => {
     return (
       <ul className="events" style={{ padding: 0, margin: 0, listStyleType: 'none' }}>
         {listData.map((item, index) => (
-         <Tooltip key={index} title={item.title}>
-          <li className='list-none px-5' style={{ backgroundColor: item.backgroundColor, height: '100%' }}>
-            <Badge color="rgba(0,0,0,0)" text={item.content} style={{ backgroundColor: 'transparent' }} />
+          <li key={index} style={{ backgroundColor: '#f0f0f0', margin: '5px 0', padding: '5px', borderRadius: '4px' }}>
+            <Badge status={item.type} text={item.content} style={{ backgroundColor: 'transparent' }} />
           </li>
-        </Tooltip>
         ))}
       </ul>
     );
@@ -99,8 +82,8 @@ const Calendario = () => {
   };
 
   return (
-    <div style={{ height: '650px' }}> {/* Ajusta la altura del calendario aquí */}
-      <Calendar cellRender={cellRender} headerRender={headerRender} />
+    <div>
+      <Calendar cellRender={cellRender} headerRender={headerRender}/>
     </div>
   );
 };
