@@ -60,7 +60,7 @@ const Absences = () => {
         <>
             <Flex wrap justify="space-between" align="flex-start">
                 <div className="title-box">
-                    <h1 className='title'>Lista de viajes {allUsers?.name} {allUsers?.surname}</h1>
+                    <h1 className='title'>Lista de viajes</h1>
                     <h2 className='subtitle'>Listado de todos los viajes por cada continente</h2>
                 </div>
             </Flex>
