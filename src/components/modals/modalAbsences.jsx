@@ -63,6 +63,8 @@ const AbsenceModal = ({ visible, onCancel, allUsers, refresh, absence }) => {
                 message.success('Travel created successfully!')
             }
             refresh((prev) => !prev);
+            form.resetFields();
+            setInitialValues({});
             onCancel();
         } catch (error) {
             message.error(error)
