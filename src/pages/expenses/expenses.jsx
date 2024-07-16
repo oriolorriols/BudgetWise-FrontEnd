@@ -608,7 +608,7 @@ const Expenses = () => {
                                             Ticket {index + 1}
                                         </Button>
                                         <Popconfirm
-                                            title="¿Estás seguro de eliminar esta prueba de gasto?"
+                                            title="¿Estás seguro de eliminar este ticket?"
                                             onConfirm={() => onDeleteExpenseProof(url, record._id)}
                                             onCancel={() => {}}                           
                                             okText="Sí"
