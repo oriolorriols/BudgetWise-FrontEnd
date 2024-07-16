@@ -76,12 +76,12 @@ const SideBar = () => {
   const navigate = useNavigate();
   const { setLogOut, isHR } = useAuth();
 
-  const filteredItems = items.filter(item => {
-    if (isHR !== 'HR' && (item.key === '/usuarios')) {
-      return false;
-    }
-    return true;
-  });
+ // const filteredItems = items.filter(item => {
+ //   if (isHR !== 'HR' && (item.key === '/usuarios')) {
+ //     return false;
+ //   }
+ //   return true;
+ // });
 
   return (
     <div className='sidebar h-screen sticky top-0'>
@@ -91,7 +91,7 @@ const SideBar = () => {
           theme="dark"
           mode="inline"
           selectedKeys={[pathname]}
-          items={filteredItems}
+          items={items}
           onClick={({ key }) => {
             if (key === '/logout') {
               setLogOut();

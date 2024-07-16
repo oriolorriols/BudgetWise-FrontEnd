@@ -9,7 +9,11 @@ import TokenModal from '../../components/modals/modalToken';
 import UserFormModal from '../../components/modals/modalUserForm';
 import DepartmentModal from '../../components/modals/modalDepartments';
 
+import { useAuth } from '../../contexts/authContext';
+
 const Users = () => {
+  const { isHR } = useAuth();
+
   const [isModalTokenVisible, setIsModalTokenVisible] = useState(false);
   const [isModalUserVisible, setIsModalUserVisible] = useState(false);
   const [isModalDeparmentVisible, setIsModalDepartmentVisible] = useState(false);
@@ -131,10 +135,15 @@ const Users = () => {
       const departmentMatch = user.departmentId?.departmentName?.toLowerCase().includes(value.toLowerCase());
       const statusMatch = user.status?.toLowerCase().includes(value.toLowerCase());
       const dniMatch = user.dni?.toLowerCase().includes(value.toLowerCase());
+      if (isHR !== "HR" && !user.confirmed) {
+        return false;
+      }
       return nameMatch || positionMatch || phoneExtMatch || departmentMatch || statusMatch || dniMatch;
     });
     setFiltering(filteredData);
   };
+
+  const filteredUsers = isHR !== "HR" ? allUsers.filter(user => user.confirmed) : allUsers;
 
   const columns = [
     {
@@ -173,7 +182,7 @@ const Users = () => {
             ) : null}
             </Tooltip>
           </div>
-          <p>{record.name} {record.surname} {!record.confirmed && (
+          <p>{record.name} {record.surname} {isHR === "HR" && !record.confirmed && (
             <Tooltip title="Falta por confirmar el email">
             <span style={{ color: 'red', fontStyle: 'italic', marginLeft: 0 }}>
               (Pendiente)
@@ -207,20 +216,21 @@ const Users = () => {
       width: '15%',
       sorter: (a, b) => (a.position || "").localeCompare(b.position || ""),
     },
-    {
+    isHR === "HR" && {
       title: 'Situación',
       dataIndex: 'status',
       width: '10%',
       sorter: (a, b) => (a.status || "").localeCompare(b.status || ""),
     },
-    {
+    isHR === "HR" && {
       title: 'DNI',
       dataIndex: 'dni',
+      key: 'dni',
       width: '10%',
     },
-    {
+    isHR === "HR" && {
       title: 'Editar',
-      dataIndex: 'operation',
+      key: 'operation',
       width: '10%',
       render: (_, record) => (
         <Typography.Link onClick={() => handleEdit(record)}>
@@ -228,7 +238,7 @@ const Users = () => {
         </Typography.Link>
       ),
     },
-  ];
+  ].filter(Boolean);
 
   return (
     <>
@@ -240,14 +250,19 @@ const Users = () => {
       </Flex>
       
       <div className="flex justify-between my-5">  
-        <div>
-          <Button className="mr-5" type="primary" onClick={handleAddUser}>
-              Añadir Usuario
+
+        { isHR === "HR" ?  
+          <div>
+           <Button className="mr-5" type="primary" onClick={handleAddUser}>
+           Añadir Usuario
           </Button>
           <Button className="" type="primary" onClick={() => setIsModalDepartmentVisible(true)}>
               Editar Departamentos
           </Button>
         </div>
+       : null }
+         
+   
         <Space direction="vertical">
           <Search
               placeholder="Buscar texto..."
@@ -278,7 +293,7 @@ const Users = () => {
       />
       <Form form={form} component={false}>
       <Table
-          dataSource={filtering.length > 0 ? filtering : allUsers}
+          dataSource={filtering.length > 0 ? filtering : filteredUsers}
           columns={columns}
           loading={loading}
           rowClassName={(record) => (record.confirmed ? '' : 'unconfirmed-row')}
@@ -288,4 +303,4 @@ const Users = () => {
   )
 }
 
-export default Users
+export default Users;

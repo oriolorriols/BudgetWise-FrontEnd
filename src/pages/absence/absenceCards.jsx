@@ -13,7 +13,6 @@ const AbsencesCard = ({ ausencia, id, refresh, visible, absence }) => {
     const editExpense = (id) => {
         console.log("Edito id: ", id)
         absence((prev) => id)
-        refresh((prev) => !prev);
         visible((prev) => !prev);
     }
 

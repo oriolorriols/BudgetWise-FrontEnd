@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getTasks, addTask, deleteTask, updateTask } from '../../apiService/tasksApi';
 import { getGoals, updateGoal } from '../../apiService/goalApi';
-import { Progress, Collapse, List, Checkbox, Button, message, Modal } from 'antd';
+import { Progress, Collapse, List, Checkbox, Button, message, Modal, Spin } from 'antd';
 import NewTaskModal from '../../components/modals/modalTasks';
 import { useAuth } from '../../contexts/authContext';
 
@@ -13,11 +13,13 @@ const Objetivos = () => {
   const [isTaskModalVisible, setIsTaskModalVisible] = useState(false);
   const [selectedGoalId, setSelectedGoalId] = useState(null);
   const [taskToEdit, setTaskToEdit] = useState(null); // Nuevo estado para la tarea a editar
+  const [loading, setLoading] = useState(true);
 
   const { userId } = useAuth(); 
   console.log('userId', userId);
 
   const fetchGoalsAndTasks = async () => {
+    setLoading(true)
     const fetchedGoals = await getGoals();
     const tasks = await getTasks();
     console.log('tasks', tasks);
@@ -50,6 +52,7 @@ const Objetivos = () => {
     });
 
     setGoals(Object.values(grouped));
+    setLoading(false)
     return Object.values(grouped);
   };
 
@@ -171,6 +174,15 @@ const Objetivos = () => {
     setTaskToEdit(task);
     setIsTaskModalVisible(true);
   };
+
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-dvh">
+        <Spin size="large" />
+      </div>
+    )
+  }
 
   return (
     <div className="w-full">
