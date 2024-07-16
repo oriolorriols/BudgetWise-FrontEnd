@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import {
     approvedExpenses,
     deleteExpenses,
+    deleteExpenseProof,
     emailExpenses,
     getExpenses,
-    updateExpenses,
+    updateExpenses
 } from "../../apiService/expensesApi";
 import {
     Space,
@@ -19,6 +20,7 @@ import {
     Flex,
     message,
 } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 import TokenModal from '../../components/modals/modalToken';
 import ExpenseProofModal from '../../components/modals/modalExpenseProof';
 import ExpenseModal from "../../components/modals/modalExpenses";
@@ -234,6 +236,11 @@ const Expenses = () => {
         refresh(!dummy);
     };
 
+    const onDeleteExpenseProof = async (url, id) => {
+        await deleteExpenseProof(url, id)
+        message.success('El ticket ha sido borrado')
+        refresh(!dummy)
+    }
     const handleOpenDatePicker = (id) => {
         setApprovedId(id);
         setIsDatePickerVisible(true);
@@ -591,8 +598,8 @@ const Expenses = () => {
                                 <p className="font-bold">Tickets:</p>
                                 {record.expenseProof && record.expenseProof.length > 0
                                     ? record.expenseProof.map((url, index) => (
+                                        <div className="flex" key={index}>
                                         <Button type="link"
-                                            key={index}
                                             onClick={() => showExpenseProof(url)}
                                             target="_blank"
                                             rel="noopener noreferrer"
@@ -600,6 +607,21 @@ const Expenses = () => {
                                         >
                                             Ticket {index + 1}
                                         </Button>
+                                        <Popconfirm
+                                            title="¿Estás seguro de eliminar esta prueba de gasto?"
+                                            onConfirm={() => onDeleteExpenseProof(url, record._id)}
+                                            onCancel={() => {}}                           
+                                            okText="Sí"
+                                            cancelText="No"
+                                        >
+                                            <Button
+                                                type="link"
+                                                style={{ padding: 0, paddingLeft: 5, paddingTop: 1, height: "22px", color: "red" }}
+                                                icon={<DeleteOutlined />}
+                                            />
+                                        </Popconfirm>
+                                        </div>
+                                        
                                     ))
                                     : "-"
                                 }
