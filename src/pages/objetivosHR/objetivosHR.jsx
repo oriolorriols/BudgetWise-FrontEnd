@@ -13,6 +13,7 @@ const ObjetivosHR = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingGoal, setEditingGoal] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -27,8 +28,10 @@ const ObjetivosHR = () => {
         };
 
         const fetchGoals = async () => {
+            setLoading(true)
             const goals = await getGoals();
             setGoals(goals);
+            setLoading(false)
         };
 
         fetchDepartments();
@@ -196,6 +199,7 @@ const ObjetivosHR = () => {
                     columns={columns}
                     dataSource={departments}
                     rowKey="_id"
+                    loading={loading}
                     expandable={{
                         expandedRowRender: record => (
                             <>
@@ -208,7 +212,7 @@ const ObjetivosHR = () => {
             </div>
             <Modal
                 title={isEditMode ? "Editar Objetivo" : "Añadir Objetivo para Departamento"}
-                visible={isModalVisible}
+                open={isModalVisible}
                 onCancel={handleCancel}
                 footer={null}
             >

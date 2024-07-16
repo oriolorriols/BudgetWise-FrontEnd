@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAbsences } from "../../apiService/absencesApi";
-import { Button, Card, Space, Flex, Select } from 'antd';
+import { Button, Card, Space, Flex, Select, Spin } from 'antd';
 import AbsencesCard from "./absenceCards";
 import AbsenceModal from "../../components/modals/modalAbsences";
 import { getUsers } from "../../apiService/userApi";
@@ -13,6 +13,8 @@ const Absences = () => {
     const [openEdit, setOpenEdit] = useState(false);
     const { userId, isHR } = useAuth()
     const [selectedAbsence, setSelectedAbsence] = useState(null);
+    const [loading, setLoading] = useState(true)
+
 
     useEffect(() => {
         getAllAbsences();
@@ -21,6 +23,7 @@ const Absences = () => {
     }, [dummy, userId]);
 
     const getAllAbsences = async () => {
+        setLoading(true)
         try {
             const absences = await getAbsences();
             const notRemoved = absences.filter((absence) => !absence.removeAt);
@@ -30,6 +33,7 @@ const Absences = () => {
             } else {
                 setAllAbsences(notRemoved)
             }
+            setLoading(false)
         } catch (error) {
             console.log(error);
         }
@@ -62,6 +66,14 @@ const Absences = () => {
     const filteredUsers = (value, _e, info) => {
         console.log(info?.source, "click en buscar en viajes (filtro cards)", value);
     }
+
+    if (loading) {
+        return (
+          <div className="flex justify-center items-center h-dvh">
+            <Spin size="large" />
+          </div>
+        )
+      }
 
     return (
         <>

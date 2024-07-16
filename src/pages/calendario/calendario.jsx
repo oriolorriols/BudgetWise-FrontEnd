@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, Calendar, Tooltip } from 'antd';
+import { Badge, Calendar, Tooltip, Spin } from 'antd';
 import { getAbsences } from '../../apiService/absencesApi';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -32,9 +32,11 @@ const getListData = (value, absences) => {
 
 const Calendario = () => {
   const [absences, setAbsences] = useState([]);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchAbsences = async () => {
+      setLoading(true)
       const fetchedAbsences = await getAbsences();
       // Asigna un color de fondo único a cada ausencia
       const absencesWithColor = fetchedAbsences.map(absence => ({
@@ -42,6 +44,7 @@ const Calendario = () => {
         backgroundColor: getRandomColor()
       }));
       setAbsences(absencesWithColor);
+      setLoading(false)
     };
 
     fetchAbsences();
@@ -97,6 +100,15 @@ const Calendario = () => {
       </div>
     );
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-dvh">
+        <Spin size="large" />
+      </div>
+    )
+  }
+
 
   return (
     <div style={{ height: '650px' }}> {/* Ajusta la altura del calendario aquí */}

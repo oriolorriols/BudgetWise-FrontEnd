@@ -4,7 +4,7 @@ import { getOneUser } from '../../apiService/userApi';
 import { getExpenses } from '../../apiService/expensesApi';
 import { getDepartments } from '../../apiService/departmentApi';
 import BudgetModal from '../../components/modals/modalDepartmentBudget';
-import { Row, Col, DatePicker, Select, Card, Button, Alert, Checkbox, Progress, Flex } from 'antd';
+import { Row, Col, DatePicker, Select, Card, Button, Alert, Checkbox, Progress, Flex, Spin } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import './dashboard.scss';
@@ -32,9 +32,11 @@ const Dashboard = () => {
   const [showMonthlyTrend, setShowMonthlyTrend] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [budget, setBudget] = useState({});
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       const userData = await getOneUser(userId);
       const expensesData = await getExpenses();
       const departmentsData = await getDepartments();
@@ -46,6 +48,7 @@ const Dashboard = () => {
       setExpenses(filteredData);
       setFilteredExpenses(expensesData);
       setDepartments(departmentsData);
+      setLoading(false)
     };
 
     fetchData();
@@ -347,6 +350,14 @@ const Dashboard = () => {
     document.body.removeChild(link);
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-dvh">
+        <Spin size="large" />
+      </div>
+    )
+  }
+  
   return (
   <>
   <Flex wrap justify="space-between" align="flex-start">
