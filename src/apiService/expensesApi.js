@@ -64,6 +64,19 @@ export const deleteExpenses = async (id) => {
     return expensesDeleted;
 };
 
+export const deleteExpenseProof = async (url, id) => {
+    const token = localStorage.getItem("access_token")
+    const response = await fetch(`${baseUrl}/upload/expenseproof/${id}` , {
+        method: "DELETE", 
+        headers: { 
+            "Content-Type": "application/json",
+            "authorization": `Bearer ${token}`, 
+     },
+        body: JSON.stringify({url})
+    })
+    return response
+}
+
 export const updateExpenses = async (id, data) => {
     const token = localStorage.getItem("access_token");
     const formData = new FormData();

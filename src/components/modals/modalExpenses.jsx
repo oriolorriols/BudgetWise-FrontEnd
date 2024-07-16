@@ -44,11 +44,13 @@ const ExpenseModal = ({ expense, visible, onCancel, allAbsences, refresh }) => {
         };
         setInitialValues(formValues);
         form.setFieldsValue(formValues);
+        /*
         setFileList(data.expenseProof.map((proof, index) => ({
             uid: index,
             name: `Justificante ${index + 1}`,
             url: proof,
         })));
+        */
     };
 
     const onFinishData = async (values) => {
