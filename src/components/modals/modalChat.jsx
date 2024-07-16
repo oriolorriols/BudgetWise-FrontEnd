@@ -7,8 +7,8 @@ import { useSocket } from "../../contexts/socketContext";
 import './modalChat.scss';
 
 const ChatModal = ({ listMessages }) => {
-  const { userId } = useAuth();
-  const { socket, connectedUsers } = useSocket();
+  const { userId, isHR } = useAuth();
+  const { socket, connectedUsers, isHRconnected } = useSocket();
   const [user, setUser] = useState({});
   const [messageInput, setMessageInput] = useState('');
 
@@ -53,10 +53,10 @@ const ChatModal = ({ listMessages }) => {
   return (
     <div className="chat-modal">
       <div className="connected-users">
-        {connectedUsers.length > 0 ? (
-          <p>{connectedUsers.length} personas conectadas</p>
+        {isHRconnected ? (
+          <p className='p-2 text-center' style={{color:"#071829", fontWeight:'500', backgroundColor:'#e3e3e3'}}> {isHR!=="HR" ? 'Recursos Humanos y' : ''} {connectedUsers.length - 1}  {` usuario${(connectedUsers.length === 1 || connectedUsers.length >= 3) ? 's' : ''} conectado${(connectedUsers.length === 1 || connectedUsers.length >= 3) ? 's' : ''}`}</p>
         ) : (
-          <p>Nadie está conectado actualmente</p>
+          <p className='p-2 text-center' style={{color:"#071829", fontWeight:'500', backgroundColor:'#34B990'}}>Recursos Humanos no esta disponible</p>
         )}
       </div>
 
@@ -83,14 +83,20 @@ const ChatModal = ({ listMessages }) => {
       )}
       
       <div className="message-input">
-        <input
+       <input
           type="text"
+          disabled={!isHRconnected || connectedUsers.length < 2}
           placeholder="Type message here"
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
           onKeyUp={handleKeyPress}
         />
-        <SendOutlined onClick={sendMessage} />
+        <SendOutlined onClick={sendMessage} style={{
+          opacity: isHRconnected ? 1 : 0.5, 
+          cursor: isHRconnected ? 'pointer' : 'not-allowed'
+       
+        }}
+/>
       </div>
     </div>
   );

@@ -37,7 +37,6 @@ function App() {
           <Route element={<PrivateRoutes/>}>
               <Route path='/' element={<Home/>}>
                   <Route path='/' element={<DashBoard/>}/>
-                  {isHR === 'HR' ? <Route path="/usuarios" element={<Users />} /> : null}
                   <Route path="/usuarios" element={<Users />} />
                   <Route path='/calendario' element={<Calendario/>}/>
                   {isHR === 'HR' ? 

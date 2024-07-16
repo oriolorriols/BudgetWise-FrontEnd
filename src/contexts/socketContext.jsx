@@ -9,7 +9,9 @@ export const WebSocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null)
     const [connectedUsers, setConnectedUsers] = useState([])
 
-    const { userId } = useAuth()
+    const [isHRconnected, setIsHRconnected] = useState(false)
+
+    const { userId, isHR } = useAuth()
 
     useEffect(() => {
         if (!userId) {
@@ -19,7 +21,7 @@ export const WebSocketProvider = ({ children }) => {
         const newSocket = io(import.meta.env.VITE_BACKEND)
 
         newSocket.on('connect', () => {
-            newSocket.emit('userConnected', { userId })
+            newSocket.emit('userConnected', { userId, isHR })
             setIsConnected(true)
         });
 
@@ -28,7 +30,10 @@ export const WebSocketProvider = ({ children }) => {
             console.log(users)
         });
 
-
+        newSocket.on('isHRconnected', (isHRonline) => {
+            setIsHRconnected(isHRonline)
+        });
+        
         newSocket.on('disconnect', () => {
             setIsConnected(false)
         });
@@ -41,7 +46,7 @@ export const WebSocketProvider = ({ children }) => {
     }, [userId]);
 
     return (
-        <WebSocketContext.Provider value={{ socket, isConnected, connectedUsers }}>
+        <WebSocketContext.Provider value={{ socket, isConnected, connectedUsers, isHRconnected }}>
             {children}
         </WebSocketContext.Provider>
     );
