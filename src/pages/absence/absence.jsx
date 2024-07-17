@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { getAbsences } from "../../apiService/absencesApi";
-import { Button, Card, Space, Flex, Select, Spin } from 'antd';
+import { Button, Card, Space, Flex, Select, Spin, Empty, Alert, message } from 'antd';
 import AbsencesCard from "./absenceCards";
 import AbsenceModal from "../../components/modals/modalAbsences";
 import { getUsers } from "../../apiService/userApi";
 import { useAuth } from "../../contexts/authContext";
+import Search from "antd/es/input/Search";
 
 const { Option } = Select;
 
@@ -16,6 +17,7 @@ const Absences = () => {
     const { userId, isHR } = useAuth();
     const [selectedAbsence, setSelectedAbsence] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [filtering, setFiltering] = useState([]);
 
     useEffect(() => {
         getAllAbsences();
@@ -61,11 +63,36 @@ const Absences = () => {
     };
 
     const onSearch = (value, _e, info) => {
-        console.log(info?.source, "voy escribiendo y cambio busqueda de opciones (filtro wrap)", value);
-    };
-
-    const filteredUsers = (value, _e, info) => {
-        console.log(info?.source, "click en buscar en viajes (filtro cards)", value);
+        console.log(info?.source, "valor: ", value);
+        const newList = [...allAbsences];
+        if (info) {
+            const filteredData = newList.filter(
+                (info) =>
+                    info.employeeId.name
+                        .toLowerCase()
+                        .includes(value.toLowerCase()) ||
+                    info.employeeId.surname
+                        .toLowerCase()
+                        .includes(value.toLowerCase()) ||
+                    info.country
+                        .toLowerCase()
+                        .includes(value.toLowerCase()) ||
+                    info.city
+                        .toLowerCase()
+                        .includes(value.toLowerCase()) ||
+                    info.absenceService
+                        .toLowerCase()
+                        .includes(value.toLowerCase()) ||
+                    info.absenceCode
+                        ?.toLowerCase()
+                        .includes(value.toLowerCase())
+            );
+            if (filteredData.length !== 0) return setFiltering(filteredData);
+            if (filteredData.length === 0) {
+                message.success('No hay datos de filtro')
+            }
+        }
+        if (!info) allAbsences;
     };
 
     if (loading) {
@@ -92,25 +119,17 @@ const Absences = () => {
                         Crear viaje
                     </Button>
                 </div>
-                <div className="flex justify-end my-5 pr-16">
-                    {isHR === "HR" && (
-                        <Select
-                            showSearch
-                            style={{ width: 300 }}
+                <isindex />
+                {isHR === "HR" ?
+                    <div className="flex justify-end my-5 pr-16">
+                        <Search
                             placeholder="Buscar por empleado..."
-                            optionFilterProp="label"
                             allowClear
-                            onChange={filteredUsers}
+                            enterButton="Buscar"
+                            style={{ width: 300 }}
                             onSearch={onSearch}
-                        >
-                            {allUsers?.map((user) => (
-                                <Option key={user._id} value={user._id}>
-                                    {user.name} {user.surname}
-                                </Option>
-                            ))}
-                        </Select>
-                    )}
-                </div>
+                        />
+                    </div> : null}
             </div>
             <Space>
                 <AbsenceModal
@@ -123,7 +142,10 @@ const Absences = () => {
             </Space>
             <Space wrap size={16} align="start">
                 {continents.map((continent) => {
-                    const continentAbsences = allAbsences.filter(ausencia => ausencia.continent === continent);
+                    const continentAbsences =
+                        filtering.length !== 0 ?
+                            filtering.filter(ausencia => ausencia.continent === continent) :
+                            allAbsences.filter(ausencia => ausencia.continent === continent);
                     return continentAbsences.length > 0 ? (
                         <Card
                             key={continent}
