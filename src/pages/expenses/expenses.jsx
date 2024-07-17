@@ -169,10 +169,11 @@ const Expenses = () => {
         const [start, end] = dateStringsE;
         console.log(start, end);
         const filtered = allExpenses.filter(
-            new Date(item.absenceId.startDate).getTime() >=
-            new Date(start).getTime() &&
-            new Date(item.absenceId.startDate).getTime() <=
-            new Date(end).getTime()
+            (item) =>
+                new Date(item.absenceId.startDate).getTime() >=
+                new Date(start).getTime() &&
+                new Date(item.absenceId.startDate).getTime() <=
+                new Date(end).getTime()
         );
         setFiltering(filtered);
     };
