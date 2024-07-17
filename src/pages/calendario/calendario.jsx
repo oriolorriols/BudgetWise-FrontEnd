@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, Calendar, Tooltip } from 'antd';
+import { Badge, Calendar, Tooltip, Flex } from 'antd';
 import { getAbsences } from '../../apiService/absencesApi';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
+import './calendario.scss';
 dayjs.locale('es');
 
 // Función para generar un color de fondo único
@@ -90,18 +91,27 @@ const Calendario = () => {
     };
 
     return (
-      <div className='flex flex-row justify-between py-4 font-bold text-xl'>
+      <div className='flex flex-row justify-between py-4 font-bold text-xl month-row'>
         <LeftOutlined onClick={handlePrevMonth} />
-        <span>{value.format('MMMM YYYY')}</span>
+        <span className='month-text'>{value.format('MMMM YYYY')}</span>
         <RightOutlined onClick={handleNextMonth} />
       </div>
     );
   };
 
   return (
-    <div style={{ height: '650px' }}> {/* Ajusta la altura del calendario aquí */}
-      <Calendar cellRender={cellRender} headerRender={headerRender} />
-    </div>
+    <>
+    
+      <Flex wrap justify="space-between" align="flex-start">
+        <div className="title-box">
+          <h1 className='title'>Calendario de eventos</h1>
+          <h2 className='subtitle'>Aquí puedes consultar todos tus viajes y eventos futuros y pasados</h2>
+        </div>
+      </Flex>
+      <div style={{ height: 'auto' }}> {/* Ajusta la altura del calendario aquí */}
+        <Calendar cellRender={cellRender} headerRender={headerRender} />
+      </div>  
+    </>
   );
 };
 
