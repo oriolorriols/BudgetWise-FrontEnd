@@ -149,6 +149,13 @@ const Profile = () => {
       <TokenModal
         visible={isModalTokenVisible}
       />
+      <Flex wrap justify="space-between" align="flex-start">
+        <div className="title-box">
+          <h1 className='title'>¡Bienvenido de nuevo, {user.name}!</h1>
+          <h2 className='subtitle'>Aquí puedes ver y modificar los datos de tu perfil</h2>
+        </div>
+        <ProfileBar />
+      </Flex>
       <div className='flex'>
         <Col span={6}>
           <div className='profile-info-box max-w-72 h-fit p-9 mr-8'>
@@ -182,13 +189,6 @@ const Profile = () => {
           </div>
         </Col>
         <Col span={18}>
-          <Flex wrap justify="space-between" align="flex-start">
-            <div className="title-box">
-              <h1 className='title'>¡Bienvenido de nuevo, {user.name}!</h1>
-              <h2 className='subtitle'>Aquí puedes ver y modificar los datos de tu perfil</h2>
-            </div>
-            <ProfileBar />
-          </Flex>
           <Form
             form={form}
             name="validate_other"

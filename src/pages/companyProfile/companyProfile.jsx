@@ -132,8 +132,14 @@ const CompanyProfile = () => {
     <>
       <TokenModal
         visible={isModalTokenVisible}
-      />
-      <div className='flex'>
+      />       
+      <Flex wrap justify="space-between" align="flex-start">
+        <div className="title-box">
+          <h1 className='title'>Datos de la empresa {companyData.companyName}</h1>
+          <h2 className='subtitle'>Aquí puedes ver y modificar los datos de la empresa</h2>
+        </div>
+      </Flex>
+      <div className='flex'> 
         <Col span={6}>
           <div className='profile-info-box max-w-72 h-fit p-9 mr-8'>
             <div className='profile-img mt-8 overflow-hidden'>
@@ -163,11 +169,6 @@ const CompanyProfile = () => {
           </div>
         </Col>
         <Col span={18}>
-          <Flex wrap justify="space-between" align="flex-start">
-            <div className="title-box">
-              <h1 className='title'>Datos de {companyData.companyName}</h1>
-            </div>
-          </Flex>
           <Form
             form={form}
             name="validate_other"
