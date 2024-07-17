@@ -94,6 +94,7 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId, refres
       if(user) {
         await deleteUser(user._id)
         message.success('Usuario borrado correctamente')
+        refresh((prev) => !prev)
         onCancel()
         return
       }
