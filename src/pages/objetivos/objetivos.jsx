@@ -92,14 +92,13 @@ const Objetivos = () => {
     fetchGoalsAndTasks();
   };
 
-  const handleCreateTask = async (values) => {
+  const handleCreateTask = async (values, selectedGoalId) => {
     try {
       if (taskToEdit) {
-        await updateTask(taskToEdit.id, {taskName: values.name, taskDescription: values.description, taskStatus: values.status});
+        await updateTask(taskToEdit.id, {goalId: selectedGoalId, taskName: values.name, taskDescription: values.description, taskStatus: values.status});
         message.success('Task updated successfully!');
       } else {
-        // Add new task
-        await addTask(values);
+        await addTask({goalId: selectedGoalId, taskName: values.name, taskDescription: values.description, taskStatus: values.status});
         message.success('Task created successfully!');
       }
       setTaskToEdit(null);
@@ -256,9 +255,9 @@ const Objetivos = () => {
       <NewTaskModal
         visible={isTaskModalVisible}
         onCancel={() => setIsTaskModalVisible(false)}
-        onCreate={handleCreateTask}
+        onCreate={() => handleCreateTask(values, selectedGoalId)}
         goalId={selectedGoalId}
-        task={taskToEdit} // Pasar la tarea a editar al modal
+        task={taskToEdit}
       />
     </div>
   );
