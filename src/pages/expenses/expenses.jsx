@@ -592,7 +592,7 @@ const Expenses = () => {
                                                     onDeleteDate(record._id)
                                                 }
                                             >
-                                                <a>No aprobado</a>
+                                                <a>Eliminar</a>
                                             </Popconfirm>
                                         </Space>
                                     </Button>
