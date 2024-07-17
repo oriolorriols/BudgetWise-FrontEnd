@@ -135,7 +135,10 @@ const Expenses = () => {
                         ?.toLowerCase()
                         .includes(value.toLowerCase())
             );
-            if (filteredData) return setFiltering(filteredData);
+            if (filteredData.length !== 0) return setFiltering(filteredData);
+            if (filteredData.length === 0) {
+                message.success('No hay datos de filtro')
+            }
         }
         if (!info) allExpenses;
     };
@@ -599,29 +602,29 @@ const Expenses = () => {
                                 {record.expenseProof && record.expenseProof.length > 0
                                     ? record.expenseProof.map((url, index) => (
                                         <div className="flex" key={index}>
-                                        <Button type="link"
-                                            onClick={() => showExpenseProof(url)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ padding: '0', display: "block", height: "22px" }}
-                                        >
-                                            Ticket {index + 1}
-                                        </Button>
-                                        <Popconfirm
-                                            title="¿Estás seguro de eliminar este ticket?"
-                                            onConfirm={() => onDeleteExpenseProof(url, record._id)}
-                                            onCancel={() => {}}                           
-                                            okText="Sí"
-                                            cancelText="No"
-                                        >
-                                            <Button
-                                                type="link"
-                                                style={{ padding: 0, paddingLeft: 5, paddingTop: 1, height: "22px", color: "red" }}
-                                                icon={<DeleteOutlined />}
-                                            />
-                                        </Popconfirm>
+                                            <Button type="link"
+                                                onClick={() => showExpenseProof(url)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ padding: '0', display: "block", height: "22px" }}
+                                            >
+                                                Ticket {index + 1}
+                                            </Button>
+                                            <Popconfirm
+                                                title="¿Estás seguro de eliminar este ticket?"
+                                                onConfirm={() => onDeleteExpenseProof(url, record._id)}
+                                                onCancel={() => { }}
+                                                okText="Sí"
+                                                cancelText="No"
+                                            >
+                                                <Button
+                                                    type="link"
+                                                    style={{ padding: 0, paddingLeft: 5, paddingTop: 1, height: "22px", color: "red" }}
+                                                    icon={<DeleteOutlined />}
+                                                />
+                                            </Popconfirm>
                                         </div>
-                                        
+
                                     ))
                                     : "-"
                                 }
