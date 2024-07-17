@@ -20,8 +20,8 @@ const items = [
     label: <a href="/perfil">Ver mi Perfil</a>,
   },
   {    
-    key: '/expenses',
-    label: <a href="/expenses">Ver mis Gastos</a>,
+    key: '/gastos',
+    label: <a href="/gastos">Ver mis Gastos</a>,
   },
   {    
     key: '/calendario',

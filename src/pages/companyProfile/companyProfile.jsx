@@ -13,7 +13,9 @@ import {
   Upload,
   Space,
   message,
-  Spin
+  Spin,
+  Col,
+  Flex,
 } from 'antd'
 
 const { Option } = Select
@@ -131,131 +133,136 @@ const CompanyProfile = () => {
       <TokenModal
         visible={isModalTokenVisible}
       />
-      <div className='mb-5'>
-        <h2 className='font-medium text-2xl'>Datos de {companyData.companyName}</h2>
-      </div>
       <div className='flex'>
-        <div className='bg-green-200 rounded-lg max-w-72 h-fit p-5 mr-10'>
-          <div className='overflow-hidden rounded-full mt-3'>
-            <img className='aspect-square object-cover' src={companyData.companyLogo} alt="" />
+        <Col span={6}>
+          <div className='profile-info-box max-w-72 h-fit p-9 mr-8'>
+            <div className='profile-img mt-8 overflow-hidden'>
+              <img className='aspect-square object-cover' src={companyData.companyLogo} alt="" />
+            </div>
+            <div className='mt-5 mb-8 profile-user-data'>
+            <h3 className='font-medium text-center'>{companyData.companyName}</h3>
+              <p className='text-lg font-medium text-center'>{companyData.companyNIF}</p>
+            </div>
+            {isHR === 'HR' ? 
+            <div className='text-center mt-4'>
+            <Upload {...props}>
+              <Button icon={<UploadOutlined />}>Selecciona tu logotipo</Button>
+            </Upload>
+            {fileList.length > 0 && (
+              <Button
+                type="primary"
+                onClick={handleUpload}
+                loading={uploading}
+                style={{ marginTop: 16 }}
+              >
+                {uploading ? 'Subiendo' : 'Actualizar'}
+              </Button>
+            )}
+          </div> 
+          : null }
           </div>
-          {isHR === 'HR' ? 
-           <div className='text-center mt-4'>
-           <Upload {...props}>
-             <Button icon={<UploadOutlined />}>Selecciona tu logotipo</Button>
-           </Upload>
-           {fileList.length > 0 && (
-             <Button
-               type="primary"
-               onClick={handleUpload}
-               loading={uploading}
-               style={{ marginTop: 16 }}
-             >
-               {uploading ? 'Subiendo' : 'Actualizar'}
-             </Button>
-           )}
-         </div> 
-         : null }
-         
-          <div className='mt-5 mb-2'>
-            <p className='text-xl font-bold text-center'>{companyData.companyName}</p>
-            <p className='text-lg font-medium text-center'>{companyData.companyNIF}</p>
-          </div>
-        </div>
-        <Form
-          form={form}
-          name="validate_other"
-          {...formItemLayout}
-          onFinish={onFinishData}
-          style={{ width: 650 }}
-        >
-          <h2 className='text-lg font-bold mb-7'>Datos de la empresa</h2>
-          <Form.Item
-            className='w-full'
-            name="companyName"
-            label="Nombre"
-            rules={[{ required: isHR === 'HR', message: 'Introduce el nombre!' }]}
+        </Col>
+        <Col span={18}>
+          <Flex wrap justify="space-between" align="flex-start">
+            <div className="title-box">
+              <h1 className='title'>Datos de {companyData.companyName}</h1>
+            </div>
+          </Flex>
+          <Form
+            form={form}
+            name="validate_other"
+            {...formItemLayout}
+            onFinish={onFinishData}
+            style={{ width: 650 }}
           >
-            <Input disabled={isHR !== 'HR'} />
-          </Form.Item>
-          <Form.Item
-            className='w-full'
-            name="companyNIF"
-            label="NIF"
-            rules={[{ required: isHR === 'HR', message: 'Introduce el nombre!' }]}
-          >
-            <Input disabled={isHR !== 'HR'} />
-          </Form.Item>
-          <Form.Item
-            className='w-full'
-            name="companyCountry"
-            label="País"
-            rules={[{ required: isHR === 'HR', message: 'Introduce el país!' }]}
-          >
-            <Input disabled={isHR !== 'HR'} />
-          </Form.Item>
-          <Form.Item
-            className='w-full'
-            name="companyCity"
-            label="Ciudad"
-            rules={[{ required: isHR === 'HR', message: 'Introduce la ciudad!' }]}
-          >
-            <Input disabled={isHR !== 'HR'} />
-          </Form.Item>
-          <Form.Item
-            className='w-full'
-            name="companyAddress"
-            label="Dirección"
-            rules={[{ required: isHR === 'HR', message: 'Introduce la dirección!' }]}
-          >
-            <Input disabled={isHR !== 'HR'} />
-          </Form.Item>
-          <Form.Item
-            className='w-full'
-            name="companyPostalCode"
-            label="Codigo Postal"
-            rules={[{ required: isHR === 'HR', message: 'Introduce el codigo postal!' }]}
-          >
-            <Input disabled={isHR !== 'HR'} />
-          </Form.Item>
-  
-          <Form.Item
-            label="Teléfono"
-            name="companyPhone"
-            rules={[{ required: isHR === 'HR', message: 'Introduce el teléfono' }]}
-          >
-            <Input disabled={isHR !== 'HR'} />
-          </Form.Item>
-
-          {isHR !== 'HR' ? null :
+            <h2 className='text-lg font-bold mb-7'>Datos de la empresa</h2>
             <Form.Item
-            className='w-full'
-            name="companyPlan"
-            label="Plan"
-            rules={[{ message: 'Selecciona un plan' }]}
-          >
-            <Select>
-              <Option value="Small">Pequeña Empresa (1-50)</Option>
-              <Option value="Medium">Mediana Empresa (50-150)</Option>
-              <Option value="Large">Gran Empresa (+150)</Option>
-            </Select>
-          </Form.Item>
-          }
-
-          {isHR !== 'HR' ? null : 
-            <Form.Item
-              wrapperCol={{ span: 12, offset: 6 }}
+              className='w-full'
+              name="companyName"
+              label="Nombre"
+              rules={[{ required: isHR === 'HR', message: 'Introduce el nombre!' }]}
             >
-              <Space>
-                <Button type="primary" htmlType="submit">
-                  Actualizar
-                </Button>
-                <Button htmlType="button" onClick={handleReset}>Restablecer</Button>
-              </Space>
+              <Input disabled={isHR !== 'HR'} />
             </Form.Item>
-          }
-          
-        </Form>
+            <Form.Item
+              className='w-full'
+              name="companyNIF"
+              label="NIF"
+              rules={[{ required: isHR === 'HR', message: 'Introduce el nombre!' }]}
+            >
+              <Input disabled={isHR !== 'HR'} />
+            </Form.Item>
+            <Form.Item
+              className='w-full'
+              name="companyCountry"
+              label="País"
+              rules={[{ required: isHR === 'HR', message: 'Introduce el país!' }]}
+            >
+              <Input disabled={isHR !== 'HR'} />
+            </Form.Item>
+            <Form.Item
+              className='w-full'
+              name="companyCity"
+              label="Ciudad"
+              rules={[{ required: isHR === 'HR', message: 'Introduce la ciudad!' }]}
+            >
+              <Input disabled={isHR !== 'HR'} />
+            </Form.Item>
+            <Form.Item
+              className='w-full'
+              name="companyAddress"
+              label="Dirección"
+              rules={[{ required: isHR === 'HR', message: 'Introduce la dirección!' }]}
+            >
+              <Input disabled={isHR !== 'HR'} />
+            </Form.Item>
+            <Form.Item
+              className='w-full'
+              name="companyPostalCode"
+              label="Codigo Postal"
+              rules={[{ required: isHR === 'HR', message: 'Introduce el codigo postal!' }]}
+            >
+              <Input disabled={isHR !== 'HR'} />
+            </Form.Item>
+    
+            <Form.Item
+              label="Teléfono"
+              name="companyPhone"
+              rules={[{ required: isHR === 'HR', message: 'Introduce el teléfono' }]}
+            >
+              <Input disabled={isHR !== 'HR'} />
+            </Form.Item>
+
+            {isHR !== 'HR' ? null :
+              <Form.Item
+              className='w-full'
+              name="companyPlan"
+              label="Plan"
+              rules={[{ message: 'Selecciona un plan' }]}
+            >
+              <Select>
+                <Option value="Small">Pequeña Empresa (1-50)</Option>
+                <Option value="Medium">Mediana Empresa (50-150)</Option>
+                <Option value="Large">Gran Empresa (+150)</Option>
+              </Select>
+            </Form.Item>
+            }
+
+            {isHR !== 'HR' ? null : 
+              <Form.Item
+                wrapperCol={{ span: 12, offset: 6 }}
+              >
+                <Space>
+                  <Button type="primary" htmlType="submit">
+                    Actualizar
+                  </Button>
+                  <Button htmlType="button" onClick={handleReset}>Restablecer</Button>
+                </Space>
+              </Form.Item>
+            }
+            
+          </Form>
+        </Col>
       </div>
     </>
   )
