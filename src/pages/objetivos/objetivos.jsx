@@ -19,7 +19,6 @@ const Objetivos = () => {
   console.log('userId', userId);
 
   const fetchGoalsAndTasks = async () => {
-    setLoading(true)
     const fetchedGoals = await getGoals();
     const tasks = await getTasks();
     console.log('tasks', tasks);
@@ -50,14 +49,14 @@ const Objetivos = () => {
         });
       }
     });
-
     setGoals(Object.values(grouped));
-    setLoading(false)
     return Object.values(grouped);
   };
 
   useEffect(() => {
+    setLoading(true)
     fetchGoalsAndTasks();
+    setLoading(false)
   }, [userId]);
 
   const togglePanel = key => {
