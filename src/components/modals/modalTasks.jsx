@@ -46,20 +46,20 @@ const NewTaskModal = ({ visible, onCancel, onCreate, goalId, task }) => {
         name="new_task_form"
       >
         <Form.Item
-          name="name"
+          name="taskName"
           label="Nombre de la tarea"
           rules={[{ required: true, message: 'Por favor, introduce el nombre de la tarea' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name="description"
+          name="taskDescription"
           label="Descripción de la tarea"
         >
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item
-          name="status"
+          name="taskStatus"
           label="Estado de la tarea"
           rules={[{ required: true, message: 'Por favor, indica el estado de la tarea' }]}
         >
