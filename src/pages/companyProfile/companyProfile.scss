@@ -2,3 +2,51 @@
     color: black !important;
     cursor: default !important;
 }
+
+.profile-info-box {
+    background-color: #fff;
+    color: #001529;
+    box-shadow: 1px 1px 10px #eee;
+    position: fixed;
+    border-radius: 20px !important;
+
+    .profile-img {
+        width: 100%;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+
+        img {
+            width: 120px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+    }
+
+    .ant-btn-default {
+        border-radius: 30px;
+        border: 1px solid #aaa;
+        transition: all 0.7s !important;
+        font-size: 12px;
+        padding: 5px 15px;
+        height: auto;
+
+        &:hover {
+            background: #34B990 !important;
+            border-color: #34B990 !important;
+            color: #fff !important;
+            transform: scale(1.05);
+
+        }
+   
+    }
+
+    .profile-user-data {
+        h3 {
+            font-size: 16px;
+        }
+        p {
+            color: #777;
+        }
+    }
+}
