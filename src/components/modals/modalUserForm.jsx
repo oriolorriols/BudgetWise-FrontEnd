@@ -181,11 +181,11 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId, refres
               </Button>
               {user ? (
                   <Popconfirm
-                  title="Delete the task"
-                  description="Are you sure to delete this task?"
+                  title="Eliminar usuario"
+                  description="¿Estás seguro que quieres borrar el usuario?"
                   onConfirm={confirmDeleteUser}
                   onCancel={cancelDeleteUser}
-                  okText="Yes"
+                  okText="Si"
                   cancelText="No"
                   >
                   <Button danger>
