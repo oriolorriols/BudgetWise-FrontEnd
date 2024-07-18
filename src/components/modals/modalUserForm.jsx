@@ -51,7 +51,7 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId, refres
       if(user) {
         console.log(sanitizedValues)
         await updateUser(user._id, sanitizedValues)
-        message.success('User data updated successfully!')
+        message.success('Se ha actualizado el usuario')
       } else {
         const newValues = {
           ...sanitizedValues, 
@@ -61,13 +61,14 @@ const UserFormModal = ({ user, visible, onCancel, departments, companyId, refres
         } 
         try {
           const response = await createUser(newValues)
+          message.error('Se ha creado el usuario')
           if(response.error !== "")
             if(response.error.includes('email')){
               message.error('El correo ya esta registrado')
               console.error(response.error)
             }
             else {
-              message.error('No se ha podido crear el usuario, comprueba que los datos sean únicos!')
+              message.error('No se ha podido crear el usuario, comprueba que los datos sean únicos')
               console.error(response.error)
             }
         } catch (error) {
