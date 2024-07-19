@@ -96,7 +96,7 @@ const ExpenseModal = ({ expense, visible, onCancel, allAbsences, refresh }) => {
         fileList,
     };
 
-    const absenceFilteredByUser = allAbsences.filter(ausencia => ausencia.employeeId._id === userId)
+    const absenceFilteredByUser = allAbsences.filter(ausencia => ausencia.employeeId?._id === userId)
 
     return (
         <Modal

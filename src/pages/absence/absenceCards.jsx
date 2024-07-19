@@ -20,7 +20,7 @@ const AbsencesCard = ({ ausencia, id, refresh, visible, absence }) => {
         < Card hoverable className="cardStyle" >
             <Carousel arrows >
                 <div className="mb-0">
-                    <h1 className="contentStyle"><strong>Empleado: </strong>{ausencia.employeeId.name} {ausencia.employeeId.surname}</h1>
+                    <h1 className="contentStyle"><strong>Empleado: </strong>{ausencia.employeeId?.name} {ausencia.employeeId?.surname}</h1>
                     <h1 className="contentStyle"><strong>Título: </strong>{ausencia.absenceName}</h1>
                 </div>
                 <div>

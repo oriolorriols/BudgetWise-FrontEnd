@@ -117,7 +117,7 @@ const Dashboard = () => {
   const calculateDepartmentExpenses = () => {
     const departmentExpenses = departments.map(department => {
       const totalSpent = filteredExpenses
-        .filter(expense => expense.absenceId.employeeId.departmentId._id === department._id)
+        .filter(expense => expense.absenceId?.employeeId?.departmentId._id === department._id)
         .reduce((acc, expense) => acc + (expense.expenseFood || 0) + (expense.expenseTravel || 0) + (expense.expenseLodging || 0), 0);
       
       const budget = department.departmentBudget || 0;
@@ -285,7 +285,7 @@ const Dashboard = () => {
 
     filteredExpenses.forEach(expense => {
       const date = moment(expense.createdAt).format('YYYY-MM-DD');
-      const departmentName = departments.find(dept => dept._id === expense.absenceId.employeeId.departmentId._id)?.departmentName || 'Unknown';
+      const departmentName = departments.find(dept => dept._id === expense.absenceId.employeeId?.departmentId._id)?.departmentName || 'Unknown';
       if (groupedData[date] && groupedData[date][departmentName] !== undefined) {
         groupedData[date][departmentName] += (expense.expenseFood || 0) + (expense.expenseTravel || 0) + (expense.expenseLodging || 0);
       }
