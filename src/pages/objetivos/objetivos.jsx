@@ -24,7 +24,7 @@ const Objetivos = () => {
     console.log('tasks', tasks);
     console.log('fetchedGoals', fetchedGoals);
 
-    const filteredGoals = fetchedGoals.filter(goal => goal.employeeId?._id === userId);
+    const filteredGoals = fetchedGoals.filter(goal => goal.employeeId._id === userId);
     console.log('filteredGoals', filteredGoals);
 
     const grouped = filteredGoals.reduce((acc, goal) => {

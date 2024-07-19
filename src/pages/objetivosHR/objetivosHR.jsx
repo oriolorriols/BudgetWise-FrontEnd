@@ -91,7 +91,7 @@ const ObjetivosHR = () => {
     };
 
     const getCompletionPercentage = (userId) => {
-        const userGoals = goals.filter(goal => goal.employeeId?._id === userId);
+        const userGoals = goals.filter(goal => goal.employeeId._id === userId);
         const completedGoals = userGoals.filter(goal => goal.goalStatus === 'Completado');
         return userGoals.length > 0 ? ((completedGoals.length / userGoals.length) * 100).toFixed(0) : 0;
     };
@@ -108,7 +108,7 @@ const ObjetivosHR = () => {
     };
 
     const removeDuplicateGoals = (departmentId) => {
-        const departmentGoals = goals.filter(goal => goal.employeeId?.departmentId === departmentId);
+        const departmentGoals = goals.filter(goal => goal.employeeId.departmentId === departmentId);
         const uniqueGoals = [];
         const goalMap = {};
 
