@@ -17,7 +17,7 @@ const Login = () => {
     const { setLogIn } = useAuth()
 
     const onFinish = async (values) => {
-        if(values.username === "" || values.password === "") {}
+        if (values.username === "" || values.password === "") { }
         setLoading(true)
         const response = await login(email, password)
         setLoading(false)
@@ -47,7 +47,7 @@ const Login = () => {
                     },
                 ]);
             }
-            
+
             else if (response.msg === "Contraseña incorrecta") {
                 form.setFields([
                     {
@@ -96,11 +96,12 @@ const Login = () => {
                             ]}
                             hasFeedback
                         >
-                            <Input 
-                                prefix={<UserOutlined className="site-form-item-icon" />} 
-                                placeholder="Email" 
-                                value={email} 
-                                onChange={e => setEmail(e.currentTarget.value)} 
+                            <Input
+                                prefix={<UserOutlined className="site-form-item-icon" />}
+                                placeholder="Email"
+                                value={email}
+                                onChange={e => setEmail(e.currentTarget.value)}
+                                defaultValue={"angieprueba-hr@example.com"}
                             />
                         </Form.Item>
                         <Form.Item
@@ -111,16 +112,17 @@ const Login = () => {
                                     message: '¡Introduce tu contraseña!',
                                 },
                             ]}
-                            
+
                         >
-                            <Input.Password 
+                            <Input.Password
                                 prefix={<LockOutlined className="site-form-item-icon" />}
                                 type="password"
                                 placeholder="Contraseña"
                                 value={password}
                                 onChange={e => setPassword(e.currentTarget.value)}
+                                defaultValue={"perro123"}
                             />
-                            
+
                         </Form.Item>
                         <div className='flex w-full justify-between mt-8 mb-5'>
                             <Form.Item name="remember" valuePropName="checked" noStyle>
@@ -131,7 +133,7 @@ const Login = () => {
                             </a>
                         </div>
                         <Form.Item>
-                        <Button type="primary" htmlType="submit" className="w-full mb-3" disabled={loading}>
+                            <Button type="primary" htmlType="submit" className="w-full mb-3" disabled={loading}>
                                 {loading ? <Spin /> : 'Iniciar'}
                             </Button>
                             ¡O <Link to="/registro"><span className='link'>registrate</span></Link>!
