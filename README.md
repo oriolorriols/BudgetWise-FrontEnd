@@ -4,3 +4,5 @@ First steps!
 
 - npm install
 - npm run dev
+
+nvm use 21
