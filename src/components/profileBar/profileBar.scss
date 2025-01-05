@@ -1,0 +1,12 @@
+@import "../../colors.scss";
+
+.profile-bar {
+    .ant-avatar {
+        
+        > img {
+            &:hover {
+                box-shadow: 0 0 10px #eee;
+            }
+        }
+    }
+}

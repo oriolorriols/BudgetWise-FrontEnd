@@ -1,0 +1,95 @@
+.ant-picker-calendar {
+
+    padding: 10px 30px;
+    border-radius: 10px;
+
+    .month-row {
+        padding: 8px 20px;
+        margin: 20px 0 ;
+        border-radius: 6px;
+        background-color: #f6f6f6;
+
+        .month-text {
+            font-size: 18px;
+            text-transform: capitalize;
+            color: #34B990
+        }
+        .anticon {
+            font-weight: 800;
+
+            &:hover {
+                color: #34B990
+            }
+        }
+    }
+
+    .ant-picker-cell {
+
+        border: 1px solid #f0f0f0;
+
+        .ant-picker-calendar-date {
+            height: 100px;
+        }
+
+        .ant-picker-calendar-date-value {
+            padding: 4px 8px;
+            background-color: #f8f8f8;
+            font-weight: 700;
+
+        }
+
+        &-in-view {
+
+            .ant-picker-calendar-date-value {
+                background-color: #f0f0f0;
+
+            }
+
+        }
+
+        .events {
+            li {
+                min-height: 36px;
+                padding-top: 2px;
+
+                .ant-badge-status {
+                    line-height: 15px;
+
+                    .ant-badge-status-text {
+                        font-size: 12px; 
+                        font-weight: 500;
+                        display: block;
+                        margin-inline-start: 0;
+                        color: #000 !important
+                    }
+                    .ant-badge-status-dot {
+                        display: none;
+                    }
+
+                }
+
+            }
+        }
+
+        &.ant-picker-cell-selected {
+
+            .ant-picker-calendar-date-value {
+                background-color: #34B990;
+                color: #fff !important;
+            }
+
+            .ant-picker-calendar-date {
+                background: #d9ffeb !important;
+            }
+        }
+
+        &.ant-picker-cell-today {
+
+            .ant-picker-calendar-date-value {
+                background-color: #071829;
+                color: #fff !important;
+            }
+
+        }
+    }
+}
