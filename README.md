@@ -1,8 +1,8 @@
 # TFM Team Amarillo FrontEnd
 
-First steps!
+Live server: https://bw-budgetwise.netlify.app/login
 
-- npm install
-- npm run dev
+For tests you can access with this credentials:
 
-nvm use 21
+user: angieprueba-hr@example.com
+p: perro123
