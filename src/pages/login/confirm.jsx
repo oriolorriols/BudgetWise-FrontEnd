@@ -4,6 +4,8 @@ import { useAuth } from "../../contexts/authContext"
 import { Button, Spin } from 'antd';
 import './confirm.scss'
 
+const baseUrl = import.meta.env.VITE_BACKEND
+
 const Confirm = () => {
   const [message, setMessage] = useState('Confirmando usuario...');
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ const Confirm = () => {
 
   useEffect(() => {
     if (userid) {
-      fetch(`http://localhost:3000/users/confirm/${userid}`, { method: 'PATCH' })
+      fetch(`${baseUrl}/${userid}`, { method: 'PATCH' })
         .then(res => res.json())
         .then(data => {
           setMessage(data.msg || '¡Gracias por confirmar tu correo!');

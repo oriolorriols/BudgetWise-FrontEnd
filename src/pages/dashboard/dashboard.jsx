@@ -85,8 +85,9 @@ const Dashboard = () => {
 
   const filterExpenses = () => {
     let filtered = expenses;
-    const currentYear = new Date().getFullYear();
-  
+    // const currentYear = new Date().getFullYear();
+    const currentYear = 2024;
+
     if (dateRange && dateRange[0] && dateRange[1]) {
       filtered = filtered.filter(expense => (new Date(expense.createdAt) >= new Date(dateRange[0]) && new Date(expense.createdAt) <= new Date(dateRange[1])));
     }

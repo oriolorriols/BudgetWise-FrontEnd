@@ -98,10 +98,11 @@ const Login = () => {
                         >
                             <Input
                                 prefix={<UserOutlined className="site-form-item-icon" />}
-                                placeholder="Email"
+                                placeholder="angieprueba-hr@example.com"
+                                defaultValue={"angieprueba-hr@example.com"}
                                 value={email}
                                 onChange={e => setEmail(e.currentTarget.value)}
-                                defaultValue={"angieprueba-hr@example.com"}
+                     
                             />
                         </Form.Item>
                         <Form.Item
@@ -117,10 +118,10 @@ const Login = () => {
                             <Input.Password
                                 prefix={<LockOutlined className="site-form-item-icon" />}
                                 type="password"
-                                placeholder="Contraseña"
+                                placeholder="perro123"
+                                defaultValue={"perro123"}
                                 value={password}
                                 onChange={e => setPassword(e.currentTarget.value)}
-                                defaultValue={"perro123"}
                             />
 
                         </Form.Item>

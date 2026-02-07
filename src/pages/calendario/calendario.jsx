@@ -3,6 +3,9 @@ import { Badge, Calendar, Tooltip, Spin, Flex } from 'antd';
 import { getAbsences } from '../../apiService/absencesApi';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(isBetween);
+
 import 'dayjs/locale/es';
 import './calendario.scss';
 dayjs.locale('es');
@@ -17,23 +20,26 @@ const getRandomColor = () => {
 };
 
 const getListData = (value, absences) => {
-  const date = new Date(value);
+  const date = dayjs(value); // Asegurar que `value` es un objeto dayjs
+
   return absences
     .filter(absence => {
-      const startDate = new Date(absence.startDate);
-      const endDate = new Date(absence.endDate);
-      return date >= startDate && date <= endDate;
+      const startDate = dayjs(absence.startDate);
+      const endDate = dayjs(absence.endDate);
+      return date.isBetween(startDate, endDate, 'day', '[]');
     })
     .map(absence => ({
-      title: date.toDateString() === new Date(absence.startDate).toDateString() ? `${absence.city}, ${absence.country}` : '',
-      content: date.toDateString() === new Date(absence.startDate).toDateString() ? `${absence.absenceName}` : '',
-      backgroundColor: absence.backgroundColor || getRandomColor() // Asigna un color de fondo único si no existe
+      title: date.isSame(dayjs(absence.startDate), 'day') ? `${absence.city}, ${absence.country}` : '',
+      content: date.isSame(dayjs(absence.startDate), 'day') ? `${absence.absenceName}` : '',
+      backgroundColor: absence.backgroundColor || getRandomColor(), // Asignar color único si falta
     }));
 };
 
+
 const Calendario = () => {
   const [absences, setAbsences] = useState([]);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
+  const [defaultDate] = useState(dayjs('2024-07-01')); // Fecha predeterminada: Julio 2024
 
   useEffect(() => {
     const fetchAbsences = async () => {
@@ -121,7 +127,7 @@ const Calendario = () => {
         </div>
       </Flex>
       <div style={{ height: 'auto' }}> {/* Ajusta la altura del calendario aquí */}
-        <Calendar cellRender={cellRender} headerRender={headerRender} />
+        <Calendar cellRender={cellRender} headerRender={headerRender}  defaultValue={dayjs('2024-07-01')}/>
       </div>  
     </>
   );
